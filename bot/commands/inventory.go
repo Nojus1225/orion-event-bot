@@ -97,7 +97,7 @@ func init() {
 				legendaryLines = append(legendaryLines, fmt.Sprintf("> Watch : %d", data.ItemMontre))
 			}
 			if data.ItemDent > 0 {
-				legendaryLines = append(legendaryLines, fmt.Sprintf("> Tooth : %d", data.ItemDent))
+				legendaryLines = append(legendaryLines, fmt.Sprintf("> Shark Tooth : %d", data.ItemDent))
 			}
 
 			objectStr := ""
