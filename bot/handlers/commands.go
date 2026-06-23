@@ -8,10 +8,13 @@ import (
 )
 
 type Command struct {
-	Name        string
-	Description string
-	Create      discord.ApplicationCommandCreate
-	Execute     func(b *core.Bot, event *events.ApplicationCommandInteractionCreate)
+	Name          string
+	Description   string
+	Create        discord.ApplicationCommandCreate
+	Execute       func(b *core.Bot, event *events.ApplicationCommandInteractionCreate)
+	ExecuteButton func(b *core.Bot, event *events.ComponentInteractionCreate)
+	ExecuteMenu   func(b *core.Bot, event *events.ComponentInteractionCreate)
+	ExecuteModal  func(b *core.Bot, event *events.ModalSubmitInteractionCreate)
 }
 
 var Commands = make(map[string]Command)
@@ -26,8 +29,6 @@ func SyncCommands(b *core.Bot) error {
 		cmds = append(cmds, cmd.Create)
 	}
 
-	// Wait, if guildID is defined, we could sync to guild, or to global. 
-	// For simplicity, let's sync to global. Main can choose what to do.
 	_, err := b.Client.Rest.SetGlobalCommands(b.Client.ApplicationID, cmds)
 	return err
 }
