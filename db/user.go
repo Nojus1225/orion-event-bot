@@ -1,9 +1,5 @@
 package db
 
-import (
-	"time"
-)
-
 type StatusMalus string
 
 const (
@@ -44,6 +40,12 @@ type User struct {
 	ItemMontre       int
 	ItemDent         int
 
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	StatsFouille           int
+	StatsObjetsTrouve      int
+	StatsTotalCoins        int
+	StatsTotalCoinsDepense int
+
+	StatsTotalRien    int
+	StatsTotalSunburn int
+	StatsTotalCuts    int
 }
