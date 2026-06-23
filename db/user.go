@@ -23,7 +23,7 @@ type User struct {
 	Coins     int
 	CDFouille int
 
-	StatusMalus string //"none", "sunburn", "cut"
+	StatusMalus StatusMalus //"none", "sunburn", "cut"
 	CDMalus     int
 
 	Tier Tier // 0: aucun, 1: Sac, 2: Tamis, 3: Detecteur
