@@ -66,10 +66,10 @@ func init() {
 					object = db.ShopPansement
 				}
 
-				var item *shopItem
-				for i := range items {
-					if int(items[i].ID) == int(object) {
-						item = &items[i]
+				var item *ShopItem
+				for i := range Items {
+					if int(Items[i].ID) == int(object) {
+						item = &Items[i]
 						break
 					}
 				}
@@ -107,10 +107,10 @@ func init() {
 			cdFouille := time.Unix(int64(data.CDFouille), 0)
 			if now.Before(cdFouille) {
 				object := db.ShopBouteilleEau
-				var item *shopItem
-				for i := range items {
-					if int(items[i].ID) == int(object) {
-						item = &items[i]
+				var item *ShopItem
+				for i := range Items {
+					if int(Items[i].ID) == int(object) {
+						item = &Items[i]
 						break
 					}
 				}
@@ -189,23 +189,22 @@ func init() {
 					if hasItem {
 						data.Inventory = append(data.Inventory[:itemIndex], data.Inventory[itemIndex+1:]...)
 
-						updates := map[string]any{
-							"inventory": data.Inventory,
-						}
-
 						switch object {
 						case db.ShopCremeSolaire, db.ShopPansement:
 							data.CDMalus = 0
 							data.StatusMalus = db.MalusNone
-							updates["cd_malus"] = 0
-							updates["status_malus"] = db.MalusNone
+							if err := b.DB.GormDB.Model(&data).Select("Inventory", "CDMalus", "StatusMalus").Updates(data).Error; err != nil {
+								fmt.Println("DB error:", err)
+							}
 						case db.ShopBouteilleEau:
 							data.CDFouille = 0
-							updates["cd_fouille"] = 0
-						}
-
-						if err := b.DB.GormDB.Model(&data).Updates(updates).Error; err != nil {
-							fmt.Println("DB error:", err)
+							if err := b.DB.GormDB.Model(&data).Select("Inventory", "CDFouille").Updates(data).Error; err != nil {
+								fmt.Println("DB error:", err)
+							}
+						default:
+							if err := b.DB.GormDB.Model(&data).Select("Inventory").Updates(data).Error; err != nil {
+								fmt.Println("DB error:", err)
+							}
 						}
 
 						msg := discord.NewMessageUpdateV2(

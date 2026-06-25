@@ -14,7 +14,7 @@ import (
 	"github.com/disgoorg/snowflake/v2"
 )
 
-type shopItem struct {
+type ShopItem struct {
 	Name        string
 	Description string
 	Cost        int
@@ -22,7 +22,7 @@ type shopItem struct {
 	Thumbnail   string
 }
 
-var items = []shopItem{
+var Items = []ShopItem{
 	{
 		Name:        "Sunscreen",
 		Description: "Cures the 'Sunburn' debuff",
@@ -78,7 +78,7 @@ func getShopData(page, totalPages int, user db.User) discord.ContainerComponent 
 
 	actionRow := discord.NewActionRow(firstBtn, prevBtn, currBtn, nextBtn, lastBtn)
 
-	item := items[page-1]
+	item := Items[page-1]
 	content := fmt.Sprintf("### %s\n-# %s\n> Coins : %d", item.Name, item.Description, item.Cost)
 
 	canBuy := false
@@ -100,7 +100,7 @@ func getShopData(page, totalPages int, user db.User) discord.ContainerComponent 
 	).WithAccentColor(0x5865F2)
 }
 
-var totalPages = len(items)
+var totalPages = len(Items)
 
 func init() {
 	handlers.RegisterCommand(handlers.Command{
@@ -142,10 +142,10 @@ func init() {
 				if err != nil {
 					return
 				}
-				var item *shopItem
-				for i := range items {
-					if int(items[i].ID) == id {
-						item = &items[i]
+				var item *ShopItem
+				for i := range Items {
+					if int(Items[i].ID) == id {
+						item = &Items[i]
 						break
 					}
 				}
@@ -168,8 +168,8 @@ func init() {
 				}
 
 				var page int
-				for i := range items {
-					if items[i].ID == item.ID {
+				for i := range Items {
+					if Items[i].ID == item.ID {
 						page = i + 1
 						break
 					}

@@ -10,7 +10,6 @@ import (
 
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
-	json "github.com/disgoorg/json/v2"
 )
 
 func init() {
@@ -29,20 +28,18 @@ func init() {
 			},
 		},
 		Execute: func(b *core.Bot, event *events.ApplicationCommandInteractionCreate) {
-			avatarURL := event.User().EffectiveAvatarURL()
 			command := event.SlashCommandInteractionData()
 
-			userOpt, exist := command.Option("user")
+			userOpt, exist := command.OptUser("user")
 
 			var targetUser discord.User
 			if exist {
-				if err := json.Unmarshal(userOpt.Value, &targetUser); err != nil {
-					targetUser = event.User()
-				} else {
-				}
+				targetUser = userOpt
 			} else {
 				targetUser = event.User()
 			}
+
+			avatarURL := targetUser.EffectiveAvatarURL()
 
 			var data db.User
 			if err := b.DB.GormDB.FirstOrCreate(&data, db.User{ID: strconv.FormatUint(uint64(targetUser.ID), 10)}).Error; err != nil {
@@ -125,6 +122,21 @@ func init() {
 			} else {
 				for _, l := range legendaryLines {
 					objectStr += l + "\n"
+				}
+			}
+
+			objectStr += "## Shop Items\n"
+			if len(data.Inventory) == 0 {
+				objectStr += "> There are no items\n"
+			} else {
+				counts := make(map[int]int)
+				for _, id := range data.Inventory {
+					counts[id]++
+				}
+				for _, j := range Items {
+					if cnt, ok := counts[int(j.ID)]; ok {
+						objectStr += fmt.Sprintf("(x%d) %s\n", cnt, j.Name)
+					}
 				}
 			}
 
