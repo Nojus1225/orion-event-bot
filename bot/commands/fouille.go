@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/big"
 	"strconv"
+	"strings"
 	"time"
 
 	"orion-event-bot/bot/core"
@@ -59,15 +60,42 @@ func init() {
 			cdMalus := time.Unix(int64(data.CDMalus), 0)
 			if now.Before(cdMalus) {
 				txt := "got a sunburn"
+				object := db.ShopCremeSolaire
 				if data.StatusMalus == db.MalusCut {
 					txt = "got cut"
+					object = db.ShopPansement
 				}
-				message := fmt.Sprintf("Oh no, you %s come back <t:%d:R>.", txt, cdMalus.Unix())
+
+				var item *shopItem
+				for i := range items {
+					if int(items[i].ID) == int(object) {
+						item = &items[i]
+						break
+					}
+				}
+
+				hasItem := false
+				for _, invItem := range data.Inventory {
+					if invItem == int(object) {
+						hasItem = true
+						break
+					}
+				}
+
+				message := fmt.Sprintf("Oh no, you %s come back <t:%d:R>.\n-# You can cure urself if you buy a %s in the /shop.", txt, cdMalus.Unix(), item.Name)
+
+				components := []discord.ContainerSubComponent{
+					discord.NewTextDisplay("# Search"),
+					discord.NewTextDisplay(message),
+				}
+				if hasItem {
+					components = append(components, discord.NewActionRow(
+						discord.NewButton(discord.ButtonStyleSuccess, "Use", fmt.Sprintf("search-use-item-%d", object), "", snowflake.ID(0)),
+					))
+				}
+
 				msg := discord.NewMessageCreateV2(
-					discord.NewContainer(
-						discord.NewTextDisplay("# Search"),
-						discord.NewTextDisplay(message),
-					).WithAccentColor(0xE74C3C),
+					discord.NewContainer(components...).WithAccentColor(0xE74C3C),
 				)
 
 				if err := event.CreateMessage(msg); err != nil {
@@ -78,11 +106,37 @@ func init() {
 
 			cdFouille := time.Unix(int64(data.CDFouille), 0)
 			if now.Before(cdFouille) {
+				object := db.ShopBouteilleEau
+				var item *shopItem
+				for i := range items {
+					if int(items[i].ID) == int(object) {
+						item = &items[i]
+						break
+					}
+				}
+
+				hasItem := false
+				for _, invItem := range data.Inventory {
+					if invItem == int(object) {
+						hasItem = true
+						break
+					}
+				}
+
+				message := fmt.Sprintf("You already dug, come back <t:%d:R>.\n-# You can bypass the cooldown by buying a %s in the shop.", cdFouille.Unix(), item.Name)
+
+				components := []discord.ContainerSubComponent{
+					discord.NewTextDisplay("# Search"),
+					discord.NewTextDisplay(message),
+				}
+				if hasItem {
+					components = append(components, discord.NewActionRow(
+						discord.NewButton(discord.ButtonStyleSuccess, "Use", fmt.Sprintf("search-use-item-%d", object), "", snowflake.ID(0)),
+					))
+				}
+
 				msg := discord.NewMessageCreateV2(
-					discord.NewContainer(
-						discord.NewTextDisplay("# Search"),
-						discord.NewTextDisplay(fmt.Sprintf("You already dug, come back <t:%d:R>.", cdFouille.Unix())),
-					).WithAccentColor(0xE74C3C),
+					discord.NewContainer(components...).WithAccentColor(0xE74C3C),
 				)
 
 				if err := event.CreateMessage(msg); err != nil {
@@ -117,7 +171,66 @@ func init() {
 				fmt.Println("DB error:", err)
 			}
 
-			switch button.CustomID() {
+			customID := button.CustomID()
+
+			if strings.HasPrefix(customID, "search-use-item-") {
+				itemIdx, err := strconv.Atoi(customID[16:])
+				if err == nil {
+					object := db.Item(itemIdx)
+					hasItem := false
+					itemIndex := -1
+					for i, invItem := range data.Inventory {
+						if invItem == int(object) {
+							hasItem = true
+							itemIndex = i
+							break
+						}
+					}
+					if hasItem {
+						data.Inventory = append(data.Inventory[:itemIndex], data.Inventory[itemIndex+1:]...)
+
+						updates := map[string]any{
+							"inventory": data.Inventory,
+						}
+
+						switch object {
+						case db.ShopCremeSolaire, db.ShopPansement:
+							data.CDMalus = 0
+							data.StatusMalus = db.MalusNone
+							updates["cd_malus"] = 0
+							updates["status_malus"] = db.MalusNone
+						case db.ShopBouteilleEau:
+							data.CDFouille = 0
+							updates["cd_fouille"] = 0
+						}
+
+						if err := b.DB.GormDB.Model(&data).Updates(updates).Error; err != nil {
+							fmt.Println("DB error:", err)
+						}
+
+						msg := discord.NewMessageUpdateV2(
+							discord.NewContainer(
+								discord.NewSection(
+									discord.NewTextDisplay("# Search"),
+									discord.NewTextDisplay("Which area would you like to search?"),
+								).WithAccessory(discord.NewThumbnail(event.User().EffectiveAvatarURL())),
+								discord.NewActionRow(
+									discord.NewButton(discord.ButtonStylePrimary, "Deckchairs", "search-transats", "", snowflake.ID(0)),
+									discord.NewButton(discord.ButtonStylePrimary, "Water's edge", "search-eau", "", snowflake.ID(0)),
+									discord.NewButton(discord.ButtonStyleDanger, "The rocks", "search-rochers", "", snowflake.ID(0)),
+								),
+							).WithAccentColor(0x5865F2),
+						)
+
+						if err := event.UpdateMessage(msg); err != nil {
+							fmt.Println("Error updating search message:", err)
+						}
+						return
+					}
+				}
+			}
+
+			switch customID {
 			case "search-transats":
 				rewards := []string{"Shell", "Bottle", "Can"}
 				fields := []string{"item_coquillage", "item_bouteille", "item_cannette"}
@@ -158,7 +271,7 @@ func init() {
 				}
 			case "search-eau":
 				rewards := []string{"Shell", "Bottle", "Can", "Glasses", "Coin", "Crab Claw"}
-				fields := []string{"item_coquillage", "item_bouteille", "item_cannette", "item_lunette", "item_piece", "item_pince"}
+				fields := []string{"item_coquillage", "item_bouteille", "item_cannette", "item_lunettes", "item_piece", "item_pince"}
 				values := []int{data.ItemCoquillage, data.ItemBouteille, data.ItemCannette, data.ItemLunettes, data.ItemPiece, data.ItemPince}
 				random, err := rand.Int(rand.Reader, big.NewInt(100))
 				if err != nil {
@@ -197,7 +310,7 @@ func init() {
 
 			case "search-rochers":
 				rewards := []string{"Glasses", "Coin", "Crab Claw", "Message in a Bottle", "Watch", "Shark Tooth"}
-				fields := []string{"item_lunette", "item_piece", "item_pince", "item_msg_bouteille", "item_montre", "item_dent"}
+				fields := []string{"item_lunettes", "item_piece", "item_pince", "item_msg_bouteille", "item_montre", "item_dent"}
 				values := []int{data.ItemLunettes, data.ItemPiece, data.ItemPince, data.ItemMsgBouteille, data.ItemMontre, data.ItemDent}
 				random, err := rand.Int(rand.Reader, big.NewInt(100))
 				if err != nil {

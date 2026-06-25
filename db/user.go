@@ -34,7 +34,7 @@ type User struct {
 	StatusMalus StatusMalus
 	CDMalus     int
 
-	Inventory []Item `gorm:"serializer:json"`
+	Inventory []int `gorm:"serializer:json"`
 
 	Tier Tier
 
