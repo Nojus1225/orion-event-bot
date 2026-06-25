@@ -11,10 +11,11 @@ type Command struct {
 	Name          string
 	Description   string
 	Create        discord.ApplicationCommandCreate
-	Execute       func(b *core.Bot, event *events.ApplicationCommandInteractionCreate)
-	ExecuteButton func(b *core.Bot, event *events.ComponentInteractionCreate)
-	ExecuteMenu   func(b *core.Bot, event *events.ComponentInteractionCreate)
-	ExecuteModal  func(b *core.Bot, event *events.ModalSubmitInteractionCreate)
+	Execute          func(b *core.Bot, event *events.ApplicationCommandInteractionCreate)
+	ExecuteButton    func(b *core.Bot, event *events.ComponentInteractionCreate)
+	ExecuteMenu      func(b *core.Bot, event *events.ComponentInteractionCreate)
+	ExecuteModal     func(b *core.Bot, event *events.ModalSubmitInteractionCreate)
+	ExecuteAutocomplete func(b *core.Bot, event *events.AutocompleteInteractionCreate)
 }
 
 var Commands = make(map[string]Command)

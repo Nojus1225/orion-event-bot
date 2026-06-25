@@ -80,4 +80,20 @@ func init() {
 			}
 		},
 	})
+
+	handlers.RegisterEvent(handlers.Event{
+		Name:     "AutocompleteInteractionCreate",
+		ExecOnce: false,
+		Execute: func(b *core.Bot, e bot.Event) {
+			event, ok := e.(*events.AutocompleteInteractionCreate)
+			if !ok {
+				return
+			}
+
+			commandName := event.Data.CommandName
+			if cmd, exists := handlers.Commands[commandName]; exists && cmd.ExecuteAutocomplete != nil {
+				cmd.ExecuteAutocomplete(b, event)
+			}
+		},
+	})
 }
