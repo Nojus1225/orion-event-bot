@@ -97,16 +97,24 @@ func init() {
 				return
 			}
 
-			page, err := strconv.Atoi(parts[1])
-			if err != nil {
-				return
-			}
-
 			var totalCount int64
 			b.DB.GormDB.Model(&db.User{}).Count(&totalCount)
 			totalPages := int(math.Ceil(float64(totalCount) / 10.0))
 			if totalPages == 0 {
 				totalPages = 1
+			}
+
+			var page int
+			if parts[1] == "first" {
+				page = 1
+			} else if parts[1] == "last" {
+				page = totalPages
+			} else {
+				p, err := strconv.Atoi(parts[1])
+				if err != nil {
+					return
+				}
+				page = p
 			}
 
 			content, actionRow := getLeaderboardData(b, page, totalPages)
