@@ -17,16 +17,26 @@ const (
 	TierDetecteur Tier = 3
 )
 
+type Item int
+
+const (
+	ShopCremeSolaire Item = 0
+	ShopPansement    Item = 1
+	ShopBouteilleEau Item = 2
+)
+
 type User struct {
 	ID string `gorm:"primaryKey;type:varchar(255)"`
 
 	Coins     int
 	CDFouille int
 
-	StatusMalus StatusMalus //"none", "sunburn", "cut"
+	StatusMalus StatusMalus
 	CDMalus     int
 
-	Tier Tier // 0: aucun, 1: Sac, 2: Tamis, 3: Detecteur
+	Inventory []Item `gorm:"serializer:json"`
+
+	Tier Tier
 
 	ItemCoquillage int
 	ItemBouteille  int
