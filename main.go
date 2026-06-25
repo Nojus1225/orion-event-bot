@@ -17,7 +17,9 @@ import (
 
 	"github.com/disgoorg/disgo"
 	"github.com/disgoorg/disgo/bot"
+	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/gateway"
+	"github.com/disgoorg/disgo/rest"
 	"github.com/joho/godotenv"
 )
 
@@ -39,6 +41,11 @@ func main() {
 				gateway.IntentGuildMessages,
 				gateway.IntentDirectMessages,
 			),
+		),
+		bot.WithRestConfigOpts(
+			rest.WithDefaultAllowedMentions(discord.AllowedMentions{
+				Parse: []discord.AllowedMentionType{},
+			}),
 		),
 	)
 	if err != nil {
