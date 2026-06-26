@@ -1,6 +1,7 @@
 package events
 
 import (
+	"fmt"
 	"strings"
 
 	"orion-event-bot/bot/core"
@@ -9,6 +10,7 @@ import (
 	"github.com/disgoorg/disgo/bot"
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
 func init() {
@@ -18,6 +20,19 @@ func init() {
 		Execute: func(b *core.Bot, e bot.Event) {
 			event, ok := e.(*events.ApplicationCommandInteractionCreate)
 			if !ok {
+				return
+			}
+
+			if b.MaintenanceMode && !b.IsAdmin(event.User().ID.String()) {
+				loc := core.GetLocalizer(event.Locale().String())
+				msg, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "MaintenanceMessage"})
+				if msg == "" {
+					msg = "The event is complete."
+				}
+				err := event.CreateMessage(discord.NewMessageCreate().WithEphemeral(true).WithContent(msg))
+				if err != nil {
+					fmt.Println("Error sending maintenance message:", err)
+				}
 				return
 			}
 
@@ -34,6 +49,19 @@ func init() {
 		Execute: func(b *core.Bot, e bot.Event) {
 			event, ok := e.(*events.ComponentInteractionCreate)
 			if !ok {
+				return
+			}
+
+			if b.MaintenanceMode && !b.IsAdmin(event.User().ID.String()) {
+				loc := core.GetLocalizer(event.Locale().String())
+				msg, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "MaintenanceMessage"})
+				if msg == "" {
+					msg = "L'événement est actuellement en maintenance. Merci de patienter !"
+				}
+				err := event.CreateMessage(discord.NewMessageCreate().WithEphemeral(true).WithContent(msg))
+				if err != nil {
+					fmt.Println("Error sending maintenance message:", err)
+				}
 				return
 			}
 

@@ -31,5 +31,6 @@
   "UpgradeCost": "**Cost:** {{.Coins}} Coins",
   "UpgradeBuy": "Buy Upgrade",
   "UpgradeNotEnoughCoins": "You don't have enough coins for this upgrade.",
-  "UpgradeBuySuccess": "You successfully purchased the upgrade!"
+  "UpgradeBuySuccess": "You successfully purchased the upgrade!",
+  "MaintenanceMessage": "The event is complete."
 }

@@ -31,5 +31,6 @@
   "UpgradeCost": "**Coût :** {{.Coins}} Pièces",
   "UpgradeBuy": "Acheter l'amélioration",
   "UpgradeNotEnoughCoins": "Vous n'avez pas assez de pièces pour cette amélioration.",
-  "UpgradeBuySuccess": "Vous avez acheté l'amélioration avec succès !"
+  "UpgradeBuySuccess": "Vous avez acheté l'amélioration avec succès !",
+  "MaintenanceMessage": "L'événement est terminé."
 }

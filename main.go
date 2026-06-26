@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -32,8 +33,18 @@ func main() {
 
 	database := db.New()
 
+	adminIDsStr := os.Getenv("ADMIN_IDS")
+	var adminIDs []string
+	if adminIDsStr != "" {
+		adminIDs = strings.Split(adminIDsStr, ",")
+		for i := range adminIDs {
+			adminIDs[i] = strings.TrimSpace(adminIDs[i])
+		}
+	}
+
 	coreBot := &core.Bot{
-		DB: database,
+		DB:       database,
+		AdminIDs: adminIDs,
 	}
 
 	client, err := disgo.New(token,
@@ -42,6 +53,7 @@ func main() {
 				gateway.IntentGuilds,
 				gateway.IntentGuildMessages,
 				gateway.IntentDirectMessages,
+				gateway.IntentMessageContent,
 			),
 		),
 		bot.WithRestConfigOpts(
