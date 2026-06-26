@@ -189,9 +189,21 @@ func init() {
 				data.Coins -= item.Cost
 				data.StatsTotalCoinsDepense += item.Cost
 				data.Inventory = append(data.Inventory, int(item.ID))
-				if err := b.DB.GormDB.Model(&data).Select("Coins", "Inventory", "StatsTotalCoinsDepense").Updates(data).Error; err != nil {
+				
+				switch item.ID {
+				case db.ShopCremeSolaire:
+					data.StatsAchatCremeSolaire++
+				case db.ShopPansement:
+					data.StatsAchatPansement++
+				case db.ShopBouteilleEau:
+					data.StatsAchatEau++
+				}
+
+				if err := b.DB.GormDB.Model(&data).Select("Coins", "Inventory", "StatsTotalCoinsDepense", "StatsAchatCremeSolaire", "StatsAchatPansement", "StatsAchatEau").Updates(data).Error; err != nil {
 					fmt.Println("DB error:", err)
 				}
+				
+				db.LogAction(b.DB.GormDB, data.ID, db.ActionShop, fmt.Sprintf(`{"item_id":%d, "cost":%d}`, item.ID, item.Cost))
 
 				var page int
 				for i := range Items {

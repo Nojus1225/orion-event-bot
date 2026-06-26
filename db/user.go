@@ -58,4 +58,26 @@ type User struct {
 	StatsTotalRien    int
 	StatsTotalSunburn int
 	StatsTotalCuts    int
+
+	StatsFouilleTransats int
+	StatsFouilleEau      int
+	StatsFouilleRochers  int
+
+	StatsCoquillagesTrouves  int
+	StatsBouteillesTrouvees  int
+	StatsCannettesTrouvees   int
+	StatsLunettesTrouvees    int
+	StatsPiecesTrouvees      int
+	StatsPincesTrouvees      int
+	StatsMsgBouteilleTrouves int
+	StatsMontresTrouvees     int
+	StatsDentsTrouvees       int
+
+	StatsEchecsFouilleCooldown int
+	StatsEchecsFouilleMalus    int
+
+	StatsVentesTotal       int
+	StatsAchatCremeSolaire int
+	StatsAchatPansement    int
+	StatsAchatEau          int
 }

@@ -315,10 +315,13 @@ func init() {
 
 			data.Coins += coinsGenerated
 			data.StatsTotalCoins += coinsGenerated
+			data.StatsVentesTotal++
 
 			if err := b.DB.GormDB.Save(&data).Error; err != nil {
 				fmt.Println("DB error:", err)
 			}
+
+			db.LogAction(b.DB.GormDB, data.ID, db.ActionSell, fmt.Sprintf(`{"action":"%s", "coins":%d}`, action, coinsGenerated))
 
 			successMsg, _ := loc.Localize(&i18n.LocalizeConfig{
 				MessageID: "SellSuccessMsg",

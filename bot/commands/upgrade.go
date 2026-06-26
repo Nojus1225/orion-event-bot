@@ -157,6 +157,8 @@ func init() {
 				fmt.Println("DB error:", err)
 			}
 
+			db.LogAction(b.DB.GormDB, data.ID, db.ActionUpgrade, fmt.Sprintf(`{"tier":%d, "cost":%d}`, targetTier, cost))
+
 			container := getUpgradeContainer(data, loc)
 			msg := discord.NewMessageUpdateV2(container)
 

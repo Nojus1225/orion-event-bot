@@ -30,9 +30,43 @@ func grantLoot(b *core.Bot, data *db.User, idx int, rewards []string, fields []s
 	total := updateLoot(b, data, fields[idx], values[idx]+1)
 
 	data.StatsObjetsTrouve++
-	if err := b.DB.GormDB.Model(data).Update("stats_objets_trouve", data.StatsObjetsTrouve).Error; err != nil {
+	updates := map[string]any{"stats_objets_trouve": data.StatsObjetsTrouve}
+
+	switch itemName {
+	case "Shell":
+		data.StatsCoquillagesTrouves++
+		updates["stats_coquillages_trouves"] = data.StatsCoquillagesTrouves
+	case "Bottle":
+		data.StatsBouteillesTrouvees++
+		updates["stats_bouteilles_trouvees"] = data.StatsBouteillesTrouvees
+	case "Can":
+		data.StatsCannettesTrouvees++
+		updates["stats_cannettes_trouvees"] = data.StatsCannettesTrouvees
+	case "Glasses":
+		data.StatsLunettesTrouvees++
+		updates["stats_lunettes_trouvees"] = data.StatsLunettesTrouvees
+	case "Coin":
+		data.StatsPiecesTrouvees++
+		updates["stats_pieces_trouvees"] = data.StatsPiecesTrouvees
+	case "Crab Claw":
+		data.StatsPincesTrouvees++
+		updates["stats_pinces_trouvees"] = data.StatsPincesTrouvees
+	case "Message in a Bottle":
+		data.StatsMsgBouteilleTrouves++
+		updates["stats_msg_bouteille_trouves"] = data.StatsMsgBouteilleTrouves
+	case "Watch":
+		data.StatsMontresTrouvees++
+		updates["stats_montres_trouvees"] = data.StatsMontresTrouvees
+	case "Shark Tooth":
+		data.StatsDentsTrouvees++
+		updates["stats_dents_trouvees"] = data.StatsDentsTrouvees
+	}
+
+	if err := b.DB.GormDB.Model(data).Updates(updates).Error; err != nil {
 		fmt.Println("DB error:", err)
 	}
+
+	db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, fmt.Sprintf(`{"result":"item","item":"%s"}`, itemName))
 
 	return itemName, total
 }
@@ -53,6 +87,7 @@ func applyMalus(b *core.Bot, data *db.User, duration time.Duration, status db.St
 	if err := b.DB.GormDB.Model(data).Updates(updates).Error; err != nil {
 		fmt.Println("DB error:", err)
 	}
+	db.LogAction(b.DB.GormDB, data.ID, db.ActionMalus, fmt.Sprintf(`{"status":"%s"}`, string(status)))
 	return data.CDMalus
 }
 
@@ -134,6 +169,9 @@ func init() {
 				if err := event.CreateMessage(msg); err != nil {
 					fmt.Println("Error sending cd message:", err)
 				}
+				data.StatsEchecsFouilleMalus++
+				b.DB.GormDB.Model(&data).Update("stats_echecs_fouille_malus", data.StatsEchecsFouilleMalus)
+				db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"failed_malus"}`)
 				return
 			}
 
@@ -189,6 +227,9 @@ func init() {
 				if err := event.CreateMessage(msg); err != nil {
 					fmt.Println("Error sending cd message:", err)
 				}
+				data.StatsEchecsFouilleCooldown++
+				b.DB.GormDB.Model(&data).Update("stats_echecs_fouille_cooldown", data.StatsEchecsFouilleCooldown)
+				db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"failed_cooldown"}`)
 				return
 			}
 
@@ -309,7 +350,8 @@ func init() {
 
 				data.CDFouille = int(time.Now().Add(30 * time.Minute).Unix())
 				data.StatsFouille++
-				if err := b.DB.GormDB.Model(&data).Updates(map[string]any{"cd_fouille": data.CDFouille, "stats_fouille": data.StatsFouille}).Error; err != nil {
+				data.StatsFouilleTransats++
+				if err := b.DB.GormDB.Model(&data).Updates(map[string]any{"cd_fouille": data.CDFouille, "stats_fouille": data.StatsFouille, "stats_fouille_transats": data.StatsFouilleTransats}).Error; err != nil {
 					fmt.Println("DB error:", err)
 				}
 
@@ -336,6 +378,7 @@ func init() {
 					if err := b.DB.GormDB.Model(&data).Update("stats_total_rien", data.StatsTotalRien).Error; err != nil {
 						fmt.Println("DB error:", err)
 					}
+					db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"rien"}`)
 				}
 
 				searchTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"})
@@ -364,7 +407,8 @@ func init() {
 
 				data.CDFouille = int(time.Now().Add(30 * time.Minute).Unix())
 				data.StatsFouille++
-				if err := b.DB.GormDB.Model(&data).Updates(map[string]any{"cd_fouille": data.CDFouille, "stats_fouille": data.StatsFouille}).Error; err != nil {
+				data.StatsFouilleEau++
+				if err := b.DB.GormDB.Model(&data).Updates(map[string]any{"cd_fouille": data.CDFouille, "stats_fouille": data.StatsFouille, "stats_fouille_eau": data.StatsFouilleEau}).Error; err != nil {
 					fmt.Println("DB error:", err)
 				}
 
@@ -391,6 +435,7 @@ func init() {
 					if err := b.DB.GormDB.Model(&data).Update("stats_total_rien", data.StatsTotalRien).Error; err != nil {
 						fmt.Println("DB error:", err)
 					}
+					db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"rien"}`)
 				}
 
 				searchTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"})
@@ -420,7 +465,8 @@ func init() {
 
 				data.CDFouille = int(time.Now().Add(30 * time.Minute).Unix())
 				data.StatsFouille++
-				if err := b.DB.GormDB.Model(&data).Updates(map[string]any{"cd_fouille": data.CDFouille, "stats_fouille": data.StatsFouille}).Error; err != nil {
+				data.StatsFouilleRochers++
+				if err := b.DB.GormDB.Model(&data).Updates(map[string]any{"cd_fouille": data.CDFouille, "stats_fouille": data.StatsFouille, "stats_fouille_rochers": data.StatsFouilleRochers}).Error; err != nil {
 					fmt.Println("DB error:", err)
 				}
 
@@ -442,6 +488,7 @@ func init() {
 					if err := b.DB.GormDB.Model(&data).Update("stats_total_rien", data.StatsTotalRien).Error; err != nil {
 						fmt.Println("DB error:", err)
 					}
+					db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"rien"}`)
 				} else if roll <= 90 {
 					cd := applyMalus(b, &data, 1*time.Hour, db.MalusCut)
 					message, _ = loc.Localize(&i18n.LocalizeConfig{
