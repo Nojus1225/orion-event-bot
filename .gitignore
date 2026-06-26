@@ -1,3 +1,5 @@
 .env
 orion-event-bot
 bot.db
+# Orion CLI
+.orion/
