@@ -187,8 +187,9 @@ func init() {
 				}
 
 				data.Coins -= item.Cost
+				data.StatsTotalCoinsDepense += item.Cost
 				data.Inventory = append(data.Inventory, int(item.ID))
-				if err := b.DB.GormDB.Model(&data).Select("Coins", "Inventory").Updates(data).Error; err != nil {
+				if err := b.DB.GormDB.Model(&data).Select("Coins", "Inventory", "StatsTotalCoinsDepense").Updates(data).Error; err != nil {
 					fmt.Println("DB error:", err)
 				}
 

@@ -28,13 +28,29 @@ func updateLoot(b *core.Bot, data *db.User, field string, value int) int {
 func grantLoot(b *core.Bot, data *db.User, idx int, rewards []string, fields []string, values []int) (string, int) {
 	itemName := rewards[idx]
 	total := updateLoot(b, data, fields[idx], values[idx]+1)
+
+	data.StatsObjetsTrouve++
+	if err := b.DB.GormDB.Model(data).Update("stats_objets_trouve", data.StatsObjetsTrouve).Error; err != nil {
+		fmt.Println("DB error:", err)
+	}
+
 	return itemName, total
 }
 
 func applyMalus(b *core.Bot, data *db.User, duration time.Duration, status db.StatusMalus) int {
 	data.CDMalus = int(time.Now().Add(duration).Unix())
 	data.StatusMalus = status
-	if err := b.DB.GormDB.Model(data).Updates(map[string]any{"cd_malus": data.CDMalus, "status_malus": data.StatusMalus}).Error; err != nil {
+
+	updates := map[string]any{"cd_malus": data.CDMalus, "status_malus": data.StatusMalus}
+	if status == db.MalusSunBurn {
+		data.StatsTotalSunburn++
+		updates["stats_total_sunburn"] = data.StatsTotalSunburn
+	} else if status == db.MalusCut {
+		data.StatsTotalCuts++
+		updates["stats_total_cuts"] = data.StatsTotalCuts
+	}
+
+	if err := b.DB.GormDB.Model(data).Updates(updates).Error; err != nil {
 		fmt.Println("DB error:", err)
 	}
 	return data.CDMalus
@@ -292,7 +308,8 @@ func init() {
 				roll := int(random.Int64()) + 1
 
 				data.CDFouille = int(time.Now().Add(30 * time.Minute).Unix())
-				if err := b.DB.GormDB.Model(&data).Update("cd_fouille", data.CDFouille).Error; err != nil {
+				data.StatsFouille++
+				if err := b.DB.GormDB.Model(&data).Updates(map[string]any{"cd_fouille": data.CDFouille, "stats_fouille": data.StatsFouille}).Error; err != nil {
 					fmt.Println("DB error:", err)
 				}
 
@@ -314,6 +331,11 @@ func init() {
 						MessageID: "SearchDeckchairsSunburn",
 						TemplateData: map[string]interface{}{"Time": cd},
 					})
+				} else {
+					data.StatsTotalRien++
+					if err := b.DB.GormDB.Model(&data).Update("stats_total_rien", data.StatsTotalRien).Error; err != nil {
+						fmt.Println("DB error:", err)
+					}
 				}
 
 				searchTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"})
@@ -341,7 +363,8 @@ func init() {
 				roll := int(random.Int64()) + 1
 
 				data.CDFouille = int(time.Now().Add(30 * time.Minute).Unix())
-				if err := b.DB.GormDB.Model(&data).Update("cd_fouille", data.CDFouille).Error; err != nil {
+				data.StatsFouille++
+				if err := b.DB.GormDB.Model(&data).Updates(map[string]any{"cd_fouille": data.CDFouille, "stats_fouille": data.StatsFouille}).Error; err != nil {
 					fmt.Println("DB error:", err)
 				}
 
@@ -363,6 +386,11 @@ func init() {
 						MessageID: "SearchDeckchairsSunburn",
 						TemplateData: map[string]interface{}{"Time": cd},
 					})
+				} else {
+					data.StatsTotalRien++
+					if err := b.DB.GormDB.Model(&data).Update("stats_total_rien", data.StatsTotalRien).Error; err != nil {
+						fmt.Println("DB error:", err)
+					}
 				}
 
 				searchTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"})
@@ -391,7 +419,8 @@ func init() {
 				roll := int(random.Int64()) + 1
 
 				data.CDFouille = int(time.Now().Add(30 * time.Minute).Unix())
-				if err := b.DB.GormDB.Model(&data).Update("cd_fouille", data.CDFouille).Error; err != nil {
+				data.StatsFouille++
+				if err := b.DB.GormDB.Model(&data).Updates(map[string]any{"cd_fouille": data.CDFouille, "stats_fouille": data.StatsFouille}).Error; err != nil {
 					fmt.Println("DB error:", err)
 				}
 
@@ -409,6 +438,10 @@ func init() {
 					})
 				} else if roll <= 75 {
 					message, _ = loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchRocksEmpty"})
+					data.StatsTotalRien++
+					if err := b.DB.GormDB.Model(&data).Update("stats_total_rien", data.StatsTotalRien).Error; err != nil {
+						fmt.Println("DB error:", err)
+					}
 				} else if roll <= 90 {
 					cd := applyMalus(b, &data, 1*time.Hour, db.MalusCut)
 					message, _ = loc.Localize(&i18n.LocalizeConfig{

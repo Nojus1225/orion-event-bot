@@ -150,9 +150,10 @@ func init() {
 			}
 
 			data.Coins -= cost
+			data.StatsTotalCoinsDepense += cost
 			data.Tier = targetTier
 
-			if err := b.DB.GormDB.Model(&data).Select("Coins", "Tier").Updates(data).Error; err != nil {
+			if err := b.DB.GormDB.Model(&data).Select("Coins", "Tier", "StatsTotalCoinsDepense").Updates(data).Error; err != nil {
 				fmt.Println("DB error:", err)
 			}
 

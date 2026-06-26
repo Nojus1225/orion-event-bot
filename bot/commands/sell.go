@@ -314,6 +314,7 @@ func init() {
 			}
 
 			data.Coins += coinsGenerated
+			data.StatsTotalCoins += coinsGenerated
 
 			if err := b.DB.GormDB.Save(&data).Error; err != nil {
 				fmt.Println("DB error:", err)
