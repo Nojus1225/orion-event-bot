@@ -87,6 +87,11 @@ func init() {
 			}
 		},
 		ExecuteButton: func(b *core.Bot, event *events.ComponentInteractionCreate) {
+			if (event.Message.InteractionMetadata != nil && event.Message.InteractionMetadata.User.ID != event.User().ID) ||
+				(event.Message.Interaction != nil && event.Message.Interaction.User.ID != event.User().ID) {
+				_ = event.CreateMessage(discord.NewMessageCreate().WithContent("You cannot interact with components on someone else's command.").WithEphemeral(true))
+				return
+			}
 			customID := event.Data.CustomID()
 			parts := strings.SplitN(customID, "-", 2)
 			if len(parts) != 2 {
