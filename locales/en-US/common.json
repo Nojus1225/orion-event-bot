@@ -19,5 +19,17 @@
   "ShopItems": "Shop Items",
   "NoItems": "No items",
   "Sunburn": "Sunburn",
-  "Cut": "Cut"
+  "Cut": "Cut",
+  "UpgradeTitle": "Equipment Upgrades",
+  "UpgradeTier1Name": "Waterproof Backpack",
+  "UpgradeTier1Desc": "+20% Coins when selling items.",
+  "UpgradeTier2Name": "Pro Beach Sieve",
+  "UpgradeTier2Desc": "+50% Coins when selling items (replaces Level 1).",
+  "UpgradeTier3Name": "Military Metal Detector",
+  "UpgradeTier3Desc": "x2 Coins when selling all items (replaces Level 2).",
+  "UpgradeMaxTier": "You have reached the maximum upgrade tier!",
+  "UpgradeCost": "**Cost:** {{.Coins}} Coins",
+  "UpgradeBuy": "Buy Upgrade",
+  "UpgradeNotEnoughCoins": "You don't have enough coins for this upgrade.",
+  "UpgradeBuySuccess": "You successfully purchased the upgrade!"
 }

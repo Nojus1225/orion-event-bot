@@ -28,6 +28,19 @@ var sellPrices = map[string]int{
 	"Shark Tooth":         15,
 }
 
+func getSellMultiplier(tier db.Tier) float64 {
+	switch tier {
+	case db.TierSac:
+		return 1.2
+	case db.TierTamis:
+		return 1.5
+	case db.TierDetecteur:
+		return 2.0
+	default:
+		return 1.0
+	}
+}
+
 func init() {
 	handlers.RegisterCommand(handlers.Command{
 		Name:        "sell",
@@ -142,7 +155,7 @@ func init() {
 					return
 				}
 
-				price := count * sellPrices[targetItem]
+				price := int(float64(count * sellPrices[targetItem]) * getSellMultiplier(data.Tier))
 				itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: targetItem})
 				if itemLoc == "" {
 					itemLoc = targetItem
@@ -164,6 +177,8 @@ func init() {
 				total += data.ItemMsgBouteille * sellPrices["Message in a Bottle"]
 				total += data.ItemMontre * sellPrices["Watch"]
 				total += data.ItemDent * sellPrices["Shark Tooth"]
+
+				total = int(float64(total) * getSellMultiplier(data.Tier))
 
 				if total == 0 {
 					noItemsTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SellNoItems"})
@@ -237,6 +252,8 @@ func init() {
 				data.ItemMontre = 0
 				coinsGenerated += data.ItemDent * sellPrices["Shark Tooth"]
 				data.ItemDent = 0
+
+				coinsGenerated = int(float64(coinsGenerated) * getSellMultiplier(data.Tier))
 			} else {
 				targetItem := action
 				count := 0
@@ -284,7 +301,7 @@ func init() {
 					}
 					return
 				}
-				coinsGenerated = count * sellPrices[targetItem]
+				coinsGenerated = int(float64(count * sellPrices[targetItem]) * getSellMultiplier(data.Tier))
 			}
 
 			if coinsGenerated == 0 {
