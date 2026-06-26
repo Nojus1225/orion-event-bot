@@ -1,0 +1,23 @@
+{
+  "Close": "Fermer",
+  "NotYourComponent": "Vous ne pouvez pas interagir avec les composants de la commande de quelqu'un d'autre.",
+  "None": "Aucun",
+  "Shell": "Coquillage",
+  "Bottle": "Bouteille",
+  "Can": "Canette",
+  "Glasses": "Lunettes",
+  "Coins": "Pièces",
+  "CrabClaw": "Pince de crabe",
+  "MessageInABottle": "Message dans une bouteille",
+  "Watch": "Montre",
+  "SharkTooth": "Dent de requin",
+  "Cancel": "Annuler",
+  "OperationCancelled": "Opération annulée.",
+  "CommonItems": "Objets Communs",
+  "RareItems": "Objets Rares",
+  "LegendaryItems": "Objets Légendaires",
+  "ShopItems": "Objets de Boutique",
+  "NoItems": "Aucun objet",
+  "Sunburn": "Coup de Soleil",
+  "Cut": "Coupure"
+}

@@ -1,0 +1,23 @@
+{
+  "Close": "Close",
+  "NotYourComponent": "You cannot interact with components on someone else's command.",
+  "None": "None",
+  "Shell": "Shell",
+  "Bottle": "Bottle",
+  "Can": "Can",
+  "Glasses": "Glasses",
+  "Coins": "Coins",
+  "CrabClaw": "Crab Claw",
+  "MessageInABottle": "Message in a Bottle",
+  "Watch": "Watch",
+  "SharkTooth": "Shark Tooth",
+  "Cancel": "Cancel",
+  "OperationCancelled": "Operation cancelled.",
+  "CommonItems": "Common Items",
+  "RareItems": "Rare Items",
+  "LegendaryItems": "Legendary Items",
+  "ShopItems": "Shop Items",
+  "NoItems": "No items",
+  "Sunburn": "Sunburn",
+  "Cut": "Cut"
+}

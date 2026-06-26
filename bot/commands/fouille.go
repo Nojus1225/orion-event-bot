@@ -15,6 +15,7 @@ import (
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
 	"github.com/disgoorg/snowflake/v2"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
 func updateLoot(b *core.Bot, data *db.User, field string, value int) int {
@@ -48,6 +49,7 @@ func init() {
 			Description: "Search the sand",
 		},
 		Execute: func(b *core.Bot, event *events.ApplicationCommandInteractionCreate) {
+			loc := core.GetLocalizer(event.Locale().String())
 			avatarURL := event.User().EffectiveAvatarURL()
 
 			var data db.User
@@ -59,10 +61,10 @@ func init() {
 
 			cdMalus := time.Unix(int64(data.CDMalus), 0)
 			if now.Before(cdMalus) {
-				txt := "got a sunburn"
+				txt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchSunburn"})
 				object := db.ShopCremeSolaire
 				if data.StatusMalus == db.MalusCut {
-					txt = "got cut"
+					txt, _ = loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchCut"})
 					object = db.ShopPansement
 				}
 
@@ -82,15 +84,30 @@ func init() {
 					}
 				}
 
-				message := fmt.Sprintf("Oh no, you %s come back <t:%d:R>.\n-# You can cure urself if you buy a %s in the /shop.", txt, cdMalus.Unix(), item.Name)
+				itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: item.Name})
+				if itemLoc == "" {
+					itemLoc = item.Name
+				}
+
+				message, _ := loc.Localize(&i18n.LocalizeConfig{
+					MessageID: "SearchMalusPrompt",
+					TemplateData: map[string]interface{}{
+						"Status": txt,
+						"Time":   cdMalus.Unix(),
+						"Item":   itemLoc,
+					},
+				})
+
+				searchTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"})
+				useBtnTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "Use"})
 
 				components := []discord.ContainerSubComponent{
-					discord.NewTextDisplay("# Search"),
+					discord.NewTextDisplay(searchTitle),
 					discord.NewTextDisplay(message),
 				}
 				if hasItem {
 					components = append(components, discord.NewActionRow(
-						discord.NewButton(discord.ButtonStyleSuccess, "Use", fmt.Sprintf("search-use-item-%d", object), "", snowflake.ID(0)),
+						discord.NewButton(discord.ButtonStyleSuccess, useBtnTxt, fmt.Sprintf("search-use-item-%d", object), "", snowflake.ID(0)),
 					))
 				}
 
@@ -123,15 +140,29 @@ func init() {
 					}
 				}
 
-				message := fmt.Sprintf("You already dug, come back <t:%d:R>.\n-# You can bypass the cooldown by buying a %s in the shop.", cdFouille.Unix(), item.Name)
+				itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: item.Name})
+				if itemLoc == "" {
+					itemLoc = item.Name
+				}
+
+				message, _ := loc.Localize(&i18n.LocalizeConfig{
+					MessageID: "SearchCooldownPrompt",
+					TemplateData: map[string]interface{}{
+						"Time": cdFouille.Unix(),
+						"Item": itemLoc,
+					},
+				})
+
+				searchTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"})
+				useBtnTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "Use"})
 
 				components := []discord.ContainerSubComponent{
-					discord.NewTextDisplay("# Search"),
+					discord.NewTextDisplay(searchTitle),
 					discord.NewTextDisplay(message),
 				}
 				if hasItem {
 					components = append(components, discord.NewActionRow(
-						discord.NewButton(discord.ButtonStyleSuccess, "Use", fmt.Sprintf("search-use-item-%d", object), "", snowflake.ID(0)),
+						discord.NewButton(discord.ButtonStyleSuccess, useBtnTxt, fmt.Sprintf("search-use-item-%d", object), "", snowflake.ID(0)),
 					))
 				}
 
@@ -145,16 +176,22 @@ func init() {
 				return
 			}
 
+			searchTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"})
+			areaPrompt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchAreaPrompt"})
+			deckchairsTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "Deckchairs"})
+			watersEdgeTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "WatersEdge"})
+			theRocksTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "TheRocks"})
+
 			msg := discord.NewMessageCreateV2(
 				discord.NewContainer(
 					discord.NewSection(
-						discord.NewTextDisplay("# Search"),
-						discord.NewTextDisplay("Which area would you like to search?"),
+						discord.NewTextDisplay(searchTitle),
+						discord.NewTextDisplay(areaPrompt),
 					).WithAccessory(discord.NewThumbnail(avatarURL)),
 					discord.NewActionRow(
-						discord.NewButton(discord.ButtonStylePrimary, "Deckchairs", "search-transats", "", snowflake.ID(0)),
-						discord.NewButton(discord.ButtonStylePrimary, "Water's edge", "search-eau", "", snowflake.ID(0)),
-						discord.NewButton(discord.ButtonStyleDanger, "The rocks", "search-rochers", "", snowflake.ID(0)),
+						discord.NewButton(discord.ButtonStylePrimary, deckchairsTxt, "search-transats", "", snowflake.ID(0)),
+						discord.NewButton(discord.ButtonStylePrimary, watersEdgeTxt, "search-eau", "", snowflake.ID(0)),
+						discord.NewButton(discord.ButtonStyleDanger, theRocksTxt, "search-rochers", "", snowflake.ID(0)),
 					),
 				).WithAccentColor(0x5865F2),
 			)
@@ -165,9 +202,11 @@ func init() {
 
 		},
 		ExecuteButton: func(b *core.Bot, event *events.ComponentInteractionCreate) {
+			loc := core.GetLocalizer(event.Locale().String())
+			notYourComponentTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "NotYourComponent"})
 			if (event.Message.InteractionMetadata != nil && event.Message.InteractionMetadata.User.ID != event.User().ID) ||
 				(event.Message.Interaction != nil && event.Message.Interaction.User.ID != event.User().ID) {
-				_ = event.CreateMessage(discord.NewMessageCreate().WithContent("You cannot interact with components on someone else's command.").WithEphemeral(true))
+				_ = event.CreateMessage(discord.NewMessageCreate().WithContent(notYourComponentTxt).WithEphemeral(true))
 				return
 			}
 			button := event.ButtonInteractionData()
@@ -212,16 +251,22 @@ func init() {
 							}
 						}
 
+						searchTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"})
+						areaPrompt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchAreaPrompt"})
+						deckchairsTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "Deckchairs"})
+						watersEdgeTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "WatersEdge"})
+						theRocksTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "TheRocks"})
+
 						msg := discord.NewMessageUpdateV2(
 							discord.NewContainer(
 								discord.NewSection(
-									discord.NewTextDisplay("# Search"),
-									discord.NewTextDisplay("Which area would you like to search?"),
+									discord.NewTextDisplay(searchTitle),
+									discord.NewTextDisplay(areaPrompt),
 								).WithAccessory(discord.NewThumbnail(event.User().EffectiveAvatarURL())),
 								discord.NewActionRow(
-									discord.NewButton(discord.ButtonStylePrimary, "Deckchairs", "search-transats", "", snowflake.ID(0)),
-									discord.NewButton(discord.ButtonStylePrimary, "Water's edge", "search-eau", "", snowflake.ID(0)),
-									discord.NewButton(discord.ButtonStyleDanger, "The rocks", "search-rochers", "", snowflake.ID(0)),
+									discord.NewButton(discord.ButtonStylePrimary, deckchairsTxt, "search-transats", "", snowflake.ID(0)),
+									discord.NewButton(discord.ButtonStylePrimary, watersEdgeTxt, "search-eau", "", snowflake.ID(0)),
+									discord.NewButton(discord.ButtonStyleDanger, theRocksTxt, "search-rochers", "", snowflake.ID(0)),
 								),
 							).WithAccentColor(0x5865F2),
 						)
@@ -251,20 +296,31 @@ func init() {
 					fmt.Println("DB error:", err)
 				}
 
-				message := "You found nothing while searching the deckchairs."
+				message, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchDeckchairsEmpty"})
 				if roll <= 85 {
 					idx := roll % len(rewards)
 					itemName, total := grantLoot(b, &data, idx, rewards, fields, values)
-					message = fmt.Sprintf("You found x1 %s (%d) while searching the deckchairs.", itemName, total)
+					itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: itemName})
+					if itemLoc == "" {
+						itemLoc = itemName
+					}
+					message, _ = loc.Localize(&i18n.LocalizeConfig{
+						MessageID: "SearchDeckchairsFound",
+						TemplateData: map[string]interface{}{"Item": itemLoc, "Total": total},
+					})
 				} else if roll > 98 {
 					cd := applyMalus(b, &data, 1*time.Hour, db.MalusSunBurn)
-					message = fmt.Sprintf("You got a sunburn. Come back <t:%d:R>.", cd)
+					message, _ = loc.Localize(&i18n.LocalizeConfig{
+						MessageID: "SearchDeckchairsSunburn",
+						TemplateData: map[string]interface{}{"Time": cd},
+					})
 				}
 
+				searchTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"})
 				msg := discord.NewMessageUpdateV2(
 					discord.NewContainer(
 						discord.NewSection(
-							discord.NewTextDisplay("# Search"),
+							discord.NewTextDisplay(searchTitle),
 							discord.NewTextDisplay(message),
 						).WithAccessory(discord.NewThumbnail(event.User().EffectiveAvatarURL())),
 					).WithAccentColor(0x5865F2),
@@ -289,20 +345,31 @@ func init() {
 					fmt.Println("DB error:", err)
 				}
 
-				message := "You found nothing while searching the water's edge."
+				message, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchWaterEmpty"})
 				if roll <= 60 {
 					idx := roll % len(rewards)
 					itemName, total := grantLoot(b, &data, idx, rewards, fields, values)
-					message = fmt.Sprintf("You found x1 %s (%d) while searching the water's edge.", itemName, total)
+					itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: itemName})
+					if itemLoc == "" {
+						itemLoc = itemName
+					}
+					message, _ = loc.Localize(&i18n.LocalizeConfig{
+						MessageID: "SearchWaterFound",
+						TemplateData: map[string]interface{}{"Item": itemLoc, "Total": total},
+					})
 				} else if roll > 80 {
 					cd := applyMalus(b, &data, 1*time.Hour, db.MalusSunBurn)
-					message = fmt.Sprintf("You got a sunburn. Come back <t:%d:R>.", cd)
+					message, _ = loc.Localize(&i18n.LocalizeConfig{
+						MessageID: "SearchDeckchairsSunburn",
+						TemplateData: map[string]interface{}{"Time": cd},
+					})
 				}
 
+				searchTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"})
 				msg := discord.NewMessageUpdateV2(
 					discord.NewContainer(
 						discord.NewSection(
-							discord.NewTextDisplay("# Search"),
+							discord.NewTextDisplay(searchTitle),
 							discord.NewTextDisplay(message),
 						).WithAccessory(discord.NewThumbnail(event.User().EffectiveAvatarURL())),
 					).WithAccentColor(0x5865F2),
@@ -328,25 +395,39 @@ func init() {
 					fmt.Println("DB error:", err)
 				}
 
-				message := "You found nothing while searching the rocks."
+				message, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchRocksEmpty"})
 				if roll <= 35 {
 					idx := roll % len(rewards)
 					itemName, total := grantLoot(b, &data, idx, rewards, fields, values)
-					message = fmt.Sprintf("You found x1 %s (%d) while searching the rocks.", itemName, total)
+					itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: itemName})
+					if itemLoc == "" {
+						itemLoc = itemName
+					}
+					message, _ = loc.Localize(&i18n.LocalizeConfig{
+						MessageID: "SearchRocksFound",
+						TemplateData: map[string]interface{}{"Item": itemLoc, "Total": total},
+					})
 				} else if roll <= 75 {
-					message = "You found nothing while searching the rocks."
+					message, _ = loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchRocksEmpty"})
 				} else if roll <= 90 {
 					cd := applyMalus(b, &data, 1*time.Hour, db.MalusCut)
-					message = fmt.Sprintf("You got a sunburn. Come back <t:%d:R>.", cd)
+					message, _ = loc.Localize(&i18n.LocalizeConfig{
+						MessageID: "SearchDeckchairsSunburn",
+						TemplateData: map[string]interface{}{"Time": cd},
+					})
 				} else {
 					cd := applyMalus(b, &data, 90*time.Minute, db.MalusCut)
-					message = fmt.Sprintf("You got cut. Come back <t:%d:R>.", cd)
+					message, _ = loc.Localize(&i18n.LocalizeConfig{
+						MessageID: "SearchRocksCut",
+						TemplateData: map[string]interface{}{"Time": cd},
+					})
 				}
 
+				searchTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"})
 				msg := discord.NewMessageUpdateV2(
 					discord.NewContainer(
 						discord.NewSection(
-							discord.NewTextDisplay("# Search"),
+							discord.NewTextDisplay(searchTitle),
 							discord.NewTextDisplay(message),
 						).WithAccessory(discord.NewThumbnail(event.User().EffectiveAvatarURL())),
 					).WithAccentColor(0x5865F2),

@@ -1,0 +1,23 @@
+{
+  "SearchDescription": "Fouiller le sable",
+  "SearchSunburn": "avez un coup de soleil",
+  "SearchCut": "vous êtes coupé",
+  "Sunburn": "Coup de soleil",
+  "Cut": "Coupure",
+  "SearchMalusPrompt": "Oh non, vous {{.Status}}, revenez <t:{{.Time}}:R>.\n-# Vous pouvez vous soigner en achetant un(e) {{.Item}} dans la /boutique.",
+  "SearchCooldownPrompt": "Vous avez déjà fouillé, revenez <t:{{.Time}}:R>.\n-# Vous pouvez ignorer le temps de recharge en achetant un(e) {{.Item}} dans la /boutique.",
+  "SearchTitle": "# Fouille",
+  "SearchAreaPrompt": "Quelle zone souhaitez-vous fouiller ?",
+  "Deckchairs": "Transats",
+  "WatersEdge": "Bord de l'eau",
+  "TheRocks": "Les rochers",
+  "Use": "Utiliser",
+  "SearchDeckchairsEmpty": "Vous n'avez rien trouvé en fouillant les transats.",
+  "SearchDeckchairsFound": "Vous avez trouvé x1 {{.Item}} ({{.Total}}) en fouillant les transats.",
+  "SearchDeckchairsSunburn": "Vous avez attrapé un coup de soleil. Revenez <t:{{.Time}}:R>.",
+  "SearchWaterEmpty": "Vous n'avez rien trouvé au bord de l'eau.",
+  "SearchWaterFound": "Vous avez trouvé x1 {{.Item}} ({{.Total}}) au bord de l'eau.",
+  "SearchRocksEmpty": "Vous n'avez rien trouvé en fouillant les rochers.",
+  "SearchRocksFound": "Vous avez trouvé x1 {{.Item}} ({{.Total}}) en fouillant les rochers.",
+  "SearchRocksCut": "Vous vous êtes coupé. Revenez <t:{{.Time}}:R>."
+}

@@ -26,6 +26,8 @@ import (
 func main() {
 	_ = godotenv.Load()
 
+	core.InitI18n()
+
 	token := os.Getenv("DISCORD_TOKEN")
 
 	database := db.New()

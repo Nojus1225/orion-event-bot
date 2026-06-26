@@ -1,0 +1,6 @@
+{
+  "LeaderboardDescription": "Voir le classement",
+  "LeaderboardTitle": "## Classement",
+  "LeaderboardEntry": "**#{{.Rank}}** <@{{.ID}}> - **{{.Coins}}** Pièces\n> Commun: {{.Common}} | Rare: {{.Rare}} | Épique: {{.Epic}}",
+  "NoUsersFound": "Aucun utilisateur trouvé."
+}

@@ -13,6 +13,7 @@ import (
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
 	"github.com/disgoorg/snowflake/v2"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
 var sellPrices = map[string]int{
@@ -87,6 +88,7 @@ func init() {
 			}
 		},
 		Execute: func(b *core.Bot, event *events.ApplicationCommandInteractionCreate) {
+			loc := core.GetLocalizer(event.Locale().String())
 			var data db.User
 			if err := b.DB.GormDB.FirstOrCreate(&data, db.User{ID: strconv.FormatUint(uint64(event.User().ID), 10)}).Error; err != nil {
 				fmt.Println("DB error:", err)
@@ -125,7 +127,15 @@ func init() {
 				}
 
 				if count == 0 {
-					err := event.CreateMessage(discord.NewMessageCreate().WithEphemeral(true).WithContent(fmt.Sprintf(":x: You don't have any '%s' to sell!", targetItem)))
+					itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: targetItem})
+					if itemLoc == "" {
+						itemLoc = targetItem
+					}
+					noItemTxt, _ := loc.Localize(&i18n.LocalizeConfig{
+						MessageID: "SellNoSpecificItem",
+						TemplateData: map[string]interface{}{"Item": itemLoc},
+					})
+					err := event.CreateMessage(discord.NewMessageCreate().WithEphemeral(true).WithContent(noItemTxt))
 					if err != nil {
 						fmt.Println("Error:", err)
 					}
@@ -133,8 +143,15 @@ func init() {
 				}
 
 				price := count * sellPrices[targetItem]
-				content = fmt.Sprintf("You are about to sell **%d** %s for **%d** coins. Click the button to confirm.", count, targetItem, price)
-				buttonLabel = "Sell " + targetItem
+				itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: targetItem})
+				if itemLoc == "" {
+					itemLoc = targetItem
+				}
+				content, _ = loc.Localize(&i18n.LocalizeConfig{
+					MessageID: "SellConfirm",
+					TemplateData: map[string]interface{}{"Quantity": count, "Item": itemLoc, "Coins": price},
+				})
+				buttonLabel = "Sell " + itemLoc
 				customID = "sell-" + targetItem
 			} else {
 				total := 0
@@ -149,15 +166,19 @@ func init() {
 				total += data.ItemDent * sellPrices["Shark Tooth"]
 
 				if total == 0 {
-					err := event.CreateMessage(discord.NewMessageCreate().WithEphemeral(true).WithContent(":x: You don't have anything to sell!"))
+					noItemsTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SellNoItems"})
+					err := event.CreateMessage(discord.NewMessageCreate().WithEphemeral(true).WithContent(noItemsTxt))
 					if err != nil {
 						fmt.Println("Error:", err)
 					}
 					return
 				}
 
-				content = fmt.Sprintf("You are about to sell all your items for **%d** coins. Click the button to confirm.", total)
-				buttonLabel = "Sell All"
+				content, _ = loc.Localize(&i18n.LocalizeConfig{
+					MessageID: "SellAllConfirm",
+					TemplateData: map[string]interface{}{"Coins": total},
+				})
+				buttonLabel, _ = loc.Localize(&i18n.LocalizeConfig{MessageID: "SellAll"})
 				customID = "sell-all"
 			}
 
@@ -176,9 +197,11 @@ func init() {
 			}
 		},
 		ExecuteButton: func(b *core.Bot, event *events.ComponentInteractionCreate) {
+			loc := core.GetLocalizer(event.Locale().String())
+			notYourComponentTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "NotYourComponent"})
 			if (event.Message.InteractionMetadata != nil && event.Message.InteractionMetadata.User.ID != event.User().ID) ||
 				(event.Message.Interaction != nil && event.Message.Interaction.User.ID != event.User().ID) {
-				_ = event.CreateMessage(discord.NewMessageCreate().WithContent("You cannot interact with components on someone else's command.").WithEphemeral(true))
+				_ = event.CreateMessage(discord.NewMessageCreate().WithContent(notYourComponentTxt).WithEphemeral(true))
 				return
 			}
 			customID := event.Data.CustomID()
@@ -247,7 +270,15 @@ func init() {
 					data.ItemDent = 0
 				}
 				if count == 0 {
-					err := event.CreateMessage(discord.NewMessageCreate().WithEphemeral(true).WithContent(fmt.Sprintf(":x: You don't have any '%s' to sell!", targetItem)))
+					itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: targetItem})
+					if itemLoc == "" {
+						itemLoc = targetItem
+					}
+					noItemTxt, _ := loc.Localize(&i18n.LocalizeConfig{
+						MessageID: "SellNoSpecificItem",
+						TemplateData: map[string]interface{}{"Item": itemLoc},
+					})
+					err := event.CreateMessage(discord.NewMessageCreate().WithEphemeral(true).WithContent(noItemTxt))
 					if err != nil {
 						fmt.Println("Error:", err)
 					}
@@ -257,7 +288,8 @@ func init() {
 			}
 
 			if coinsGenerated == 0 {
-				err := event.CreateMessage(discord.NewMessageCreate().WithEphemeral(true).WithContent(":x: You don't have anything to sell!"))
+				noItemsTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SellNoItems"})
+				err := event.CreateMessage(discord.NewMessageCreate().WithEphemeral(true).WithContent(noItemsTxt))
 				if err != nil {
 					fmt.Println("Error:", err)
 				}
@@ -270,9 +302,13 @@ func init() {
 				fmt.Println("DB error:", err)
 			}
 
+			successMsg, _ := loc.Localize(&i18n.LocalizeConfig{
+				MessageID: "SellSuccessMsg",
+				TemplateData: map[string]interface{}{"Coins": coinsGenerated},
+			})
 			msgUpdate := discord.NewMessageUpdateV2(
 				discord.NewContainer(
-					discord.NewTextDisplay(fmt.Sprintf(":white_check_mark: Successfully sold your items for **%d** coins!", coinsGenerated)),
+					discord.NewTextDisplay(successMsg),
 				).WithAccentColor(0x57F287),
 			)
 

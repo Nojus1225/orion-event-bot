@@ -13,23 +13,37 @@ import (
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
 	"github.com/disgoorg/snowflake/v2"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
-func getLeaderboardData(b *core.Bot, page int, totalPages int) (string, discord.ActionRowComponent) {
+func getLeaderboardData(b *core.Bot, loc *i18n.Localizer, page int, totalPages int) (string, discord.ActionRowComponent) {
 	limit := 10
 	offset := (page - 1) * limit
 
 	var users []db.User
 	b.DB.GormDB.Order("coins desc").Limit(limit).Offset(offset).Find(&users)
 
-	content := "## Leaderboard\n"
+	titleTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "LeaderboardTitle"})
+	content := titleTxt + "\n"
 	for i, u := range users {
 		rank := offset + i + 1
-		content += fmt.Sprintf("**#%d** <@%s> - **%d** Coins\n> Common: %d | Rare: %d | Epic: %d\n", rank, u.ID, u.Coins, u.ItemCoquillage+u.ItemBouteille+u.ItemCannette, u.ItemLunettes+u.ItemPiece+u.ItemPince, u.ItemMsgBouteille+u.ItemMontre+u.ItemDent)
+		entry, _ := loc.Localize(&i18n.LocalizeConfig{
+			MessageID: "LeaderboardEntry",
+			TemplateData: map[string]interface{}{
+				"Rank":   rank,
+				"ID":     u.ID,
+				"Coins":  u.Coins,
+				"Common": u.ItemCoquillage + u.ItemBouteille + u.ItemCannette,
+				"Rare":   u.ItemLunettes + u.ItemPiece + u.ItemPince,
+				"Epic":   u.ItemMsgBouteille + u.ItemMontre + u.ItemDent,
+			},
+		})
+		content += entry + "\n"
 	}
 
 	if len(users) == 0 {
-		content += "No users found."
+		noUsersTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "NoUsersFound"})
+		content += noUsersTxt
 	}
 
 	firstBtn := discord.NewButton(discord.ButtonStylePrimary, "", "leaderboard-first", "", snowflake.ID(0)).WithEmoji(discord.NewComponentEmoji("⏮️"))
@@ -67,14 +81,15 @@ func init() {
 			Description: "View the leaderboard",
 		},
 		Execute: func(b *core.Bot, event *events.ApplicationCommandInteractionCreate) {
+			loc := core.GetLocalizer(event.Locale().String())
 			var totalCount int64
 			b.DB.GormDB.Model(&db.User{}).Count(&totalCount)
-			totalPages := int(math.Ceil(float64(totalCount) / 10.0))
+			totalPages := int(math.Ceil(float64(totalCount) / 5.0))
 			if totalPages == 0 {
 				totalPages = 1
 			}
 
-			content, actionRow := getLeaderboardData(b, 1, totalPages)
+			content, actionRow := getLeaderboardData(b, loc, 1, totalPages)
 			msg := discord.NewMessageCreateV2(
 				discord.NewContainer(
 					discord.NewTextDisplay(content),
@@ -87,9 +102,11 @@ func init() {
 			}
 		},
 		ExecuteButton: func(b *core.Bot, event *events.ComponentInteractionCreate) {
+			loc := core.GetLocalizer(event.Locale().String())
+			notYourComponentTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "NotYourComponent"})
 			if (event.Message.InteractionMetadata != nil && event.Message.InteractionMetadata.User.ID != event.User().ID) ||
 				(event.Message.Interaction != nil && event.Message.Interaction.User.ID != event.User().ID) {
-				_ = event.CreateMessage(discord.NewMessageCreate().WithContent("You cannot interact with components on someone else's command.").WithEphemeral(true))
+				_ = event.CreateMessage(discord.NewMessageCreate().WithContent(notYourComponentTxt).WithEphemeral(true))
 				return
 			}
 			customID := event.Data.CustomID()
@@ -104,7 +121,7 @@ func init() {
 
 			var totalCount int64
 			b.DB.GormDB.Model(&db.User{}).Count(&totalCount)
-			totalPages := int(math.Ceil(float64(totalCount) / 10.0))
+			totalPages := int(math.Ceil(float64(totalCount) / 5.0))
 			if totalPages == 0 {
 				totalPages = 1
 			}
@@ -122,7 +139,7 @@ func init() {
 				page = p
 			}
 
-			content, actionRow := getLeaderboardData(b, page, totalPages)
+			content, actionRow := getLeaderboardData(b, loc, page, totalPages)
 
 			msg := discord.NewMessageUpdateV2(
 				discord.NewContainer(

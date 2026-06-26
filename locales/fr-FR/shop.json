@@ -1,0 +1,23 @@
+{
+  "ShopDescription": "Ouvrir la boutique",
+  "ShopTitle": "# Boutique",
+  "ShopCoins": "> Pièces : {{.Coins}}",
+  "ShopBuyItem": "Acheter l'objet",
+  "ShopNotEnoughCoins": ":x: Vous n'avez pas assez de pièces pour acheter cet objet !",
+  "ShopBuySuccess": ":white_check_mark: Vous venez d'acheter cet objet !",
+  "ShopSunscreenName": "Crème Solaire",
+  "ShopSunscreenDesc": "Soigne le malus 'Coup de soleil'",
+  "ShopBandageName": "Pansement",
+  "ShopBandageDesc": "Soigne le malus 'Coupure'",
+  "ShopWaterBottleName": "Bouteille d'Eau",
+  "ShopWaterBottleDesc": "Permet de fouiller sans temps d'attente (par unité)",
+  "ShopCategoryPrompt": "Quelle catégorie souhaitez-vous parcourir ?",
+  "CommonItems": "Objets Communs",
+  "RareItems": "Objets Rares",
+  "LegendaryItems": "Objets Légendaires",
+  "Upgrades": "Améliorations",
+  "NotEnoughCoins": "Pas assez de pièces. Il vous manque {{.Coins}} pièces pour acheter ceci.",
+  "PurchasedItem": "Acheté {{.Item}} pour {{.Price}} pièces.",
+  "ShopItems": "Objets de Boutique",
+  "NoItems": "> Il n'y a pas d'objets"
+}

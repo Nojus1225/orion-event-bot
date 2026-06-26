@@ -10,6 +10,7 @@ import (
 
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
 func init() {
@@ -28,6 +29,7 @@ func init() {
 			},
 		},
 		Execute: func(b *core.Bot, event *events.ApplicationCommandInteractionCreate) {
+			loc := core.GetLocalizer(event.Locale().String())
 			command := event.SlashCommandInteractionData()
 
 			userOpt, exist := command.OptUser("user")
@@ -46,88 +48,103 @@ func init() {
 				fmt.Println("DB error:", err)
 			}
 
-			tierStr := "None"
+			tierStr, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "None"})
 			switch data.Tier {
 			case db.TierSac:
-				tierStr = "Backpack"
+				tierStr, _ = loc.Localize(&i18n.LocalizeConfig{MessageID: "Backpack"})
 			case db.TierTamis:
-				tierStr = "Sieve"
+				tierStr, _ = loc.Localize(&i18n.LocalizeConfig{MessageID: "Sieve"})
 			case db.TierDetecteur:
-				tierStr = "Detector"
+				tierStr, _ = loc.Localize(&i18n.LocalizeConfig{MessageID: "Detector"})
 			}
 
-			malusStr := "none"
+			malusStr, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "None"})
 			switch data.StatusMalus {
 			case db.MalusSunBurn:
-				malusStr = "Sunburn"
+				malusStr, _ = loc.Localize(&i18n.LocalizeConfig{MessageID: "Sunburn"})
 			case db.MalusCut:
-				malusStr = "Cut"
+				malusStr, _ = loc.Localize(&i18n.LocalizeConfig{MessageID: "Cut"})
 			}
 
 			commonLines := []string{}
 			if data.ItemCoquillage > 0 {
-				commonLines = append(commonLines, fmt.Sprintf("> Shell : %d", data.ItemCoquillage))
+				itemTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "Shell"})
+				commonLines = append(commonLines, fmt.Sprintf("> %s : %d", itemTxt, data.ItemCoquillage))
 			}
 			if data.ItemBouteille > 0 {
-				commonLines = append(commonLines, fmt.Sprintf("> Bottle : %d", data.ItemBouteille))
+				itemTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "Bottle"})
+				commonLines = append(commonLines, fmt.Sprintf("> %s : %d", itemTxt, data.ItemBouteille))
 			}
 			if data.ItemCannette > 0 {
-				commonLines = append(commonLines, fmt.Sprintf("> Can : %d", data.ItemCannette))
+				itemTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "Can"})
+				commonLines = append(commonLines, fmt.Sprintf("> %s : %d", itemTxt, data.ItemCannette))
 			}
 
 			rareLines := []string{}
 			if data.ItemLunettes > 0 {
-				rareLines = append(rareLines, fmt.Sprintf("> Glasses : %d", data.ItemLunettes))
+				itemTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "Glasses"})
+				rareLines = append(rareLines, fmt.Sprintf("> %s : %d", itemTxt, data.ItemLunettes))
 			}
 			if data.ItemPiece > 0 {
-				rareLines = append(rareLines, fmt.Sprintf("> Coins : %d", data.ItemPiece))
+				itemTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "Coins"})
+				rareLines = append(rareLines, fmt.Sprintf("> %s : %d", itemTxt, data.ItemPiece))
 			}
 			if data.ItemPince > 0 {
-				rareLines = append(rareLines, fmt.Sprintf("> Crab Claw : %d", data.ItemPince))
+				itemTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "CrabClaw"})
+				rareLines = append(rareLines, fmt.Sprintf("> %s : %d", itemTxt, data.ItemPince))
 			}
 
 			legendaryLines := []string{}
 			if data.ItemMsgBouteille > 0 {
-				legendaryLines = append(legendaryLines, fmt.Sprintf("> Message in a Bottle : %d", data.ItemMsgBouteille))
+				itemTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "MessageInABottle"})
+				legendaryLines = append(legendaryLines, fmt.Sprintf("> %s : %d", itemTxt, data.ItemMsgBouteille))
 			}
 			if data.ItemMontre > 0 {
-				legendaryLines = append(legendaryLines, fmt.Sprintf("> Watch : %d", data.ItemMontre))
+				itemTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "Watch"})
+				legendaryLines = append(legendaryLines, fmt.Sprintf("> %s : %d", itemTxt, data.ItemMontre))
 			}
 			if data.ItemDent > 0 {
-				legendaryLines = append(legendaryLines, fmt.Sprintf("> Shark Tooth : %d", data.ItemDent))
+				itemTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SharkTooth"})
+				legendaryLines = append(legendaryLines, fmt.Sprintf("> %s : %d", itemTxt, data.ItemDent))
 			}
 
+			noItems, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "NoItems"})
+			commonItemsTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "CommonItems"})
+			rareItemsTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "RareItems"})
+			legItemsTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "LegendaryItems"})
+			shopItemsTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "ShopItems"})
+
 			objectStr := ""
-			objectStr += "## Common Items\n"
+			objectStr += "## " + commonItemsTxt + "\n"
 			if len(commonLines) == 0 {
-				objectStr += "> There are no items\n"
+				objectStr += noItems + "\n"
 			} else {
 				for _, l := range commonLines {
 					objectStr += l + "\n"
 				}
 			}
 
-			objectStr += "## Rare Items\n"
+			objectStr += "## " + rareItemsTxt + "\n"
 			if len(rareLines) == 0 {
-				objectStr += "> There are no items\n"
+				objectStr += noItems + "\n"
 			} else {
 				for _, l := range rareLines {
 					objectStr += l + "\n"
 				}
 			}
 
-			objectStr += "## Legendary Items\n"
+			objectStr += "## " + legItemsTxt + "\n"
 			if len(legendaryLines) == 0 {
-				objectStr += "> There are no items\n"
+				objectStr += noItems + "\n"
 			} else {
 				for _, l := range legendaryLines {
 					objectStr += l + "\n"
 				}
 			}
 
-			objectStr += "## Shop Items\n"
+			objectStr += "## " + shopItemsTxt + "\n"
 			if len(data.Inventory) == 0 {
-				objectStr += "> There are no items\n"
+				objectStr += noItems + "\n"
 			} else {
 				counts := make(map[int]int)
 				for _, id := range data.Inventory {
@@ -135,16 +152,30 @@ func init() {
 				}
 				for _, j := range Items {
 					if cnt, ok := counts[int(j.ID)]; ok {
-						objectStr += fmt.Sprintf("(x%d) %s\n", cnt, j.Name)
+						itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: j.Name})
+						if itemLoc == "" {
+							itemLoc = j.Name
+						}
+						objectStr += fmt.Sprintf("(x%d) %s\n", cnt, itemLoc)
 					}
 				}
 			}
 
+			invTitle, _ := loc.Localize(&i18n.LocalizeConfig{
+				MessageID:    "InventoryTitle",
+				TemplateData: map[string]interface{}{"User": targetUser.Username},
+			})
+
+			invStats, _ := loc.Localize(&i18n.LocalizeConfig{
+				MessageID:    "InventoryStats",
+				TemplateData: map[string]interface{}{"Coins": data.Coins, "Penalty": malusStr, "Tier": tierStr},
+			})
+
 			msg := discord.NewMessageCreateV2(
 				discord.NewContainer(
 					discord.NewSection(
-						discord.NewTextDisplay(fmt.Sprintf("# %s Inventory", targetUser.Username)),
-						discord.NewTextDisplay(fmt.Sprintf("Coins: %d\nPenalty: %s\nTier: %s", data.Coins, malusStr, tierStr)),
+						discord.NewTextDisplay(invTitle),
+						discord.NewTextDisplay(invStats),
 						discord.NewTextDisplay(objectStr),
 					).WithAccessory(discord.NewThumbnail(avatarURL)),
 				).WithAccentColor(0x5865F2),

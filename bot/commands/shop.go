@@ -12,6 +12,7 @@ import (
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
 	"github.com/disgoorg/snowflake/v2"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
 type ShopItem struct {
@@ -24,29 +25,29 @@ type ShopItem struct {
 
 var Items = []ShopItem{
 	{
-		Name:        "Sunscreen",
-		Description: "Cures the 'Sunburn' debuff",
+		Name:        "ShopSunscreenName",
+		Description: "ShopSunscreenDesc",
 		Cost:        2,
 		ID:          db.ShopCremeSolaire,
 		Thumbnail:   "https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f9f4.png",
 	},
 	{
-		Name:        "Bandage",
-		Description: "Cures the 'Cut' debuff",
+		Name:        "ShopBandageName",
+		Description: "ShopBandageDesc",
 		Cost:        4,
 		ID:          db.ShopPansement,
 		Thumbnail:   "https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1fa79.png",
 	},
 	{
-		Name:        "Water Bottle",
-		Description: "Allows scavenging without cooldown (per unit)",
+		Name:        "ShopWaterBottleName",
+		Description: "ShopWaterBottleDesc",
 		Cost:        10,
 		ID:          db.ShopBouteilleEau,
 		Thumbnail:   "https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f4a7.png",
 	},
 }
 
-func getShopData(page, totalPages int, user db.User) discord.ContainerComponent {
+func getShopData(page, totalPages int, user db.User, loc *i18n.Localizer) discord.ContainerComponent {
 	if page < 1 {
 		page = 1
 	}
@@ -79,22 +80,34 @@ func getShopData(page, totalPages int, user db.User) discord.ContainerComponent 
 	actionRow := discord.NewActionRow(firstBtn, prevBtn, currBtn, nextBtn, lastBtn)
 
 	item := Items[page-1]
-	content := fmt.Sprintf("### %s\n-# %s\n> Coins : %d", item.Name, item.Description, item.Cost)
+	
+	locName, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: item.Name})
+	locDesc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: item.Description})
+	
+	coinsTxt, _ := loc.Localize(&i18n.LocalizeConfig{
+		MessageID: "ShopCoins",
+		TemplateData: map[string]interface{}{"Coins": item.Cost},
+	})
+
+	content := fmt.Sprintf("### %s\n-# %s\n%s", locName, locDesc, coinsTxt)
 
 	canBuy := false
 	if item.Cost <= user.Coins {
 		canBuy = true
 	}
 
+	shopTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "ShopTitle"})
+	buyItemTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "ShopBuyItem"})
+
 	return discord.NewContainer(
-		discord.NewTextDisplay("# Shop"),
+		discord.NewTextDisplay(shopTitle),
 		discord.NewSection(
 			discord.NewTextDisplay(content),
 		).WithAccessory(
 			discord.NewThumbnail(item.Thumbnail),
 		),
 		discord.NewActionRow(
-			discord.NewButton(discord.ButtonStyleSuccess, "Buy item", fmt.Sprintf("shop-buy-%d", item.ID), "", snowflake.ID(0)).WithDisabled(!canBuy).WithEmoji(discord.NewComponentEmoji("🛒")),
+			discord.NewButton(discord.ButtonStyleSuccess, buyItemTxt, fmt.Sprintf("shop-buy-%d", item.ID), "", snowflake.ID(0)).WithDisabled(!canBuy).WithEmoji(discord.NewComponentEmoji("🛒")),
 		),
 		actionRow,
 	).WithAccentColor(0x5865F2)
@@ -109,14 +122,18 @@ func init() {
 		Create: discord.SlashCommandCreate{
 			Name:        "shop",
 			Description: "Open the shop",
+			DescriptionLocalizations: map[discord.Locale]string{
+				discord.LocaleFrench: "Ouvrir la boutique",
+			},
 		},
 		Execute: func(b *core.Bot, event *events.ApplicationCommandInteractionCreate) {
+			loc := core.GetLocalizer(event.Locale().String())
 			var data db.User
 			if err := b.DB.GormDB.FirstOrCreate(&data, db.User{ID: strconv.FormatUint(uint64(event.User().ID), 10)}).Error; err != nil {
 				fmt.Println("DB error:", err)
 			}
 
-			container := getShopData(1, totalPages, data)
+			container := getShopData(1, totalPages, data, loc)
 
 			msg := discord.NewMessageCreateV2(container)
 
@@ -125,9 +142,11 @@ func init() {
 			}
 		},
 		ExecuteButton: func(b *core.Bot, event *events.ComponentInteractionCreate) {
+			loc := core.GetLocalizer(event.Locale().String())
+			notYourComponentTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "NotYourComponent"})
 			if (event.Message.InteractionMetadata != nil && event.Message.InteractionMetadata.User.ID != event.User().ID) ||
 				(event.Message.Interaction != nil && event.Message.Interaction.User.ID != event.User().ID) {
-				_ = event.CreateMessage(discord.NewMessageCreate().WithContent("You cannot interact with components on someone else's command.").WithEphemeral(true))
+				_ = event.CreateMessage(discord.NewMessageCreate().WithContent(notYourComponentTxt).WithEphemeral(true))
 				return
 			}
 			var data db.User
@@ -159,7 +178,8 @@ func init() {
 				}
 
 				if data.Coins < item.Cost {
-					msg := discord.NewMessageCreate().WithEphemeral(true).WithContent(":x: You don't have enough coins to buy this item!")
+					errMsg, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "ShopNotEnoughCoins"})
+					msg := discord.NewMessageCreate().WithEphemeral(true).WithContent(errMsg)
 					if err := event.CreateMessage(msg); err != nil {
 						fmt.Println("Error sending shop error message:", err)
 					}
@@ -180,14 +200,15 @@ func init() {
 					}
 				}
 
-				container := getShopData(page, totalPages, data)
+				container := getShopData(page, totalPages, data, loc)
 				msg := discord.NewMessageUpdateV2(container)
 
 				if err := event.UpdateMessage(msg); err != nil {
 					fmt.Println("Error updating shop message:", err)
 				}
 
-				followup := discord.NewMessageCreate().WithEphemeral(true).WithContent(":white_check_mark: You just bought this item!")
+				successMsg, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "ShopBuySuccess"})
+				followup := discord.NewMessageCreate().WithEphemeral(true).WithContent(successMsg)
 				if _, err := event.Client().Rest.CreateFollowupMessage(event.ApplicationID(), event.Token(), followup); err != nil {
 					fmt.Println("Error sending shop followup:", err)
 				}
@@ -218,7 +239,7 @@ func init() {
 				page = p
 			}
 
-			container := getShopData(page, totalPages, data)
+			container := getShopData(page, totalPages, data, loc)
 
 			msg := discord.NewMessageUpdateV2(container)
 
