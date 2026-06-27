@@ -7,6 +7,7 @@ import (
 type Settings struct {
 	ID              uint `gorm:"primaryKey"`
 	MaintenanceMode bool `gorm:"default:false"`
+	AutoDropEnabled bool `gorm:"default:false"`
 }
 
 func GetSettings(db *gorm.DB) Settings {
@@ -17,4 +18,8 @@ func GetSettings(db *gorm.DB) Settings {
 
 func UpdateMaintenanceMode(db *gorm.DB, mode bool) error {
 	return db.Model(&Settings{}).Where("id = ?", 1).Update("maintenance_mode", mode).Error
+}
+
+func UpdateAutoDropMode(db *gorm.DB, mode bool) error {
+	return db.Model(&Settings{}).Where("id = ?", 1).Update("auto_drop_enabled", mode).Error
 }

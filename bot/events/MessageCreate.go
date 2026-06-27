@@ -199,6 +199,32 @@ func init() {
 					_, _ = event.Client().Rest.CreateMessage(event.ChannelID, discord.NewMessageCreate().WithContent("Invalid state. Use 'on' or 'off'."))
 				}
 
+			case "autodrop":
+				if len(args) < 1 {
+					settings := db.GetSettings(b.DB.GormDB)
+					status := "OFF"
+					if settings.AutoDropEnabled {
+						status = "ON"
+					}
+					_, _ = event.Client().Rest.CreateMessage(event.ChannelID, discord.NewMessageCreate().WithContent(fmt.Sprintf("AutoDrop is currently %s.", status)))
+					return
+				}
+
+				state := strings.ToLower(args[0])
+				if state == "on" || state == "true" || state == "1" {
+					_ = db.UpdateAutoDropMode(b.DB.GormDB, true)
+					_, _ = event.Client().Rest.CreateMessage(event.ChannelID, discord.NewMessageCreate().WithContent("AutoDrop ENABLED"))
+				} else if state == "off" || state == "false" || state == "0" {
+					_ = db.UpdateAutoDropMode(b.DB.GormDB, false)
+					_, _ = event.Client().Rest.CreateMessage(event.ChannelID, discord.NewMessageCreate().WithContent("AutoDrop DISABLED"))
+				} else {
+					_, _ = event.Client().Rest.CreateMessage(event.ChannelID, discord.NewMessageCreate().WithContent("Invalid state. Use 'on' or 'off'."))
+				}
+
+			case "dropnow":
+				go core.TriggerAutoDrop(b)
+				_, _ = event.Client().Rest.CreateMessage(event.ChannelID, discord.NewMessageCreate().WithContent("Manual autodrop triggered!"))
+
 			case "globalstats":
 				var totalUsers int64
 				b.DB.GormDB.Model(&db.User{}).Count(&totalUsers)

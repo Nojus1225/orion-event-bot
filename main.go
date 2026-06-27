@@ -74,6 +74,7 @@ func main() {
 	coreBot.Client = client
 
 	handlers.SetupEvents(coreBot)
+	core.StartAutoDropTicker(coreBot)
 
 	defer func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
