@@ -28,6 +28,18 @@ var sellPrices = map[string]int{
 	"Shark Tooth":         15,
 }
 
+var sellItemsMap = map[string]db.Item{
+	"Shell":               db.ItemCoquillage,
+	"Bottle":              db.ItemBouteille,
+	"Can":                 db.ItemCannette,
+	"Glasses":             db.ItemLunettes,
+	"Coins":               db.ItemPiece,
+	"Crab Claw":           db.ItemPince,
+	"Message in a Bottle": db.ItemMsgBouteille,
+	"Watch":               db.ItemMontre,
+	"Shark Tooth":         db.ItemDent,
+}
+
 func getSellMultiplier(tier db.Tier) float64 {
 	switch tier {
 	case db.TierSac:
@@ -86,15 +98,9 @@ func init() {
 				}
 			}
 
-			addChoice("Shell", data.ItemCoquillage)
-			addChoice("Bottle", data.ItemBouteille)
-			addChoice("Can", data.ItemCannette)
-			addChoice("Glasses", data.ItemLunettes)
-			addChoice("Coins", data.ItemPiece)
-			addChoice("Crab Claw", data.ItemPince)
-			addChoice("Message in a Bottle", data.ItemMsgBouteille)
-			addChoice("Watch", data.ItemMontre)
-			addChoice("Shark Tooth", data.ItemDent)
+			for name, itemID := range sellItemsMap {
+				addChoice(name, db.GetItemQuantity(b.DB.GormDB, data.ID, itemID))
+			}
 
 			if err := event.AutocompleteResult(choices); err != nil {
 				fmt.Println("Error sending autocomplete message:", err)
@@ -118,25 +124,8 @@ func init() {
 
 			if targetItem != "" {
 				count := 0
-				switch targetItem {
-				case "Shell":
-					count = data.ItemCoquillage
-				case "Bottle":
-					count = data.ItemBouteille
-				case "Can":
-					count = data.ItemCannette
-				case "Glasses":
-					count = data.ItemLunettes
-				case "Coins":
-					count = data.ItemPiece
-				case "Crab Claw":
-					count = data.ItemPince
-				case "Message in a Bottle":
-					count = data.ItemMsgBouteille
-				case "Watch":
-					count = data.ItemMontre
-				case "Shark Tooth":
-					count = data.ItemDent
+				if itemID, ok := sellItemsMap[targetItem]; ok {
+					count = db.GetItemQuantity(b.DB.GormDB, data.ID, itemID)
 				}
 
 				if count == 0 {
@@ -168,15 +157,10 @@ func init() {
 				customID = "sell-" + targetItem
 			} else {
 				total := 0
-				total += data.ItemCoquillage * sellPrices["Shell"]
-				total += data.ItemBouteille * sellPrices["Bottle"]
-				total += data.ItemCannette * sellPrices["Can"]
-				total += data.ItemLunettes * sellPrices["Glasses"]
-				total += data.ItemPiece * sellPrices["Coins"]
-				total += data.ItemPince * sellPrices["Crab Claw"]
-				total += data.ItemMsgBouteille * sellPrices["Message in a Bottle"]
-				total += data.ItemMontre * sellPrices["Watch"]
-				total += data.ItemDent * sellPrices["Shark Tooth"]
+				for name, itemID := range sellItemsMap {
+					count := db.GetItemQuantity(b.DB.GormDB, data.ID, itemID)
+					total += count * sellPrices[name]
+				}
 
 				total = int(float64(total) * getSellMultiplier(data.Tier))
 
@@ -234,57 +218,22 @@ func init() {
 			coinsGenerated := 0
 
 			if action == "all" {
-				coinsGenerated += data.ItemCoquillage * sellPrices["Shell"]
-				data.ItemCoquillage = 0
-				coinsGenerated += data.ItemBouteille * sellPrices["Bottle"]
-				data.ItemBouteille = 0
-				coinsGenerated += data.ItemCannette * sellPrices["Can"]
-				data.ItemCannette = 0
-				coinsGenerated += data.ItemLunettes * sellPrices["Glasses"]
-				data.ItemLunettes = 0
-				coinsGenerated += data.ItemPiece * sellPrices["Coins"]
-				data.ItemPiece = 0
-				coinsGenerated += data.ItemPince * sellPrices["Crab Claw"]
-				data.ItemPince = 0
-				coinsGenerated += data.ItemMsgBouteille * sellPrices["Message in a Bottle"]
-				data.ItemMsgBouteille = 0
-				coinsGenerated += data.ItemMontre * sellPrices["Watch"]
-				data.ItemMontre = 0
-				coinsGenerated += data.ItemDent * sellPrices["Shark Tooth"]
-				data.ItemDent = 0
-
+				for name, itemID := range sellItemsMap {
+					count := db.GetItemQuantity(b.DB.GormDB, data.ID, itemID)
+					if count > 0 {
+						coinsGenerated += count * sellPrices[name]
+						db.RemoveItem(b.DB.GormDB, data.ID, itemID, count)
+					}
+				}
 				coinsGenerated = int(float64(coinsGenerated) * getSellMultiplier(data.Tier))
 			} else {
 				targetItem := action
 				count := 0
-				switch targetItem {
-				case "Shell":
-					count = data.ItemCoquillage
-					data.ItemCoquillage = 0
-				case "Bottle":
-					count = data.ItemBouteille
-					data.ItemBouteille = 0
-				case "Can":
-					count = data.ItemCannette
-					data.ItemCannette = 0
-				case "Glasses":
-					count = data.ItemLunettes
-					data.ItemLunettes = 0
-				case "Coins":
-					count = data.ItemPiece
-					data.ItemPiece = 0
-				case "Crab Claw":
-					count = data.ItemPince
-					data.ItemPince = 0
-				case "Message in a Bottle":
-					count = data.ItemMsgBouteille
-					data.ItemMsgBouteille = 0
-				case "Watch":
-					count = data.ItemMontre
-					data.ItemMontre = 0
-				case "Shark Tooth":
-					count = data.ItemDent
-					data.ItemDent = 0
+				if itemID, ok := sellItemsMap[targetItem]; ok {
+					count = db.GetItemQuantity(b.DB.GormDB, data.ID, itemID)
+					if count > 0 {
+						db.RemoveItem(b.DB.GormDB, data.ID, itemID, count)
+					}
 				}
 				if count == 0 {
 					itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: targetItem})
@@ -314,12 +263,12 @@ func init() {
 			}
 
 			data.Coins += coinsGenerated
-			data.StatsTotalCoins += coinsGenerated
-			data.StatsVentesTotal++
-
 			if err := b.DB.GormDB.Save(&data).Error; err != nil {
 				fmt.Println("DB error:", err)
 			}
+
+			db.IncrementStat(b.DB.GormDB, data.ID, db.StatTotalCoins, coinsGenerated)
+			db.IncrementStat(b.DB.GormDB, data.ID, db.StatVentesTotal, 1)
 
 			db.LogAction(b.DB.GormDB, data.ID, db.ActionSell, fmt.Sprintf(`{"action":"%s", "coins":%d}`, action, coinsGenerated))
 

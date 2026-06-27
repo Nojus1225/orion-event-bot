@@ -66,46 +66,61 @@ func init() {
 				malusStr, _ = loc.Localize(&i18n.LocalizeConfig{MessageID: "Cut"})
 			}
 
+			getQ := func(i db.Item) int {
+				return db.GetItemQuantity(b.DB.GormDB, data.ID, i)
+			}
+
 			commonLines := []string{}
-			if data.ItemCoquillage > 0 {
+			if c := getQ(db.ItemCoquillage); c > 0 {
 				itemTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "Shell"})
-				commonLines = append(commonLines, fmt.Sprintf("> %s : %d", itemTxt, data.ItemCoquillage))
+				commonLines = append(commonLines, fmt.Sprintf("> %s : %d", itemTxt, c))
 			}
-			if data.ItemBouteille > 0 {
+			if c := getQ(db.ItemBouteille); c > 0 {
 				itemTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "Bottle"})
-				commonLines = append(commonLines, fmt.Sprintf("> %s : %d", itemTxt, data.ItemBouteille))
+				commonLines = append(commonLines, fmt.Sprintf("> %s : %d", itemTxt, c))
 			}
-			if data.ItemCannette > 0 {
+			if c := getQ(db.ItemCannette); c > 0 {
 				itemTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "Can"})
-				commonLines = append(commonLines, fmt.Sprintf("> %s : %d", itemTxt, data.ItemCannette))
+				commonLines = append(commonLines, fmt.Sprintf("> %s : %d", itemTxt, c))
 			}
 
 			rareLines := []string{}
-			if data.ItemLunettes > 0 {
+			if c := getQ(db.ItemLunettes); c > 0 {
 				itemTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "Glasses"})
-				rareLines = append(rareLines, fmt.Sprintf("> %s : %d", itemTxt, data.ItemLunettes))
+				rareLines = append(rareLines, fmt.Sprintf("> %s : %d", itemTxt, c))
 			}
-			if data.ItemPiece > 0 {
+			if c := getQ(db.ItemPiece); c > 0 {
 				itemTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "Coins"})
-				rareLines = append(rareLines, fmt.Sprintf("> %s : %d", itemTxt, data.ItemPiece))
+				rareLines = append(rareLines, fmt.Sprintf("> %s : %d", itemTxt, c))
 			}
-			if data.ItemPince > 0 {
+			if c := getQ(db.ItemPince); c > 0 {
 				itemTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "CrabClaw"})
-				rareLines = append(rareLines, fmt.Sprintf("> %s : %d", itemTxt, data.ItemPince))
+				rareLines = append(rareLines, fmt.Sprintf("> %s : %d", itemTxt, c))
 			}
 
 			legendaryLines := []string{}
-			if data.ItemMsgBouteille > 0 {
+			if c := getQ(db.ItemMsgBouteille); c > 0 {
 				itemTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "MessageInABottle"})
-				legendaryLines = append(legendaryLines, fmt.Sprintf("> %s : %d", itemTxt, data.ItemMsgBouteille))
+				legendaryLines = append(legendaryLines, fmt.Sprintf("> %s : %d", itemTxt, c))
 			}
-			if data.ItemMontre > 0 {
+			if c := getQ(db.ItemMontre); c > 0 {
 				itemTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "Watch"})
-				legendaryLines = append(legendaryLines, fmt.Sprintf("> %s : %d", itemTxt, data.ItemMontre))
+				legendaryLines = append(legendaryLines, fmt.Sprintf("> %s : %d", itemTxt, c))
 			}
-			if data.ItemDent > 0 {
+			if c := getQ(db.ItemDent); c > 0 {
 				itemTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SharkTooth"})
-				legendaryLines = append(legendaryLines, fmt.Sprintf("> %s : %d", itemTxt, data.ItemDent))
+				legendaryLines = append(legendaryLines, fmt.Sprintf("> %s : %d", itemTxt, c))
+			}
+			
+			shopLines := []string{}
+			for _, j := range Items {
+				if c := getQ(j.ID); c > 0 {
+					itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: j.Name})
+					if itemLoc == "" {
+						itemLoc = j.Name
+					}
+					shopLines = append(shopLines, fmt.Sprintf("(x%d) %s", c, itemLoc))
+				}
 			}
 
 			noItems, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "NoItems"})
@@ -143,21 +158,11 @@ func init() {
 			}
 
 			objectStr += "## " + shopItemsTxt + "\n"
-			if len(data.Inventory) == 0 {
+			if len(shopLines) == 0 {
 				objectStr += noItems + "\n"
 			} else {
-				counts := make(map[int]int)
-				for _, id := range data.Inventory {
-					counts[id]++
-				}
-				for _, j := range Items {
-					if cnt, ok := counts[int(j.ID)]; ok {
-						itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: j.Name})
-						if itemLoc == "" {
-							itemLoc = j.Name
-						}
-						objectStr += fmt.Sprintf("(x%d) %s\n", cnt, itemLoc)
-					}
+				for _, l := range shopLines {
+					objectStr += l + "\n"
 				}
 			}
 

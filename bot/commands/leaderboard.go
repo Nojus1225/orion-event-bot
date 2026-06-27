@@ -21,21 +21,31 @@ func getLeaderboardData(b *core.Bot, loc *i18n.Localizer, page int, totalPages i
 	offset := (page - 1) * limit
 
 	var users []db.User
-	b.DB.GormDB.Order("coins desc").Limit(limit).Offset(offset).Find(&users)
+	b.DB.GormDB.Preload("Items").Order("coins desc").Limit(limit).Offset(offset).Find(&users)
 
 	titleTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "LeaderboardTitle"})
 	content := titleTxt + "\n"
 	for i, u := range users {
 		rank := offset + i + 1
+
+		counts := make(map[string]int)
+		for _, it := range u.Items {
+			counts[it.ItemID] = it.Quantity
+		}
+
+		common := counts[string(db.ItemCoquillage)] + counts[string(db.ItemBouteille)] + counts[string(db.ItemCannette)]
+		rare := counts[string(db.ItemLunettes)] + counts[string(db.ItemPiece)] + counts[string(db.ItemPince)]
+		epic := counts[string(db.ItemMsgBouteille)] + counts[string(db.ItemMontre)] + counts[string(db.ItemDent)]
+
 		entry, _ := loc.Localize(&i18n.LocalizeConfig{
 			MessageID: "LeaderboardEntry",
 			TemplateData: map[string]interface{}{
 				"Rank":   rank,
 				"ID":     u.ID,
 				"Coins":  u.Coins,
-				"Common": u.ItemCoquillage + u.ItemBouteille + u.ItemCannette,
-				"Rare":   u.ItemLunettes + u.ItemPiece + u.ItemPince,
-				"Epic":   u.ItemMsgBouteille + u.ItemMontre + u.ItemDent,
+				"Common": common,
+				"Rare":   rare,
+				"Epic":   epic,
 			},
 		})
 		content += entry + "\n"

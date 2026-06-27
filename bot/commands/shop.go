@@ -107,7 +107,7 @@ func getShopData(page, totalPages int, user db.User, loc *i18n.Localizer) discor
 			discord.NewThumbnail(item.Thumbnail),
 		),
 		discord.NewActionRow(
-			discord.NewButton(discord.ButtonStyleSuccess, buyItemTxt, fmt.Sprintf("shop-buy-%d", item.ID), "", snowflake.ID(0)).WithDisabled(!canBuy).WithEmoji(discord.NewComponentEmoji("🛒")),
+			discord.NewButton(discord.ButtonStyleSuccess, buyItemTxt, fmt.Sprintf("shop-buy-%s", item.ID), "", snowflake.ID(0)).WithDisabled(!canBuy).WithEmoji(discord.NewComponentEmoji("🛒")),
 		),
 		actionRow,
 	).WithAccentColor(0x5865F2)
@@ -162,13 +162,11 @@ func init() {
 				if len(parts) != 3 {
 					return
 				}
-				id, err := strconv.Atoi(parts[2])
-				if err != nil {
-					return
-				}
+				
+				idStr := parts[2]
 				var item *ShopItem
 				for i := range Items {
-					if int(Items[i].ID) == id {
+					if string(Items[i].ID) == idStr {
 						item = &Items[i]
 						break
 					}
@@ -187,23 +185,23 @@ func init() {
 				}
 
 				data.Coins -= item.Cost
-				data.StatsTotalCoinsDepense += item.Cost
-				data.Inventory = append(data.Inventory, int(item.ID))
-				
-				switch item.ID {
-				case db.ShopCremeSolaire:
-					data.StatsAchatCremeSolaire++
-				case db.ShopPansement:
-					data.StatsAchatPansement++
-				case db.ShopBouteilleEau:
-					data.StatsAchatEau++
-				}
-
-				if err := b.DB.GormDB.Model(&data).Select("Coins", "Inventory", "StatsTotalCoinsDepense", "StatsAchatCremeSolaire", "StatsAchatPansement", "StatsAchatEau").Updates(data).Error; err != nil {
+				if err := b.DB.GormDB.Save(&data).Error; err != nil {
 					fmt.Println("DB error:", err)
 				}
 				
-				db.LogAction(b.DB.GormDB, data.ID, db.ActionShop, fmt.Sprintf(`{"item_id":%d, "cost":%d}`, item.ID, item.Cost))
+				db.IncrementStat(b.DB.GormDB, data.ID, db.StatTotalCoinsDepense, item.Cost)
+				db.IncrementItem(b.DB.GormDB, data.ID, item.ID, 1)
+
+				switch item.ID {
+				case db.ShopCremeSolaire:
+					db.IncrementStat(b.DB.GormDB, data.ID, db.StatAchatCremeSolaire, 1)
+				case db.ShopPansement:
+					db.IncrementStat(b.DB.GormDB, data.ID, db.StatAchatPansement, 1)
+				case db.ShopBouteilleEau:
+					db.IncrementStat(b.DB.GormDB, data.ID, db.StatAchatEau, 1)
+				}
+				
+				db.LogAction(b.DB.GormDB, data.ID, db.ActionShop, fmt.Sprintf(`{"item_id":"%s", "cost":%d}`, item.ID, item.Cost))
 
 				var page int
 				for i := range Items {

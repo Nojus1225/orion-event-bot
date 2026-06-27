@@ -110,43 +110,41 @@ func init() {
 					return
 				}
 
-				fieldToUpdate := ""
+				var itemID db.Item
 				switch item {
 				case "coins":
 					user.Coins += amount
-					fieldToUpdate = "Coins"
+					if err := b.DB.GormDB.Save(&user).Error; err != nil {
+					    _, _ = event.Client().Rest.CreateMessage(event.ChannelID, discord.NewMessageCreate().WithContent("Error updating DB."))
+					    return
+				    }
+					_, _ = event.Client().Rest.CreateMessage(event.ChannelID, discord.NewMessageCreate().WithContent(fmt.Sprintf("Success! Updated %s for user %s.", item, targetIDStr)))
+					return
 				case "shell":
-					user.ItemCoquillage += amount
-					fieldToUpdate = "ItemCoquillage"
+					itemID = db.ItemCoquillage
 				case "bottle":
-					user.ItemBouteille += amount
-					fieldToUpdate = "ItemBouteille"
+					itemID = db.ItemBouteille
 				case "can":
-					user.ItemCannette += amount
-					fieldToUpdate = "ItemCannette"
+					itemID = db.ItemCannette
 				case "glasses":
-					user.ItemLunettes += amount
-					fieldToUpdate = "ItemLunettes"
+					itemID = db.ItemLunettes
 				case "crab_claw":
-					user.ItemPince += amount
-					fieldToUpdate = "ItemPince"
+					itemID = db.ItemPince
 				case "msg_bottle":
-					user.ItemMsgBouteille += amount
-					fieldToUpdate = "ItemMsgBouteille"
+					itemID = db.ItemMsgBouteille
 				case "watch":
-					user.ItemMontre += amount
-					fieldToUpdate = "ItemMontre"
+					itemID = db.ItemMontre
 				case "shark_tooth":
-					user.ItemDent += amount
-					fieldToUpdate = "ItemDent"
+					itemID = db.ItemDent
 				default:
 					_, _ = event.Client().Rest.CreateMessage(event.ChannelID, discord.NewMessageCreate().WithContent("Unknown item: "+item))
 					return
 				}
 
-				if err := b.DB.GormDB.Model(&user).Select(fieldToUpdate).Updates(user).Error; err != nil {
-					_, _ = event.Client().Rest.CreateMessage(event.ChannelID, discord.NewMessageCreate().WithContent("Error updating DB."))
-					return
+				if amount < 0 {
+					db.RemoveItem(b.DB.GormDB, user.ID, itemID, -amount)
+				} else {
+					db.IncrementItem(b.DB.GormDB, user.ID, itemID, amount)
 				}
 
 				_, _ = event.Client().Rest.CreateMessage(event.ChannelID, discord.NewMessageCreate().WithContent(fmt.Sprintf("Success! Updated %s for user %s.", item, targetIDStr)))
@@ -209,10 +207,10 @@ func init() {
 				b.DB.GormDB.Model(&db.User{}).Select("COALESCE(SUM(coins), 0)").Scan(&totalCoins)
 
 				var totalFouilles int64
-				b.DB.GormDB.Model(&db.User{}).Select("COALESCE(SUM(stats_fouille), 0)").Scan(&totalFouilles)
+				b.DB.GormDB.Model(&db.UserStat{}).Where("stat_name = ?", db.StatFouille).Select("COALESCE(SUM(value), 0)").Scan(&totalFouilles)
 
 				var totalObjets int64
-				b.DB.GormDB.Model(&db.User{}).Select("COALESCE(SUM(stats_objets_trouve), 0)").Scan(&totalObjets)
+				b.DB.GormDB.Model(&db.UserStat{}).Where("stat_name = ?", db.StatObjetsTrouve).Select("COALESCE(SUM(value), 0)").Scan(&totalObjets)
 
 				msg := fmt.Sprintf("📊 **Global Event Stats**\n- **Total Users**: %d\n- **Total Coins (Circulating)**: %d\n- **Total Searches (Fouilles)**: %d\n- **Total Items Found**: %d", totalUsers, totalCoins, totalFouilles, totalObjets)
 				_, _ = event.Client().Rest.CreateMessage(event.ChannelID, discord.NewMessageCreate().WithContent(msg))

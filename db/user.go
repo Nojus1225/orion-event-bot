@@ -17,13 +17,72 @@ const (
 	TierDetecteur Tier = 3
 )
 
-type Item int
+type Item string
 
 const (
-	ShopCremeSolaire Item = 0
-	ShopPansement    Item = 1
-	ShopBouteilleEau Item = 2
+	ShopCremeSolaire Item = "creme_solaire"
+	ShopPansement    Item = "pansement"
+	ShopBouteilleEau Item = "bouteille_eau"
+
+	ItemCoquillage Item = "coquillage"
+	ItemBouteille  Item = "bouteille_plastique"
+	ItemCannette   Item = "cannette"
+
+	ItemLunettes Item = "lunettes"
+	ItemPiece    Item = "piece"
+	ItemPince    Item = "pince"
+
+	ItemMsgBouteille Item = "msg_bouteille"
+	ItemMontre       Item = "montre"
+	ItemDent         Item = "dent"
 )
+
+type StatName string
+
+const (
+	StatFouille           StatName = "fouille"
+	StatObjetsTrouve      StatName = "objets_trouve"
+	StatTotalCoins        StatName = "total_coins"
+	StatTotalCoinsDepense StatName = "total_coins_depense"
+
+	StatTotalRien    StatName = "total_rien"
+	StatTotalSunburn StatName = "total_sunburn"
+	StatTotalCuts    StatName = "total_cuts"
+
+	StatFouilleTransats StatName = "fouille_transats"
+	StatFouilleEau      StatName = "fouille_eau"
+	StatFouilleRochers  StatName = "fouille_rochers"
+
+	StatCoquillagesTrouves  StatName = "coquillages_trouves"
+	StatBouteillesTrouvees  StatName = "bouteilles_trouvees"
+	StatCannettesTrouvees   StatName = "cannettes_trouvees"
+	StatLunettesTrouvees    StatName = "lunettes_trouvees"
+	StatPiecesTrouvees      StatName = "pieces_trouvees"
+	StatPincesTrouvees      StatName = "pinces_trouvees"
+	StatMsgBouteilleTrouves StatName = "msg_bouteille_trouves"
+	StatMontresTrouvees     StatName = "montres_trouvees"
+	StatDentsTrouvees       StatName = "dents_trouvees"
+
+	StatEchecsFouilleCooldown StatName = "echecs_fouille_cooldown"
+	StatEchecsFouilleMalus    StatName = "echecs_fouille_malus"
+
+	StatVentesTotal       StatName = "ventes_total"
+	StatAchatCremeSolaire StatName = "achat_creme_solaire"
+	StatAchatPansement    StatName = "achat_pansement"
+	StatAchatEau          StatName = "achat_eau"
+)
+
+type UserItem struct {
+	UserID   string `gorm:"primaryKey;type:varchar(255)"`
+	ItemID   string `gorm:"primaryKey;type:varchar(50)"`
+	Quantity int
+}
+
+type UserStat struct {
+	UserID   string `gorm:"primaryKey;type:varchar(255)"`
+	StatName string `gorm:"primaryKey;type:varchar(50)"`
+	Value    int
+}
 
 type User struct {
 	ID string `gorm:"primaryKey;type:varchar(255)"`
@@ -34,50 +93,8 @@ type User struct {
 	StatusMalus StatusMalus
 	CDMalus     int
 
-	Inventory []int `gorm:"serializer:json"`
-
 	Tier Tier
 
-	ItemCoquillage int
-	ItemBouteille  int
-	ItemCannette   int
-
-	ItemLunettes int
-	ItemPiece    int
-	ItemPince    int
-
-	ItemMsgBouteille int
-	ItemMontre       int
-	ItemDent         int
-
-	StatsFouille           int
-	StatsObjetsTrouve      int
-	StatsTotalCoins        int
-	StatsTotalCoinsDepense int
-
-	StatsTotalRien    int
-	StatsTotalSunburn int
-	StatsTotalCuts    int
-
-	StatsFouilleTransats int
-	StatsFouilleEau      int
-	StatsFouilleRochers  int
-
-	StatsCoquillagesTrouves  int
-	StatsBouteillesTrouvees  int
-	StatsCannettesTrouvees   int
-	StatsLunettesTrouvees    int
-	StatsPiecesTrouvees      int
-	StatsPincesTrouvees      int
-	StatsMsgBouteilleTrouves int
-	StatsMontresTrouvees     int
-	StatsDentsTrouvees       int
-
-	StatsEchecsFouilleCooldown int
-	StatsEchecsFouilleMalus    int
-
-	StatsVentesTotal       int
-	StatsAchatCremeSolaire int
-	StatsAchatPansement    int
-	StatsAchatEau          int
+	Items []UserItem `gorm:"foreignKey:UserID;references:ID"`
+	Stats []UserStat `gorm:"foreignKey:UserID;references:ID"`
 }

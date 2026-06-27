@@ -18,52 +18,32 @@ import (
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
-func updateLoot(b *core.Bot, data *db.User, field string, value int) int {
-	if err := b.DB.GormDB.Model(data).Update(field, value).Error; err != nil {
-		fmt.Println("DB error:", err)
-	}
-	return value
-}
-
-func grantLoot(b *core.Bot, data *db.User, idx int, rewards []string, fields []string, values []int) (string, int) {
+func grantLoot(b *core.Bot, data *db.User, idx int, rewards []string, items []db.Item) (string, int) {
 	itemName := rewards[idx]
-	total := updateLoot(b, data, fields[idx], values[idx]+1)
+	itemID := items[idx]
+	total := db.IncrementItem(b.DB.GormDB, data.ID, itemID, 1)
 
-	data.StatsObjetsTrouve++
-	updates := map[string]any{"stats_objets_trouve": data.StatsObjetsTrouve}
+	db.IncrementStat(b.DB.GormDB, data.ID, db.StatObjetsTrouve, 1)
 
-	switch itemName {
-	case "Shell":
-		data.StatsCoquillagesTrouves++
-		updates["stats_coquillages_trouves"] = data.StatsCoquillagesTrouves
-	case "Bottle":
-		data.StatsBouteillesTrouvees++
-		updates["stats_bouteilles_trouvees"] = data.StatsBouteillesTrouvees
-	case "Can":
-		data.StatsCannettesTrouvees++
-		updates["stats_cannettes_trouvees"] = data.StatsCannettesTrouvees
-	case "Glasses":
-		data.StatsLunettesTrouvees++
-		updates["stats_lunettes_trouvees"] = data.StatsLunettesTrouvees
-	case "Coin":
-		data.StatsPiecesTrouvees++
-		updates["stats_pieces_trouvees"] = data.StatsPiecesTrouvees
-	case "Crab Claw":
-		data.StatsPincesTrouvees++
-		updates["stats_pinces_trouvees"] = data.StatsPincesTrouvees
-	case "Message in a Bottle":
-		data.StatsMsgBouteilleTrouves++
-		updates["stats_msg_bouteille_trouves"] = data.StatsMsgBouteilleTrouves
-	case "Watch":
-		data.StatsMontresTrouvees++
-		updates["stats_montres_trouvees"] = data.StatsMontresTrouvees
-	case "Shark Tooth":
-		data.StatsDentsTrouvees++
-		updates["stats_dents_trouvees"] = data.StatsDentsTrouvees
-	}
-
-	if err := b.DB.GormDB.Model(data).Updates(updates).Error; err != nil {
-		fmt.Println("DB error:", err)
+	switch itemID {
+	case db.ItemCoquillage:
+		db.IncrementStat(b.DB.GormDB, data.ID, db.StatCoquillagesTrouves, 1)
+	case db.ItemBouteille:
+		db.IncrementStat(b.DB.GormDB, data.ID, db.StatBouteillesTrouvees, 1)
+	case db.ItemCannette:
+		db.IncrementStat(b.DB.GormDB, data.ID, db.StatCannettesTrouvees, 1)
+	case db.ItemLunettes:
+		db.IncrementStat(b.DB.GormDB, data.ID, db.StatLunettesTrouvees, 1)
+	case db.ItemPiece:
+		db.IncrementStat(b.DB.GormDB, data.ID, db.StatPiecesTrouvees, 1)
+	case db.ItemPince:
+		db.IncrementStat(b.DB.GormDB, data.ID, db.StatPincesTrouvees, 1)
+	case db.ItemMsgBouteille:
+		db.IncrementStat(b.DB.GormDB, data.ID, db.StatMsgBouteilleTrouves, 1)
+	case db.ItemMontre:
+		db.IncrementStat(b.DB.GormDB, data.ID, db.StatMontresTrouvees, 1)
+	case db.ItemDent:
+		db.IncrementStat(b.DB.GormDB, data.ID, db.StatDentsTrouvees, 1)
 	}
 
 	db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, fmt.Sprintf(`{"result":"item","item":"%s"}`, itemName))
@@ -76,12 +56,14 @@ func applyMalus(b *core.Bot, data *db.User, duration time.Duration, status db.St
 	data.StatusMalus = status
 
 	updates := map[string]any{"cd_malus": data.CDMalus, "status_malus": data.StatusMalus}
+	if err := b.DB.GormDB.Model(data).Updates(updates).Error; err != nil {
+		fmt.Println("DB error:", err)
+	}
+
 	if status == db.MalusSunBurn {
-		data.StatsTotalSunburn++
-		updates["stats_total_sunburn"] = data.StatsTotalSunburn
+		db.IncrementStat(b.DB.GormDB, data.ID, db.StatTotalSunburn, 1)
 	} else if status == db.MalusCut {
-		data.StatsTotalCuts++
-		updates["stats_total_cuts"] = data.StatsTotalCuts
+		db.IncrementStat(b.DB.GormDB, data.ID, db.StatTotalCuts, 1)
 	}
 
 	if err := b.DB.GormDB.Model(data).Updates(updates).Error; err != nil {
@@ -121,19 +103,13 @@ func init() {
 
 				var item *ShopItem
 				for i := range Items {
-					if int(Items[i].ID) == int(object) {
+					if Items[i].ID == object {
 						item = &Items[i]
 						break
 					}
 				}
 
-				hasItem := false
-				for _, invItem := range data.Inventory {
-					if invItem == int(object) {
-						hasItem = true
-						break
-					}
-				}
+				hasItem := db.GetItemQuantity(b.DB.GormDB, data.ID, object) > 0
 
 				itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: item.Name})
 				if itemLoc == "" {
@@ -158,7 +134,7 @@ func init() {
 				}
 				if hasItem {
 					components = append(components, discord.NewActionRow(
-						discord.NewButton(discord.ButtonStyleSuccess, useBtnTxt, fmt.Sprintf("search-use-item-%d", object), "", snowflake.ID(0)),
+						discord.NewButton(discord.ButtonStyleSuccess, useBtnTxt, fmt.Sprintf("search-use-item-%s", object), "", snowflake.ID(0)),
 					))
 				}
 
@@ -169,8 +145,7 @@ func init() {
 				if err := event.CreateMessage(msg); err != nil {
 					fmt.Println("Error sending cd message:", err)
 				}
-				data.StatsEchecsFouilleMalus++
-				b.DB.GormDB.Model(&data).Update("stats_echecs_fouille_malus", data.StatsEchecsFouilleMalus)
+				db.IncrementStat(b.DB.GormDB, data.ID, db.StatEchecsFouilleMalus, 1)
 				db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"failed_malus"}`)
 				return
 			}
@@ -180,19 +155,13 @@ func init() {
 				object := db.ShopBouteilleEau
 				var item *ShopItem
 				for i := range Items {
-					if int(Items[i].ID) == int(object) {
+					if Items[i].ID == object {
 						item = &Items[i]
 						break
 					}
 				}
 
-				hasItem := false
-				for _, invItem := range data.Inventory {
-					if invItem == int(object) {
-						hasItem = true
-						break
-					}
-				}
+				hasItem := db.GetItemQuantity(b.DB.GormDB, data.ID, object) > 0
 
 				itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: item.Name})
 				if itemLoc == "" {
@@ -216,7 +185,7 @@ func init() {
 				}
 				if hasItem {
 					components = append(components, discord.NewActionRow(
-						discord.NewButton(discord.ButtonStyleSuccess, useBtnTxt, fmt.Sprintf("search-use-item-%d", object), "", snowflake.ID(0)),
+						discord.NewButton(discord.ButtonStyleSuccess, useBtnTxt, fmt.Sprintf("search-use-item-%s", object), "", snowflake.ID(0)),
 					))
 				}
 
@@ -227,8 +196,7 @@ func init() {
 				if err := event.CreateMessage(msg); err != nil {
 					fmt.Println("Error sending cd message:", err)
 				}
-				data.StatsEchecsFouilleCooldown++
-				b.DB.GormDB.Model(&data).Update("stats_echecs_fouille_cooldown", data.StatsEchecsFouilleCooldown)
+				db.IncrementStat(b.DB.GormDB, data.ID, db.StatEchecsFouilleCooldown, 1)
 				db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"failed_cooldown"}`)
 				return
 			}
@@ -275,38 +243,24 @@ func init() {
 			customID := button.CustomID()
 
 			if strings.HasPrefix(customID, "search-use-item-") {
-				itemIdx, err := strconv.Atoi(customID[16:])
-				if err == nil {
-					object := db.Item(itemIdx)
-					hasItem := false
-					itemIndex := -1
-					for i, invItem := range data.Inventory {
-						if invItem == int(object) {
-							hasItem = true
-							itemIndex = i
-							break
+				object := db.Item(customID[16:])
+				hasItem := db.GetItemQuantity(b.DB.GormDB, data.ID, object) > 0
+				if hasItem {
+					db.RemoveItem(b.DB.GormDB, data.ID, object, 1)
+
+					switch object {
+					case db.ShopCremeSolaire, db.ShopPansement:
+						data.CDMalus = 0
+						data.StatusMalus = db.MalusNone
+						if err := b.DB.GormDB.Model(&data).Select("CDMalus", "StatusMalus").Updates(data).Error; err != nil {
+							fmt.Println("DB error:", err)
+						}
+					case db.ShopBouteilleEau:
+						data.CDFouille = 0
+						if err := b.DB.GormDB.Model(&data).Select("CDFouille").Updates(data).Error; err != nil {
+							fmt.Println("DB error:", err)
 						}
 					}
-					if hasItem {
-						data.Inventory = append(data.Inventory[:itemIndex], data.Inventory[itemIndex+1:]...)
-
-						switch object {
-						case db.ShopCremeSolaire, db.ShopPansement:
-							data.CDMalus = 0
-							data.StatusMalus = db.MalusNone
-							if err := b.DB.GormDB.Model(&data).Select("Inventory", "CDMalus", "StatusMalus").Updates(data).Error; err != nil {
-								fmt.Println("DB error:", err)
-							}
-						case db.ShopBouteilleEau:
-							data.CDFouille = 0
-							if err := b.DB.GormDB.Model(&data).Select("Inventory", "CDFouille").Updates(data).Error; err != nil {
-								fmt.Println("DB error:", err)
-							}
-						default:
-							if err := b.DB.GormDB.Model(&data).Select("Inventory").Updates(data).Error; err != nil {
-								fmt.Println("DB error:", err)
-							}
-						}
 
 						searchTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"})
 						areaPrompt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchAreaPrompt"})
@@ -332,15 +286,13 @@ func init() {
 							fmt.Println("Error updating search message:", err)
 						}
 						return
-					}
 				}
 			}
 
 			switch customID {
 			case "search-transats":
 				rewards := []string{"Shell", "Bottle", "Can"}
-				fields := []string{"item_coquillage", "item_bouteille", "item_cannette"}
-				values := []int{data.ItemCoquillage, data.ItemBouteille, data.ItemCannette}
+				items := []db.Item{db.ItemCoquillage, db.ItemBouteille, db.ItemCannette}
 				random, err := rand.Int(rand.Reader, big.NewInt(100))
 				if err != nil {
 					fmt.Println("Error generating random reward:", err)
@@ -349,16 +301,16 @@ func init() {
 				roll := int(random.Int64()) + 1
 
 				data.CDFouille = int(time.Now().Add(30 * time.Minute).Unix())
-				data.StatsFouille++
-				data.StatsFouilleTransats++
-				if err := b.DB.GormDB.Model(&data).Updates(map[string]any{"cd_fouille": data.CDFouille, "stats_fouille": data.StatsFouille, "stats_fouille_transats": data.StatsFouilleTransats}).Error; err != nil {
+				if err := b.DB.GormDB.Model(&data).Updates(map[string]any{"cd_fouille": data.CDFouille}).Error; err != nil {
 					fmt.Println("DB error:", err)
 				}
+				db.IncrementStat(b.DB.GormDB, data.ID, db.StatFouille, 1)
+				db.IncrementStat(b.DB.GormDB, data.ID, db.StatFouilleTransats, 1)
 
 				message, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchDeckchairsEmpty"})
 				if roll <= 85 {
 					idx := roll % len(rewards)
-					itemName, total := grantLoot(b, &data, idx, rewards, fields, values)
+					itemName, total := grantLoot(b, &data, idx, rewards, items)
 					itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: itemName})
 					if itemLoc == "" {
 						itemLoc = itemName
@@ -374,10 +326,7 @@ func init() {
 						TemplateData: map[string]interface{}{"Time": cd},
 					})
 				} else {
-					data.StatsTotalRien++
-					if err := b.DB.GormDB.Model(&data).Update("stats_total_rien", data.StatsTotalRien).Error; err != nil {
-						fmt.Println("DB error:", err)
-					}
+					db.IncrementStat(b.DB.GormDB, data.ID, db.StatTotalRien, 1)
 					db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"rien"}`)
 				}
 
@@ -396,8 +345,7 @@ func init() {
 				}
 			case "search-eau":
 				rewards := []string{"Shell", "Bottle", "Can", "Glasses", "Coin", "Crab Claw"}
-				fields := []string{"item_coquillage", "item_bouteille", "item_cannette", "item_lunettes", "item_piece", "item_pince"}
-				values := []int{data.ItemCoquillage, data.ItemBouteille, data.ItemCannette, data.ItemLunettes, data.ItemPiece, data.ItemPince}
+				items := []db.Item{db.ItemCoquillage, db.ItemBouteille, db.ItemCannette, db.ItemLunettes, db.ItemPiece, db.ItemPince}
 				random, err := rand.Int(rand.Reader, big.NewInt(100))
 				if err != nil {
 					fmt.Println("Error generating random reward:", err)
@@ -406,16 +354,16 @@ func init() {
 				roll := int(random.Int64()) + 1
 
 				data.CDFouille = int(time.Now().Add(30 * time.Minute).Unix())
-				data.StatsFouille++
-				data.StatsFouilleEau++
-				if err := b.DB.GormDB.Model(&data).Updates(map[string]any{"cd_fouille": data.CDFouille, "stats_fouille": data.StatsFouille, "stats_fouille_eau": data.StatsFouilleEau}).Error; err != nil {
+				if err := b.DB.GormDB.Model(&data).Updates(map[string]any{"cd_fouille": data.CDFouille}).Error; err != nil {
 					fmt.Println("DB error:", err)
 				}
+				db.IncrementStat(b.DB.GormDB, data.ID, db.StatFouille, 1)
+				db.IncrementStat(b.DB.GormDB, data.ID, db.StatFouilleEau, 1)
 
 				message, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchWaterEmpty"})
 				if roll <= 60 {
 					idx := roll % len(rewards)
-					itemName, total := grantLoot(b, &data, idx, rewards, fields, values)
+					itemName, total := grantLoot(b, &data, idx, rewards, items)
 					itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: itemName})
 					if itemLoc == "" {
 						itemLoc = itemName
@@ -431,10 +379,7 @@ func init() {
 						TemplateData: map[string]interface{}{"Time": cd},
 					})
 				} else {
-					data.StatsTotalRien++
-					if err := b.DB.GormDB.Model(&data).Update("stats_total_rien", data.StatsTotalRien).Error; err != nil {
-						fmt.Println("DB error:", err)
-					}
+					db.IncrementStat(b.DB.GormDB, data.ID, db.StatTotalRien, 1)
 					db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"rien"}`)
 				}
 
@@ -454,8 +399,7 @@ func init() {
 
 			case "search-rochers":
 				rewards := []string{"Glasses", "Coin", "Crab Claw", "Message in a Bottle", "Watch", "Shark Tooth"}
-				fields := []string{"item_lunettes", "item_piece", "item_pince", "item_msg_bouteille", "item_montre", "item_dent"}
-				values := []int{data.ItemLunettes, data.ItemPiece, data.ItemPince, data.ItemMsgBouteille, data.ItemMontre, data.ItemDent}
+				items := []db.Item{db.ItemLunettes, db.ItemPiece, db.ItemPince, db.ItemMsgBouteille, db.ItemMontre, db.ItemDent}
 				random, err := rand.Int(rand.Reader, big.NewInt(100))
 				if err != nil {
 					fmt.Println("Error generating random reward:", err)
@@ -464,16 +408,16 @@ func init() {
 				roll := int(random.Int64()) + 1
 
 				data.CDFouille = int(time.Now().Add(30 * time.Minute).Unix())
-				data.StatsFouille++
-				data.StatsFouilleRochers++
-				if err := b.DB.GormDB.Model(&data).Updates(map[string]any{"cd_fouille": data.CDFouille, "stats_fouille": data.StatsFouille, "stats_fouille_rochers": data.StatsFouilleRochers}).Error; err != nil {
+				if err := b.DB.GormDB.Model(&data).Updates(map[string]any{"cd_fouille": data.CDFouille}).Error; err != nil {
 					fmt.Println("DB error:", err)
 				}
+				db.IncrementStat(b.DB.GormDB, data.ID, db.StatFouille, 1)
+				db.IncrementStat(b.DB.GormDB, data.ID, db.StatFouilleRochers, 1)
 
 				message, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchRocksEmpty"})
 				if roll <= 35 {
 					idx := roll % len(rewards)
-					itemName, total := grantLoot(b, &data, idx, rewards, fields, values)
+					itemName, total := grantLoot(b, &data, idx, rewards, items)
 					itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: itemName})
 					if itemLoc == "" {
 						itemLoc = itemName
@@ -484,10 +428,7 @@ func init() {
 					})
 				} else if roll <= 75 {
 					message, _ = loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchRocksEmpty"})
-					data.StatsTotalRien++
-					if err := b.DB.GormDB.Model(&data).Update("stats_total_rien", data.StatsTotalRien).Error; err != nil {
-						fmt.Println("DB error:", err)
-					}
+					db.IncrementStat(b.DB.GormDB, data.ID, db.StatTotalRien, 1)
 					db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"rien"}`)
 				} else if roll <= 90 {
 					cd := applyMalus(b, &data, 1*time.Hour, db.MalusCut)
