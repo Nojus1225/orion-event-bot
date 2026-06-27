@@ -1,0 +1,14 @@
+{
+  "AutoDropTitle": "Un **Butin de Plage** vient d'apparaître ! 🎁",
+  "AutoDropDescription": "Le premier à le récupérer gardera son contenu. Vite !",
+  "AutoDropClaimButton": "Récupérer le butin !",
+  "AutoDropTooLate": "Désolé, quelqu'un d'autre a été plus rapide ! 😢",
+  "AutoDropLootCoinsSmall": "Petite bourse de Coins (+3 Coins)",
+  "AutoDropLootShells": "Sac de Coquillages (+3 Coquillages, +1 Cannette)",
+  "AutoDropLootCoinsMedium": "Portefeuille perdu (+12 Coins)",
+  "AutoDropLootFirstAid": "Trousse de secours de plage (+1 Lunettes, +2 Pinces de crabe)",
+  "AutoDropLootJackpot": "Le Jackpot de l'été (+50 Coins) 💰",
+  "AutoDropLootPirate": "Le Coffre du Pirate (+1 Message, +1 Montre, +1 Dent) 🏴‍☠️",
+  "AutoDropClaimedTitle": "Un **Butin de Plage** a été récupéré ! 🎁",
+  "AutoDropClaimedDescription": "<@{{.User}}> a été le plus rapide et a obtenu :\n**{{.Loot}}**"
+}

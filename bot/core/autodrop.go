@@ -8,6 +8,7 @@ import (
 
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/snowflake/v2"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
 func StartAutoDropTicker(b *Bot) {
@@ -40,14 +41,19 @@ func TriggerAutoDrop(b *Bot) {
 		return
 	}
 
+	loc := GetLocalizer("fr-FR")
+	title := loc.MustLocalize(&i18n.LocalizeConfig{MessageID: "AutoDropTitle"})
+	desc := loc.MustLocalize(&i18n.LocalizeConfig{MessageID: "AutoDropDescription"})
+	btnText := loc.MustLocalize(&i18n.LocalizeConfig{MessageID: "AutoDropClaimButton"})
+
 	msg := discord.NewMessageCreateV2(
 		discord.NewContainer(
 			discord.NewSection(
-				discord.NewTextDisplay("Un **Butin de Plage** vient d'apparaître ! 🎁"),
-				discord.NewTextDisplay("Le premier à le récupérer gardera son contenu. Vite !"),
+				discord.NewTextDisplay(title),
+				discord.NewTextDisplay(desc),
 			).WithAccessory(discord.NewThumbnail("https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f381.png")),
 			discord.NewActionRow(
-				discord.NewButton(discord.ButtonStyleSuccess, "Récupérer le butin !", fmt.Sprintf("autodrop-claim-%d", dropID), "", snowflake.ID(0)),
+				discord.NewButton(discord.ButtonStyleSuccess, btnText, fmt.Sprintf("autodrop-claim-%d", dropID), "", snowflake.ID(0)),
 			),
 		).WithAccentColor(0xF1C40F),
 	)

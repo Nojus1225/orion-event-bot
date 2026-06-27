@@ -90,7 +90,9 @@ func init() {
 					success := db.ClaimDrop(b.DB.GormDB, dropID, userID)
 
 					if !success {
-						_ = event.CreateMessage(discord.NewMessageCreate().WithEphemeral(true).WithContent("Désolé, quelqu'un d'autre a été plus rapide ! 😢"))
+						loc := core.GetLocalizer(event.Locale().String())
+						tooLate := loc.MustLocalize(&i18n.LocalizeConfig{MessageID: "AutoDropTooLate"})
+						_ = event.CreateMessage(discord.NewMessageCreate().WithEphemeral(true).WithContent(tooLate))
 						return
 					}
 
@@ -104,43 +106,54 @@ func init() {
 					}
 					roll := int(random.Int64()) + 1
 
+					loc := core.GetLocalizer(event.Locale().String())
+
 					var lootMsg string
 
 					if roll <= 450 {
 						data.Coins += 3
 						b.DB.GormDB.Save(&data)
-						lootMsg = "Petite bourse de Coins (+3 Coins)"
+						lootMsg = loc.MustLocalize(&i18n.LocalizeConfig{MessageID: "AutoDropLootCoinsSmall"})
 					} else if roll <= 750 {
 						db.IncrementItem(b.DB.GormDB, userID, db.ItemCoquillage, 3)
 						db.IncrementItem(b.DB.GormDB, userID, db.ItemCannette, 1)
-						lootMsg = "Sac de Coquillages (+3 Coquillages, +1 Cannette)"
+						lootMsg = loc.MustLocalize(&i18n.LocalizeConfig{MessageID: "AutoDropLootShells"})
 					} else if roll <= 900 {
 						data.Coins += 12
 						b.DB.GormDB.Save(&data)
-						lootMsg = "Portefeuille perdu (+12 Coins)"
+						lootMsg = loc.MustLocalize(&i18n.LocalizeConfig{MessageID: "AutoDropLootCoinsMedium"})
 					} else if roll <= 980 {
 						db.IncrementItem(b.DB.GormDB, userID, db.ItemLunettes, 1)
 						db.IncrementItem(b.DB.GormDB, userID, db.ItemPince, 2)
-						lootMsg = "Trousse de secours de plage (+1 Lunettes, +2 Pinces de crabe)"
+						lootMsg = loc.MustLocalize(&i18n.LocalizeConfig{MessageID: "AutoDropLootFirstAid"})
 					} else if roll <= 998 {
 						data.Coins += 50
 						b.DB.GormDB.Save(&data)
-						lootMsg = "Le Jackpot de l'été (+50 Coins) 💰"
+						lootMsg = loc.MustLocalize(&i18n.LocalizeConfig{MessageID: "AutoDropLootJackpot"})
 					} else {
 						db.IncrementItem(b.DB.GormDB, userID, db.ItemMsgBouteille, 1)
 						db.IncrementItem(b.DB.GormDB, userID, db.ItemMontre, 1)
 						db.IncrementItem(b.DB.GormDB, userID, db.ItemDent, 1)
-						lootMsg = "Le Coffre du Pirate (+1 Message, +1 Montre, +1 Dent) 🏴‍☠️"
+						lootMsg = loc.MustLocalize(&i18n.LocalizeConfig{MessageID: "AutoDropLootPirate"})
 					}
 
 					db.IncrementStat(b.DB.GormDB, userID, db.StatObjetsTrouve, 1)
 					db.LogAction(b.DB.GormDB, userID, db.ActionFouille, fmt.Sprintf(`{"result":"autodrop", "loot":"%s"}`, lootMsg))
 
+					claimedTitle := loc.MustLocalize(&i18n.LocalizeConfig{MessageID: "AutoDropClaimedTitle"})
+					claimedDesc := loc.MustLocalize(&i18n.LocalizeConfig{
+						MessageID: "AutoDropClaimedDescription",
+						TemplateData: map[string]interface{}{
+							"User": userID,
+							"Loot": lootMsg,
+						},
+					})
+
 					msgUpdate := discord.NewMessageUpdateV2(
 						discord.NewContainer(
 							discord.NewSection(
-								discord.NewTextDisplay("Un **Butin de Plage** a été récupéré ! 🎁"),
-								discord.NewTextDisplay(fmt.Sprintf("<@%s> a été le plus rapide et a obtenu :\n**%s**", userID, lootMsg)),
+								discord.NewTextDisplay(claimedTitle),
+								discord.NewTextDisplay(claimedDesc),
 							).WithAccessory(discord.NewThumbnail("https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f381.png")),
 						).WithAccentColor(0x2ECC71),
 					)
