@@ -1,6 +1,6 @@
 {
   "LeaderboardDescription": "View the leaderboard",
-  "LeaderboardTitle": "## Leaderboard",
-  "LeaderboardEntry": "**#{{.Rank}}** <@{{.ID}}> - **{{.Coins}}** Coins\n> Common: {{.Common}} | Rare: {{.Rare}} | Epic: {{.Epic}}",
+  "LeaderboardTitle": "## 🏆 Leaderboard",
+  "LeaderboardEntry": "**#{{.Rank}}** <@{{.ID}}> - **{{.Coins}}** 🪙 Coins\n> ⚪ Common: {{.Common}} | 🔵 Rare: {{.Rare}} | 🟡 Epic: {{.Epic}}",
   "NoUsersFound": "No users found."
 }
