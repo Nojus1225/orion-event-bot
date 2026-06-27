@@ -32,7 +32,7 @@ func New() *DB {
 		log.Fatalf("Echec de la connexion à la base de donnees: %v", err)
 	}
 
-	err = db.AutoMigrate(&User{}, &UserItem{}, &UserStat{}, &ActionLog{})
+	err = db.AutoMigrate(&User{}, &UserItem{}, &UserStat{}, &ActionLog{}, &Settings{})
 	if err != nil {
 		log.Fatalf("Erreur lors de la migration de la base de donnees: %v", err)
 	}

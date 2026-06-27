@@ -181,7 +181,7 @@ func init() {
 			case "maintenance":
 				if len(args) < 1 {
 					status := "OFF"
-					if b.MaintenanceMode {
+					if b.IsMaintenanceMode() {
 						status = "ON"
 					}
 					_, _ = event.Client().Rest.CreateMessage(event.ChannelID, discord.NewMessageCreate().WithContent(fmt.Sprintf("Maintenance mode is currently %s.", status)))
@@ -190,10 +190,10 @@ func init() {
 
 				state := strings.ToLower(args[0])
 				if state == "on" || state == "true" || state == "1" {
-					b.MaintenanceMode = true
+					_ = db.UpdateMaintenanceMode(b.DB.GormDB, true)
 					_, _ = event.Client().Rest.CreateMessage(event.ChannelID, discord.NewMessageCreate().WithContent("Maintenance mode ENABLED"))
 				} else if state == "off" || state == "false" || state == "0" {
-					b.MaintenanceMode = false
+					_ = db.UpdateMaintenanceMode(b.DB.GormDB, false)
 					_, _ = event.Client().Rest.CreateMessage(event.ChannelID, discord.NewMessageCreate().WithContent("Maintenance mode DISABLED"))
 				} else {
 					_, _ = event.Client().Rest.CreateMessage(event.ChannelID, discord.NewMessageCreate().WithContent("Invalid state. Use 'on' or 'off'."))

@@ -23,7 +23,13 @@ func init() {
 				return
 			}
 
-			if b.MaintenanceMode && !b.IsAdmin(event.User().ID.String()) {
+			if b.ChannelID != "" && event.Channel().ID().String() != b.ChannelID {
+				msg := discord.NewMessageCreate().WithEphemeral(true).WithContent("⚠️ Cette commande ne peut être utilisée que dans le salon de l'événement.")
+				_ = event.CreateMessage(msg)
+				return
+			}
+
+			if b.IsMaintenanceMode() && !b.IsAdmin(event.User().ID.String()) {
 				loc := core.GetLocalizer(event.Locale().String())
 				msg, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "MaintenanceMessage"})
 				if msg == "" {
@@ -52,7 +58,13 @@ func init() {
 				return
 			}
 
-			if b.MaintenanceMode && !b.IsAdmin(event.User().ID.String()) {
+			if b.ChannelID != "" && event.Channel().ID().String() != b.ChannelID {
+				msg := discord.NewMessageCreate().WithEphemeral(true).WithContent("⚠️ Cette interaction ne peut être utilisée que dans le salon de l'événement.")
+				_ = event.CreateMessage(msg)
+				return
+			}
+
+			if b.IsMaintenanceMode() && !b.IsAdmin(event.User().ID.String()) {
 				loc := core.GetLocalizer(event.Locale().String())
 				msg, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "MaintenanceMessage"})
 				if msg == "" {
@@ -96,6 +108,12 @@ func init() {
 				return
 			}
 
+			if b.ChannelID != "" && event.Channel().ID().String() != b.ChannelID {
+				msg := discord.NewMessageCreate().WithEphemeral(true).WithContent("⚠️ Ce modal ne peut être soumis que dans le salon de l'événement.")
+				_ = event.CreateMessage(msg)
+				return
+			}
+
 			customID := event.Data.CustomID
 			parts := strings.SplitN(customID, "-", 2)
 			if len(parts) == 0 {
@@ -115,6 +133,10 @@ func init() {
 		Execute: func(b *core.Bot, e bot.Event) {
 			event, ok := e.(*events.AutocompleteInteractionCreate)
 			if !ok {
+				return
+			}
+
+			if b.ChannelID != "" && event.Channel().ID().String() != b.ChannelID {
 				return
 			}
 

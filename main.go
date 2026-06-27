@@ -42,9 +42,14 @@ func main() {
 		}
 	}
 
+	guildID := os.Getenv("GUILD_ID")
+	channelID := os.Getenv("CHANNEL_ID")
+
 	coreBot := &core.Bot{
 		DB:       database,
 		AdminIDs: adminIDs,
+		GuildID:  guildID,
+		ChannelID: channelID,
 	}
 
 	client, err := disgo.New(token,
