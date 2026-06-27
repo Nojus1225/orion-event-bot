@@ -12,12 +12,12 @@
   "WatersEdge": "🌊 Water's edge",
   "TheRocks": "🪨 The rocks",
   "Use": "✅ Use",
-  "SearchDeckchairsEmpty": "You found nothing while searching the deckchairs.",
-  "SearchDeckchairsFound": "You found x1 {{.Item}} ({{.Total}}) while searching the deckchairs.",
-  "SearchDeckchairsSunburn": "You got a sunburn. Come back <t:{{.Time}}:R>.",
-  "SearchWaterEmpty": "You found nothing while searching the water's edge.",
-  "SearchWaterFound": "You found x1 {{.Item}} ({{.Total}}) while searching the water's edge.",
-  "SearchRocksEmpty": "You found nothing while searching the rocks.",
-  "SearchRocksFound": "You found x1 {{.Item}} ({{.Total}}) while searching the rocks.",
-  "SearchRocksCut": "You got cut. Come back <t:{{.Time}}:R>."
+  "SearchDeckchairsEmpty": "💨 You found nothing while searching the deckchairs...",
+  "SearchDeckchairsFound": "🎉 Awesome! You found x1 {{.Item}} (Total: {{.Total}}) while searching the deckchairs.",
+  "SearchDeckchairsSunburn": "🥵 Ouch! You got a sunburn. Come back <t:{{.Time}}:R>.",
+  "SearchWaterEmpty": "💨 Tough luck, you found nothing while searching the water's edge...",
+  "SearchWaterFound": "🎉 Great! You found x1 {{.Item}} (Total: {{.Total}}) while searching the water's edge.",
+  "SearchRocksEmpty": "💨 You found nothing while searching the rocks...",
+  "SearchRocksFound": "🎉 What a treasure! You found x1 {{.Item}} (Total: {{.Total}}) while searching the rocks.",
+  "SearchRocksCut": "🩸 Ouch! You got cut. Come back <t:{{.Time}}:R>."
 }

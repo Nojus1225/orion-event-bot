@@ -130,7 +130,7 @@ func init() {
 			shopItemsTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "ShopItems"})
 
 			objectStr := ""
-			objectStr += "## " + commonItemsTxt + "\n"
+			objectStr += "**" + commonItemsTxt + "**\n"
 			if len(commonLines) == 0 {
 				objectStr += noItems + "\n"
 			} else {
@@ -138,8 +138,9 @@ func init() {
 					objectStr += l + "\n"
 				}
 			}
+			objectStr += "\n"
 
-			objectStr += "## " + rareItemsTxt + "\n"
+			objectStr += "**" + rareItemsTxt + "**\n"
 			if len(rareLines) == 0 {
 				objectStr += noItems + "\n"
 			} else {
@@ -147,8 +148,9 @@ func init() {
 					objectStr += l + "\n"
 				}
 			}
+			objectStr += "\n"
 
-			objectStr += "## " + legItemsTxt + "\n"
+			objectStr += "**" + legItemsTxt + "**\n"
 			if len(legendaryLines) == 0 {
 				objectStr += noItems + "\n"
 			} else {
@@ -156,8 +158,9 @@ func init() {
 					objectStr += l + "\n"
 				}
 			}
+			objectStr += "\n"
 
-			objectStr += "## " + shopItemsTxt + "\n"
+			objectStr += "**" + shopItemsTxt + "**\n"
 			if len(shopLines) == 0 {
 				objectStr += noItems + "\n"
 			} else {

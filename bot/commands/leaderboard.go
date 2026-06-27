@@ -28,6 +28,15 @@ func getLeaderboardData(b *core.Bot, loc *i18n.Localizer, page int, totalPages i
 	for i, u := range users {
 		rank := offset + i + 1
 
+		rankEmoji := "🏅"
+		if rank == 1 {
+			rankEmoji = "🥇"
+		} else if rank == 2 {
+			rankEmoji = "🥈"
+		} else if rank == 3 {
+			rankEmoji = "🥉"
+		}
+
 		counts := make(map[string]int)
 		for _, it := range u.Items {
 			counts[it.ItemID] = it.Quantity
@@ -40,12 +49,13 @@ func getLeaderboardData(b *core.Bot, loc *i18n.Localizer, page int, totalPages i
 		entry, _ := loc.Localize(&i18n.LocalizeConfig{
 			MessageID: "LeaderboardEntry",
 			TemplateData: map[string]interface{}{
-				"Rank":   rank,
-				"ID":     u.ID,
-				"Coins":  u.Coins,
-				"Common": common,
-				"Rare":   rare,
-				"Epic":   epic,
+				"Rank":      rank,
+				"RankEmoji": rankEmoji,
+				"ID":        u.ID,
+				"Coins":     u.Coins,
+				"Common":    common,
+				"Rare":      rare,
+				"Epic":      epic,
 			},
 		})
 		content += entry + "\n"

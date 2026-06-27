@@ -83,7 +83,6 @@ func init() {
 		},
 		Execute: func(b *core.Bot, event *events.ApplicationCommandInteractionCreate) {
 			loc := core.GetLocalizer(event.Locale().String())
-			avatarURL := event.User().EffectiveAvatarURL()
 
 			var data db.User
 			if err := b.DB.GormDB.FirstOrCreate(&data, db.User{ID: strconv.FormatUint(uint64(event.User().ID), 10)}).Error; err != nil {
@@ -212,7 +211,7 @@ func init() {
 					discord.NewSection(
 						discord.NewTextDisplay(searchTitle),
 						discord.NewTextDisplay(areaPrompt),
-					).WithAccessory(discord.NewThumbnail(avatarURL)),
+					).WithAccessory(discord.NewThumbnail("https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f3d6.png")),
 					discord.NewActionRow(
 						discord.NewButton(discord.ButtonStylePrimary, deckchairsTxt, "search-transats", "", snowflake.ID(0)),
 						discord.NewButton(discord.ButtonStylePrimary, watersEdgeTxt, "search-eau", "", snowflake.ID(0)),
@@ -273,7 +272,7 @@ func init() {
 								discord.NewSection(
 									discord.NewTextDisplay(searchTitle),
 									discord.NewTextDisplay(areaPrompt),
-								).WithAccessory(discord.NewThumbnail(event.User().EffectiveAvatarURL())),
+								).WithAccessory(discord.NewThumbnail("https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f3d6.png")),
 								discord.NewActionRow(
 									discord.NewButton(discord.ButtonStylePrimary, deckchairsTxt, "search-transats", "", snowflake.ID(0)),
 									discord.NewButton(discord.ButtonStylePrimary, watersEdgeTxt, "search-eau", "", snowflake.ID(0)),
@@ -336,7 +335,7 @@ func init() {
 						discord.NewSection(
 							discord.NewTextDisplay(searchTitle),
 							discord.NewTextDisplay(message),
-						).WithAccessory(discord.NewThumbnail(event.User().EffectiveAvatarURL())),
+						).WithAccessory(discord.NewThumbnail("https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1fa91.png")),
 					).WithAccentColor(0x5865F2),
 				)
 
@@ -389,7 +388,7 @@ func init() {
 						discord.NewSection(
 							discord.NewTextDisplay(searchTitle),
 							discord.NewTextDisplay(message),
-						).WithAccessory(discord.NewThumbnail(event.User().EffectiveAvatarURL())),
+						).WithAccessory(discord.NewThumbnail("https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f30a.png")),
 					).WithAccentColor(0x5865F2),
 				)
 
@@ -450,7 +449,7 @@ func init() {
 						discord.NewSection(
 							discord.NewTextDisplay(searchTitle),
 							discord.NewTextDisplay(message),
-						).WithAccessory(discord.NewThumbnail(event.User().EffectiveAvatarURL())),
+						).WithAccessory(discord.NewThumbnail("https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1faa8.png")),
 					).WithAccentColor(0x5865F2),
 				)
 

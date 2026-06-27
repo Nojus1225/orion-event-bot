@@ -134,7 +134,7 @@ func init() {
 						itemLoc = targetItem
 					}
 					noItemTxt, _ := loc.Localize(&i18n.LocalizeConfig{
-						MessageID: "SellNoSpecificItem",
+						MessageID:    "SellNoSpecificItem",
 						TemplateData: map[string]interface{}{"Item": itemLoc},
 					})
 					err := event.CreateMessage(discord.NewMessageCreate().WithEphemeral(true).WithContent(noItemTxt))
@@ -144,13 +144,13 @@ func init() {
 					return
 				}
 
-				price := int(float64(count * sellPrices[targetItem]) * getSellMultiplier(data.Tier))
+				price := int(float64(count*sellPrices[targetItem]) * getSellMultiplier(data.Tier))
 				itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: targetItem})
 				if itemLoc == "" {
 					itemLoc = targetItem
 				}
 				content, _ = loc.Localize(&i18n.LocalizeConfig{
-					MessageID: "SellConfirm",
+					MessageID:    "SellConfirm",
 					TemplateData: map[string]interface{}{"Quantity": count, "Item": itemLoc, "Coins": price},
 				})
 				buttonLabel = "Sell " + itemLoc
@@ -174,7 +174,7 @@ func init() {
 				}
 
 				content, _ = loc.Localize(&i18n.LocalizeConfig{
-					MessageID: "SellAllConfirm",
+					MessageID:    "SellAllConfirm",
 					TemplateData: map[string]interface{}{"Coins": total},
 				})
 				buttonLabel, _ = loc.Localize(&i18n.LocalizeConfig{MessageID: "SellAll"})
@@ -183,7 +183,9 @@ func init() {
 
 			msg := discord.NewMessageCreateV2(
 				discord.NewContainer(
-					discord.NewTextDisplay(content),
+					discord.NewSection(
+						discord.NewTextDisplay(content),
+					).WithAccessory(discord.NewThumbnail("https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f4b0.png")),
 					discord.NewActionRow(
 						discord.NewButton(discord.ButtonStyleSuccess, buttonLabel, customID, "", snowflake.ID(0)).WithEmoji(discord.NewComponentEmoji("💰")),
 					),
@@ -241,7 +243,7 @@ func init() {
 						itemLoc = targetItem
 					}
 					noItemTxt, _ := loc.Localize(&i18n.LocalizeConfig{
-						MessageID: "SellNoSpecificItem",
+						MessageID:    "SellNoSpecificItem",
 						TemplateData: map[string]interface{}{"Item": itemLoc},
 					})
 					err := event.CreateMessage(discord.NewMessageCreate().WithEphemeral(true).WithContent(noItemTxt))
@@ -250,7 +252,7 @@ func init() {
 					}
 					return
 				}
-				coinsGenerated = int(float64(count * sellPrices[targetItem]) * getSellMultiplier(data.Tier))
+				coinsGenerated = int(float64(count*sellPrices[targetItem]) * getSellMultiplier(data.Tier))
 			}
 
 			if coinsGenerated == 0 {
@@ -273,7 +275,7 @@ func init() {
 			db.LogAction(b.DB.GormDB, data.ID, db.ActionSell, fmt.Sprintf(`{"action":"%s", "coins":%d}`, action, coinsGenerated))
 
 			successMsg, _ := loc.Localize(&i18n.LocalizeConfig{
-				MessageID: "SellSuccessMsg",
+				MessageID:    "SellSuccessMsg",
 				TemplateData: map[string]interface{}{"Coins": coinsGenerated},
 			})
 			msgUpdate := discord.NewMessageUpdateV2(

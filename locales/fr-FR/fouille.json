@@ -12,12 +12,12 @@
   "WatersEdge": "🌊 Bord de l'eau",
   "TheRocks": "🪨 Les rochers",
   "Use": "✅ Utiliser",
-  "SearchDeckchairsEmpty": "Vous n'avez rien trouvé en fouillant les transats.",
-  "SearchDeckchairsFound": "Vous avez trouvé x1 {{.Item}} ({{.Total}}) en fouillant les transats.",
-  "SearchDeckchairsSunburn": "Vous avez attrapé un coup de soleil. Revenez <t:{{.Time}}:R>.",
-  "SearchWaterEmpty": "Vous n'avez rien trouvé au bord de l'eau.",
-  "SearchWaterFound": "Vous avez trouvé x1 {{.Item}} ({{.Total}}) au bord de l'eau.",
-  "SearchRocksEmpty": "Vous n'avez rien trouvé en fouillant les rochers.",
-  "SearchRocksFound": "Vous avez trouvé x1 {{.Item}} ({{.Total}}) en fouillant les rochers.",
-  "SearchRocksCut": "Vous vous êtes coupé. Revenez <t:{{.Time}}:R>."
+  "SearchDeckchairsEmpty": "💨 Vous n'avez rien trouvé en fouillant les transats...",
+  "SearchDeckchairsFound": "🎉 Incroyable ! Vous avez trouvé x1 {{.Item}} (Total: {{.Total}}) en fouillant les transats.",
+  "SearchDeckchairsSunburn": "🥵 Aïe ! Vous avez attrapé un coup de soleil. Revenez <t:{{.Time}}:R>.",
+  "SearchWaterEmpty": "💨 Pas de chance, il n'y a rien au bord de l'eau...",
+  "SearchWaterFound": "🎉 Super ! Vous avez trouvé x1 {{.Item}} (Total: {{.Total}}) au bord de l'eau.",
+  "SearchRocksEmpty": "💨 Les rochers sont vides aujourd'hui...",
+  "SearchRocksFound": "🎉 Quel trésor ! Vous avez trouvé x1 {{.Item}} (Total: {{.Total}}) en fouillant les rochers.",
+  "SearchRocksCut": "🩸 Ouille ! Vous vous êtes coupé. Revenez <t:{{.Time}}:R>."
 }
