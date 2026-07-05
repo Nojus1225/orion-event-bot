@@ -1,6 +1,7 @@
 package events
 
 import (
+	"context"
 	"fmt"
 
 	"orion-event-bot/bot/core"
@@ -8,6 +9,7 @@ import (
 
 	"github.com/disgoorg/disgo/bot"
 	"github.com/disgoorg/disgo/events"
+	"github.com/disgoorg/disgo/gateway"
 )
 
 func init() {
@@ -22,11 +24,14 @@ func init() {
 
 			fmt.Println("Bot is connected as", event.User.Username)
 
+			b.Client.SetPresence(context.Background(), gateway.WithWatchingActivity("orionhost.xyz"))
+
 			if err := handlers.SyncCommands(b); err != nil {
 				fmt.Println("Failed to sync commands:", err)
 			} else {
 				fmt.Println("Successfully synced", len(handlers.Commands), "commands.")
 			}
+
 		},
 	})
 }
