@@ -26,7 +26,7 @@ func init() {
 				return
 			}
 
-			if b.ChannelID != "" && event.Channel().ID().String() != b.ChannelID {
+			if b.ChannelID != "" && event.Channel().ID().String() != b.ChannelID && !b.IsAdmin(event.User().ID.String()) {
 				msg := discord.NewMessageCreate().WithEphemeral(true).WithContent("⚠️ Cette commande ne peut être utilisée que dans le salon de l'événement.")
 				_ = event.CreateMessage(msg)
 				return
@@ -61,7 +61,7 @@ func init() {
 				return
 			}
 
-			if b.ChannelID != "" && event.Channel().ID().String() != b.ChannelID {
+			if b.ChannelID != "" && event.Channel().ID().String() != b.ChannelID && !b.IsAdmin(event.User().ID.String()) {
 				msg := discord.NewMessageCreate().WithEphemeral(true).WithContent("⚠️ Cette interaction ne peut être utilisée que dans le salon de l'événement.")
 				_ = event.CreateMessage(msg)
 				return
@@ -193,7 +193,7 @@ func init() {
 				return
 			}
 
-			if b.ChannelID != "" && event.Channel().ID().String() != b.ChannelID {
+			if b.ChannelID != "" && event.Channel().ID().String() != b.ChannelID && !b.IsAdmin(event.User().ID.String()) {
 				msg := discord.NewMessageCreate().WithEphemeral(true).WithContent("⚠️ Ce modal ne peut être soumis que dans le salon de l'événement.")
 				_ = event.CreateMessage(msg)
 				return
@@ -221,7 +221,7 @@ func init() {
 				return
 			}
 
-			if b.ChannelID != "" && event.Channel().ID().String() != b.ChannelID {
+			if b.ChannelID != "" && event.Channel().ID().String() != b.ChannelID && !b.IsAdmin(event.User().ID.String()) {
 				return
 			}
 

@@ -66,21 +66,27 @@ func getLeaderboardData(b *core.Bot, loc *i18n.Localizer, page int, totalPages i
 		content += noUsersTxt
 	}
 
-	firstBtn := discord.NewButton(discord.ButtonStylePrimary, "", "leaderboard-first", "", snowflake.ID(0)).WithEmoji(discord.NewComponentEmoji("⏮️"))
+	var firstBtn discord.ButtonComponent
 	if page <= 1 {
-		firstBtn = firstBtn.WithDisabled(true)
+		firstBtn = discord.NewButton(discord.ButtonStylePrimary, "", "leaderboard-first", "", snowflake.ID(0)).WithEmoji(discord.NewComponentEmoji("⏮️")).WithDisabled(true)
+	} else {
+		firstBtn = discord.NewButton(discord.ButtonStylePrimary, "", "leaderboard-first", "", snowflake.ID(0)).WithEmoji(discord.NewComponentEmoji("⏮️"))
 	}
 
-	prevBtn := discord.NewButton(discord.ButtonStylePrimary, "", fmt.Sprintf("leaderboard-%d", page-1), "", snowflake.ID(0)).WithEmoji(discord.NewComponentEmoji("◀️"))
+	var prevBtn discord.ButtonComponent
 	if page <= 1 {
-		prevBtn = prevBtn.WithDisabled(true)
+		prevBtn = discord.NewButton(discord.ButtonStylePrimary, "", "leaderboard-non", "", snowflake.ID(0)).WithEmoji(discord.NewComponentEmoji("◀️")).WithDisabled(true)
+	} else {
+		prevBtn = discord.NewButton(discord.ButtonStylePrimary, "", fmt.Sprintf("leaderboard-%d", page-1), "", snowflake.ID(0)).WithEmoji(discord.NewComponentEmoji("◀️"))
 	}
 
 	currBtn := discord.NewButton(discord.ButtonStyleSecondary, fmt.Sprintf("%d/%d", page, totalPages), "leaderboard-current", "", snowflake.ID(0)).WithDisabled(true)
 
-	nextBtn := discord.NewButton(discord.ButtonStylePrimary, "", fmt.Sprintf("leaderboard-%d", page+1), "", snowflake.ID(0)).WithEmoji(discord.NewComponentEmoji("▶️"))
+	var nextBtn discord.ButtonComponent
 	if page >= totalPages {
-		nextBtn = nextBtn.WithDisabled(true)
+		nextBtn = discord.NewButton(discord.ButtonStylePrimary, "", "leaderboard-beh", "", snowflake.ID(0)).WithEmoji(discord.NewComponentEmoji("▶️")).WithDisabled(true)
+	} else {
+		nextBtn = discord.NewButton(discord.ButtonStylePrimary, "", fmt.Sprintf("leaderboard-%d", page+1), "", snowflake.ID(0)).WithEmoji(discord.NewComponentEmoji("▶️"))
 	}
 
 	lastBtn := discord.NewButton(discord.ButtonStylePrimary, "", "leaderboard-last", "", snowflake.ID(0)).WithEmoji(discord.NewComponentEmoji("⏭️"))
@@ -167,9 +173,7 @@ func init() {
 
 			msg := discord.NewMessageUpdateV2(
 				discord.NewContainer(
-					discord.NewSection(
-						discord.NewTextDisplay(content),
-					),
+					discord.NewTextDisplay(content),
 					actionRow,
 				).WithAccentColor(0x5865F2),
 			)
