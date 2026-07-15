@@ -122,6 +122,9 @@ func init() {
 		Create: discord.SlashCommandCreate{
 			Name:        "shop",
 			Description: "Open the shop",
+			NameLocalizations: map[discord.Locale]string{
+				discord.LocaleFrench: "boutique",
+			},
 			DescriptionLocalizations: map[discord.Locale]string{
 				discord.LocaleFrench: "Ouvrir la boutique",
 			},

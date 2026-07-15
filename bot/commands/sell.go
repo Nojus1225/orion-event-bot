@@ -60,10 +60,22 @@ func init() {
 		Create: discord.SlashCommandCreate{
 			Name:        "sell",
 			Description: "Sell all your items.",
+			NameLocalizations: map[discord.Locale]string{
+				discord.LocaleFrench: "vendre",
+			},
+			DescriptionLocalizations: map[discord.Locale]string{
+				discord.LocaleFrench: "Vendre tous vos objets.",
+			},
 			Options: []discord.ApplicationCommandOption{
 				discord.ApplicationCommandOptionString{
 					Name:         "item",
 					Description:  "Sell all stock of this item only",
+					NameLocalizations: map[discord.Locale]string{
+						discord.LocaleFrench: "objet",
+					},
+					DescriptionLocalizations: map[discord.Locale]string{
+						discord.LocaleFrench: "Vendre tout le stock de cet objet uniquement",
+					},
 					Required:     false,
 					Autocomplete: true,
 				},

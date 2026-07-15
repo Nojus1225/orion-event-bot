@@ -20,10 +20,22 @@ func init() {
 		Create: discord.SlashCommandCreate{
 			Name:        "inventory",
 			Description: "Get user inventory",
+			NameLocalizations: map[discord.Locale]string{
+				discord.LocaleFrench: "inventaire",
+			},
+			DescriptionLocalizations: map[discord.Locale]string{
+				discord.LocaleFrench: "Voir l'inventaire d'un utilisateur",
+			},
 			Options: []discord.ApplicationCommandOption{
 				discord.ApplicationCommandOptionUser{
 					Name:        "user",
 					Description: "Get this user inventory",
+					NameLocalizations: map[discord.Locale]string{
+						discord.LocaleFrench: "utilisateur",
+					},
+					DescriptionLocalizations: map[discord.Locale]string{
+						discord.LocaleFrench: "Voir l'inventaire de cet utilisateur",
+					},
 					Required:    false,
 				},
 			},

@@ -18,6 +18,9 @@ func init() {
 		Create: discord.SlashCommandCreate{
 			Name:        "event",
 			Description: "Information about the summer event",
+			NameLocalizations: map[discord.Locale]string{
+				discord.LocaleFrench: "evenement",
+			},
 			DescriptionLocalizations: map[discord.Locale]string{
 				discord.LocaleFrench: "Informations sur l'événement estival",
 			},
