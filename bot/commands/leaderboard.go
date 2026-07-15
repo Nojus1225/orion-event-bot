@@ -99,9 +99,7 @@ func init() {
 		Create: discord.SlashCommandCreate{
 			Name:        "leaderboard",
 			Description: "View the leaderboard",
-			NameLocalizations: map[discord.Locale]string{
-				discord.LocaleFrench: "classement",
-			},
+
 			DescriptionLocalizations: map[discord.Locale]string{
 				discord.LocaleFrench: "Voir le classement",
 			},
