@@ -265,30 +265,30 @@ func init() {
 						}
 					}
 
-						searchTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"})
-						areaPrompt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchAreaPrompt"})
-						deckchairsTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "Deckchairs"})
-						watersEdgeTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "WatersEdge"})
-						theRocksTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "TheRocks"})
+					searchTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"})
+					areaPrompt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchAreaPrompt"})
+					deckchairsTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "Deckchairs"})
+					watersEdgeTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "WatersEdge"})
+					theRocksTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "TheRocks"})
 
-						msg := discord.NewMessageUpdateV2(
-							discord.NewContainer(
-								discord.NewSection(
-									discord.NewTextDisplay(searchTitle),
-									discord.NewTextDisplay(areaPrompt),
-								).WithAccessory(discord.NewThumbnail("https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f3d6.png")),
-								discord.NewActionRow(
-									discord.NewButton(discord.ButtonStylePrimary, deckchairsTxt, "search-transats", "", snowflake.ID(0)),
-									discord.NewButton(discord.ButtonStylePrimary, watersEdgeTxt, "search-eau", "", snowflake.ID(0)),
-									discord.NewButton(discord.ButtonStyleDanger, theRocksTxt, "search-rochers", "", snowflake.ID(0)),
-								),
-							).WithAccentColor(0x5865F2),
-						)
+					msg := discord.NewMessageUpdateV2(
+						discord.NewContainer(
+							discord.NewSection(
+								discord.NewTextDisplay(searchTitle),
+								discord.NewTextDisplay(areaPrompt),
+							).WithAccessory(discord.NewThumbnail("https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f3d6.png")),
+							discord.NewActionRow(
+								discord.NewButton(discord.ButtonStylePrimary, deckchairsTxt, "search-transats", "", snowflake.ID(0)),
+								discord.NewButton(discord.ButtonStylePrimary, watersEdgeTxt, "search-eau", "", snowflake.ID(0)),
+								discord.NewButton(discord.ButtonStyleDanger, theRocksTxt, "search-rochers", "", snowflake.ID(0)),
+							),
+						).WithAccentColor(0x5865F2),
+					)
 
-						if err := event.UpdateMessage(msg); err != nil {
-							fmt.Println("Error updating search message:", err)
-						}
-						return
+					if err := event.UpdateMessage(msg); err != nil {
+						fmt.Println("Error updating search message:", err)
+					}
+					return
 				}
 			}
 
@@ -319,13 +319,13 @@ func init() {
 						itemLoc = itemName
 					}
 					message, _ = loc.Localize(&i18n.LocalizeConfig{
-						MessageID: "SearchDeckchairsFound",
+						MessageID:    "SearchDeckchairsFound",
 						TemplateData: map[string]interface{}{"Item": itemLoc, "Total": total},
 					})
 				} else if roll > 98 {
 					cd := applyMalus(b, &data, 1*time.Hour, db.MalusSunBurn)
 					message, _ = loc.Localize(&i18n.LocalizeConfig{
-						MessageID: "SearchDeckchairsSunburn",
+						MessageID:    "SearchDeckchairsSunburn",
 						TemplateData: map[string]interface{}{"Time": cd},
 					})
 				} else {
@@ -372,13 +372,13 @@ func init() {
 						itemLoc = itemName
 					}
 					message, _ = loc.Localize(&i18n.LocalizeConfig{
-						MessageID: "SearchWaterFound",
+						MessageID:    "SearchWaterFound",
 						TemplateData: map[string]interface{}{"Item": itemLoc, "Total": total},
 					})
 				} else if roll > 80 {
 					cd := applyMalus(b, &data, 1*time.Hour, db.MalusSunBurn)
 					message, _ = loc.Localize(&i18n.LocalizeConfig{
-						MessageID: "SearchDeckchairsSunburn",
+						MessageID:    "SearchDeckchairsSunburn",
 						TemplateData: map[string]interface{}{"Time": cd},
 					})
 				} else {
@@ -426,7 +426,7 @@ func init() {
 						itemLoc = itemName
 					}
 					message, _ = loc.Localize(&i18n.LocalizeConfig{
-						MessageID: "SearchRocksFound",
+						MessageID:    "SearchRocksFound",
 						TemplateData: map[string]interface{}{"Item": itemLoc, "Total": total},
 					})
 				} else if roll <= 75 {
@@ -434,15 +434,15 @@ func init() {
 					db.IncrementStat(b.DB.GormDB, data.ID, db.StatTotalRien, 1)
 					db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"rien"}`)
 				} else if roll <= 90 {
-					cd := applyMalus(b, &data, 1*time.Hour, db.MalusCut)
+					cd := applyMalus(b, &data, 1*time.Hour, db.MalusSunBurn)
 					message, _ = loc.Localize(&i18n.LocalizeConfig{
-						MessageID: "SearchDeckchairsSunburn",
+						MessageID:    "SearchDeckchairsSunburn",
 						TemplateData: map[string]interface{}{"Time": cd},
 					})
 				} else {
 					cd := applyMalus(b, &data, 90*time.Minute, db.MalusCut)
 					message, _ = loc.Localize(&i18n.LocalizeConfig{
-						MessageID: "SearchRocksCut",
+						MessageID:    "SearchRocksCut",
 						TemplateData: map[string]interface{}{"Time": cd},
 					})
 				}
