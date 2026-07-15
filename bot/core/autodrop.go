@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"math/rand"
 	"time"
 
 	"orion-event-bot/db"
@@ -12,12 +13,14 @@ import (
 )
 
 func StartAutoDropTicker(b *Bot) {
-	ticker := time.NewTicker(12 * time.Hour)
+	TriggerAutoDrop(b)
 	go func() {
-		for range ticker.C {
+		for {
+			delay := time.Duration(4)*time.Hour + time.Duration(rand.Intn(4*60))*time.Minute
+			time.Sleep(delay)
+
 			settings := db.GetSettings(b.DB.GormDB)
 			if settings.AutoDropEnabled {
-				TriggerAutoDrop(b)
 			}
 		}
 	}()
