@@ -74,6 +74,59 @@ func applyMalus(b *core.Bot, data *db.User, duration time.Duration, status db.St
 	return data.CDMalus
 }
 
+func getSearchContainer(b *core.Bot, loc *i18n.Localizer) discord.ContainerComponent {
+	searchTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"})
+	areaPrompt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchAreaPrompt"})
+	deckchairsTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "Deckchairs"})
+	watersEdgeTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "WatersEdge"})
+	theRocksTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "TheRocks"})
+
+	now := time.Now().Unix()
+	zoneDeckchairs := db.GetZone(b.DB.GormDB, "Deckchairs")
+	zoneWatersEdge := db.GetZone(b.DB.GormDB, "WatersEdge")
+	zoneTheRocks := db.GetZone(b.DB.GormDB, "TheRocks")
+
+	hasSabotage := false
+	deckchairsEmoji := "🪑 "
+	if zoneDeckchairs.SabotageExpiresAt > now && zoneDeckchairs.SabotageType == string(db.ShopAlerteMeduses) {
+		deckchairsEmoji = "⚠️ "
+		hasSabotage = true
+	}
+	watersEdgeEmoji := "🌊 "
+	if zoneWatersEdge.SabotageExpiresAt > now && zoneWatersEdge.SabotageType == string(db.ShopAlerteMeduses) {
+		watersEdgeEmoji = "⚠️ "
+		hasSabotage = true
+	}
+	theRocksEmoji := "🪨 "
+	if zoneTheRocks.SabotageExpiresAt > now && zoneTheRocks.SabotageType == string(db.ShopAlerteMeduses) {
+		theRocksEmoji = "⚠️ "
+		hasSabotage = true
+	}
+
+	deckchairsTxt = deckchairsEmoji + deckchairsTxt
+	watersEdgeTxt = watersEdgeEmoji + watersEdgeTxt
+	theRocksTxt = theRocksEmoji + theRocksTxt
+
+	components := []discord.ContainerSubComponent{
+		discord.NewSection(
+			discord.NewTextDisplay(searchTitle),
+			discord.NewTextDisplay(areaPrompt),
+		).WithAccessory(discord.NewThumbnail("https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f3d6.png")),
+		discord.NewActionRow(
+			discord.NewButton(discord.ButtonStylePrimary, deckchairsTxt, "search-transats", "", snowflake.ID(0)),
+			discord.NewButton(discord.ButtonStylePrimary, watersEdgeTxt, "search-eau", "", snowflake.ID(0)),
+			discord.NewButton(discord.ButtonStyleDanger, theRocksTxt, "search-rochers", "", snowflake.ID(0)),
+		),
+	}
+
+	if hasSabotage {
+		sabotageWarning, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchSabotageWarning"})
+		components = append(components, discord.NewTextDisplay(sabotageWarning))
+	}
+
+	return discord.NewContainer(components...).WithAccentColor(0x5865F2)
+}
+
 func init() {
 	handlers.RegisterCommand(handlers.Command{
 		Name:        "search",
@@ -98,6 +151,30 @@ func init() {
 
 			cdMalus := time.Unix(int64(data.CDMalus), 0)
 			if now.Before(cdMalus) {
+				if data.StatusMalus == db.MalusShovelTheft {
+					msgStr, _ := loc.Localize(&i18n.LocalizeConfig{
+						MessageID: "SearchShovelTheftPrompt",
+						TemplateData: map[string]interface{}{
+							"Time": cdMalus.Unix(),
+						},
+					})
+					searchTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"})
+
+					msg := discord.NewMessageCreateV2(
+						discord.NewContainer(
+							discord.NewTextDisplay(searchTitle),
+							discord.NewTextDisplay(msgStr),
+						).WithAccentColor(0xE74C3C),
+					)
+
+					if err := event.CreateMessage(msg); err != nil {
+						fmt.Println("Error sending cd message:", err)
+					}
+					db.IncrementStat(b.DB.GormDB, data.ID, db.StatEchecsFouilleMalus, 1)
+					db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"failed_malus"}`)
+					return
+				}
+
 				txt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchSunburn"})
 				object := db.ShopCremeSolaire
 				if data.StatusMalus == db.MalusCut {
@@ -193,25 +270,7 @@ func init() {
 				return
 			}
 
-			searchTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"})
-			areaPrompt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchAreaPrompt"})
-			deckchairsTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "Deckchairs"})
-			watersEdgeTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "WatersEdge"})
-			theRocksTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "TheRocks"})
-
-			msg := discord.NewMessageCreateV2(
-				discord.NewContainer(
-					discord.NewSection(
-						discord.NewTextDisplay(searchTitle),
-						discord.NewTextDisplay(areaPrompt),
-					).WithAccessory(discord.NewThumbnail("https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f3d6.png")),
-					discord.NewActionRow(
-						discord.NewButton(discord.ButtonStylePrimary, deckchairsTxt, "search-transats", "", snowflake.ID(0)),
-						discord.NewButton(discord.ButtonStylePrimary, watersEdgeTxt, "search-eau", "", snowflake.ID(0)),
-						discord.NewButton(discord.ButtonStyleDanger, theRocksTxt, "search-rochers", "", snowflake.ID(0)),
-					),
-				).WithAccentColor(0x5865F2),
-			)
+			msg := discord.NewMessageCreateV2(getSearchContainer(b, loc))
 
 			if err := event.CreateMessage(msg); err != nil {
 				fmt.Println("Error sending search message:", err)
@@ -254,25 +313,7 @@ func init() {
 						}
 					}
 
-					searchTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"})
-					areaPrompt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchAreaPrompt"})
-					deckchairsTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "Deckchairs"})
-					watersEdgeTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "WatersEdge"})
-					theRocksTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "TheRocks"})
-
-					msg := discord.NewMessageUpdateV2(
-						discord.NewContainer(
-							discord.NewSection(
-								discord.NewTextDisplay(searchTitle),
-								discord.NewTextDisplay(areaPrompt),
-							).WithAccessory(discord.NewThumbnail("https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f3d6.png")),
-							discord.NewActionRow(
-								discord.NewButton(discord.ButtonStylePrimary, deckchairsTxt, "search-transats", "", snowflake.ID(0)),
-								discord.NewButton(discord.ButtonStylePrimary, watersEdgeTxt, "search-eau", "", snowflake.ID(0)),
-								discord.NewButton(discord.ButtonStyleDanger, theRocksTxt, "search-rochers", "", snowflake.ID(0)),
-							),
-						).WithAccentColor(0x5865F2),
-					)
+					msg := discord.NewMessageUpdateV2(getSearchContainer(b, loc))
 
 					if err := event.UpdateMessage(msg); err != nil {
 						fmt.Println("Error updating search message:", err)
@@ -300,7 +341,17 @@ func init() {
 				db.IncrementStat(b.DB.GormDB, data.ID, db.StatFouilleTransats, 1)
 
 				message, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchDeckchairsEmpty"})
-				if roll <= 85 {
+				rollLootThreshold := 85
+				zone := db.GetZone(b.DB.GormDB, "Deckchairs")
+				if zone.SabotageExpiresAt > time.Now().Unix() && zone.SabotageType == string(db.ShopAlerteMeduses) {
+					if db.GetItemQuantity(b.DB.GormDB, data.ID, db.ShopDrapeauBaignade) > 0 {
+						rollLootThreshold -= 10
+					} else {
+						rollLootThreshold -= 20
+					}
+				}
+
+				if roll <= rollLootThreshold {
 					idx := roll % len(rewards)
 					itemName, total := grantLoot(b, &data, idx, rewards, items)
 					itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: itemName})
@@ -353,7 +404,17 @@ func init() {
 				db.IncrementStat(b.DB.GormDB, data.ID, db.StatFouilleEau, 1)
 
 				message, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchWaterEmpty"})
-				if roll <= 60 {
+				rollLootThreshold := 60
+				zone := db.GetZone(b.DB.GormDB, "WatersEdge")
+				if zone.SabotageExpiresAt > time.Now().Unix() && zone.SabotageType == string(db.ShopAlerteMeduses) {
+					if db.GetItemQuantity(b.DB.GormDB, data.ID, db.ShopDrapeauBaignade) > 0 {
+						rollLootThreshold -= 10
+					} else {
+						rollLootThreshold -= 20
+					}
+				}
+
+				if roll <= rollLootThreshold {
 					idx := roll % len(rewards)
 					itemName, total := grantLoot(b, &data, idx, rewards, items)
 					itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: itemName})
@@ -407,7 +468,17 @@ func init() {
 				db.IncrementStat(b.DB.GormDB, data.ID, db.StatFouilleRochers, 1)
 
 				message, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchRocksEmpty"})
-				if roll <= 35 {
+				rollLootThreshold := 35
+				zone := db.GetZone(b.DB.GormDB, "TheRocks")
+				if zone.SabotageExpiresAt > time.Now().Unix() && zone.SabotageType == string(db.ShopAlerteMeduses) {
+					if db.GetItemQuantity(b.DB.GormDB, data.ID, db.ShopDrapeauBaignade) > 0 {
+						rollLootThreshold -= 10
+					} else {
+						rollLootThreshold -= 20
+					}
+				}
+
+				if roll <= rollLootThreshold {
 					idx := roll % len(rewards)
 					itemName, total := grantLoot(b, &data, idx, rewards, items)
 					itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: itemName})
