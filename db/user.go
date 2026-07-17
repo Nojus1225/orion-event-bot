@@ -3,9 +3,10 @@ package db
 type StatusMalus string
 
 const (
-	MalusNone    StatusMalus = "none"
-	MalusSunBurn StatusMalus = "sunburn"
-	MalusCut     StatusMalus = "cut"
+	MalusNone        StatusMalus = "none"
+	MalusSunBurn     StatusMalus = "sunburn"
+	MalusCut         StatusMalus = "cut"
+	MalusShovelTheft StatusMalus = "shovel_theft"
 )
 
 type Tier int
