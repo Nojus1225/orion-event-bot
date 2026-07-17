@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"orion-event-bot/bot/core"
 	"orion-event-bot/bot/handlers"
@@ -115,9 +116,9 @@ func init() {
 				case "coins":
 					user.Coins += amount
 					if err := b.DB.GormDB.Save(&user).Error; err != nil {
-					    _, _ = event.Client().Rest.CreateMessage(event.ChannelID, discord.NewMessageCreate().WithContent("Error updating DB."))
-					    return
-				    }
+						_, _ = event.Client().Rest.CreateMessage(event.ChannelID, discord.NewMessageCreate().WithContent("Error updating DB."))
+						return
+					}
 					_, _ = event.Client().Rest.CreateMessage(event.ChannelID, discord.NewMessageCreate().WithContent(fmt.Sprintf("Success! Updated %s for user %s.", item, targetIDStr)))
 					return
 				case "shell":
@@ -170,8 +171,9 @@ func init() {
 				user.CDFouille = 0
 				user.CDMalus = 0
 				user.StatusMalus = db.MalusNone
+				user.SabotageImmunityExpiresAt = 0
 
-				if err := b.DB.GormDB.Model(&user).Select("CDFouille", "CDMalus", "StatusMalus").Updates(user).Error; err != nil {
+				if err := b.DB.GormDB.Model(&user).Select("CDFouille", "CDMalus", "StatusMalus", "SabotageImmunityExpiresAt").Updates(user).Error; err != nil {
 					_, _ = event.Client().Rest.CreateMessage(event.ChannelID, discord.NewMessageCreate().WithContent("Error updating DB."))
 					return
 				}
@@ -240,6 +242,43 @@ func init() {
 
 				msg := fmt.Sprintf("📊 **Global Event Stats**\n- **Total Users**: %d\n- **Total Coins (Circulating)**: %d\n- **Total Searches (Fouilles)**: %d\n- **Total Items Found**: %d", totalUsers, totalCoins, totalFouilles, totalObjets)
 				_, _ = event.Client().Rest.CreateMessage(event.ChannelID, discord.NewMessageCreate().WithContent(msg))
+
+			case "sabotages":
+				now := time.Now().Unix()
+
+				var zones []db.Zone
+				b.DB.GormDB.Where("sabotage_expires_at > ?", now).Find(&zones)
+
+				var users []db.User
+				b.DB.GormDB.Where("cd_malus > ? AND status_malus != ?", now, db.MalusNone).Find(&users)
+
+				var sb strings.Builder
+				sb.WriteString("Sabotages Actifs\n\n")
+
+				sb.WriteString("Zones:\n")
+				if len(zones) == 0 {
+					sb.WriteString("- Aucun\n")
+				} else {
+					for _, z := range zones {
+						sb.WriteString(fmt.Sprintf("- %s: %s (Fin <t:%d:R>)\n", z.Name, z.SabotageType, z.SabotageExpiresAt))
+					}
+				}
+
+				sb.WriteString("\nUtilisateurs:\n")
+				if len(users) == 0 {
+					sb.WriteString("- Aucun\n")
+				} else {
+					for _, u := range users {
+						sb.WriteString(fmt.Sprintf("- <@%s>: %s (Fin <t:%d:R>)\n", u.ID, u.StatusMalus, u.CDMalus))
+					}
+				}
+
+				msgStr := sb.String()
+				if len(msgStr) > 1900 {
+					msgStr = msgStr[:1900] + "\n... (tronqué)"
+				}
+
+				_, _ = event.Client().Rest.CreateMessage(event.ChannelID, discord.NewMessageCreate().WithContent(msgStr).WithAllowedMentions(&discord.AllowedMentions{}))
 			}
 		},
 	})
