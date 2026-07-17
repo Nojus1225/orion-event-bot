@@ -20,14 +20,14 @@ var ProtectionItems = []ShopItem{
 	{
 		Name:        "ShopSunscreenName",
 		Description: "ShopSunscreenDesc",
-		Cost:        2,
+		Cost:        4,
 		ID:          db.ShopCremeSolaire,
 		Thumbnail:   "https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f9f4.png",
 	},
 	{
 		Name:        "ShopBandageName",
 		Description: "ShopBandageDesc",
-		Cost:        4,
+		Cost:        8,
 		ID:          db.ShopPansement,
 		Thumbnail:   "https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1fa79.png",
 	},
@@ -41,14 +41,14 @@ var ProtectionItems = []ShopItem{
 	{
 		Name:        "ShopCremeSolaire1000Name",
 		Description: "ShopCremeSolaire1000Desc",
-		Cost:        5,
+		Cost:        25,
 		ID:          db.ShopCremeSolaire1000,
 		Thumbnail:   "https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u2b50.png",
 	},
 	{
 		Name:        "ShopDrapeauBaignadeName",
 		Description: "ShopDrapeauBaignadeDesc",
-		Cost:        10,
+		Cost:        60,
 		ID:          db.ShopDrapeauBaignade,
 		Thumbnail:   "https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f6a9.png",
 	},
@@ -64,7 +64,7 @@ var SabotageItems = []ShopItem{
 	}, {
 		Name:        "ShopCrabeDePocheName",
 		Description: "ShopCrabeDePocheDesc",
-		Cost:        15,
+		Cost:        12,
 		ID:          db.ShopCrabeDePoche,
 		Thumbnail:   "https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f980.png",
 	}, {
