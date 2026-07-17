@@ -33,5 +33,5 @@
   "ShopCrabeDePocheName": "Pocket Crab",
   "ShopCrabeDePocheDesc": "Inflicts a cut-type debuff on a user. (clears previous cooldowns)",
   "ShopAlerteMedusesName": "Jellyfish Alert",
-  "ShopAlerteMedusesDesc": "Sabotages an entire zone for 30 minutes. During this period, the Nothing drop rate increases by +20% for everyone scavenging there."
+  "ShopAlerteMedusesDesc": "Sabotages an entire zone for 3 hours. During this period, the Nothing drop rate increases by +20% for everyone scavenging there."
 }

@@ -27,7 +27,7 @@
   "ShopCrabeDePocheName": "Crabe de poche",
   "ShopCrabeDePocheDesc": "Déclenche un malus de type coupure pour un utilisateur. (efface les précédents cooldowns)",
   "ShopAlerteMedusesName": "Alerte aux méduses",
-  "ShopAlerteMedusesDesc": "Sabote une zone entière pendant 30 minutes. Durant cette période, le taux de Rien augmente de +20% pour tous ceux qui y fouillent.",
+  "ShopAlerteMedusesDesc": "Sabote une zone entière pendant 3 heures. Durant cette période, le taux de Rien augmente de +20% pour tous ceux qui y fouillent.",
 
   "ShopCategoryPrompt": "Quelle catégorie souhaitez-vous parcourir ?",
   "CommonItems": "Objets Communs",
