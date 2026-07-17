@@ -9,11 +9,13 @@ import (
 type ActionType string
 
 const (
-	ActionFouille ActionType = "fouille"
-	ActionSell    ActionType = "sell"
-	ActionShop    ActionType = "shop"
-	ActionUpgrade ActionType = "upgrade"
-	ActionMalus   ActionType = "malus"
+	ActionFouille  ActionType = "fouille"
+	ActionSell     ActionType = "sell"
+	ActionShop     ActionType = "shop"
+	ActionUpgrade  ActionType = "upgrade"
+	ActionMalus    ActionType = "malus"
+	ActionSabotage ActionType = "sabotage"
+	ActionProtect  ActionType = "protect"
 )
 
 type ActionLog struct {

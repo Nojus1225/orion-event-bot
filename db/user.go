@@ -103,6 +103,7 @@ type User struct {
 	Tier Tier
 
 	SabotageImmunityExpiresAt int64
+	FlagActiveUntil           int64
 
 	Items []UserItem `gorm:"foreignKey:UserID;references:ID"`
 	Stats []UserStat `gorm:"foreignKey:UserID;references:ID"`
