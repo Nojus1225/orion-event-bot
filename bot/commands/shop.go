@@ -41,7 +41,7 @@ var Items = []ShopItem{
 	{
 		Name:        "ShopWaterBottleName",
 		Description: "ShopWaterBottleDesc",
-		Cost:        10,
+		Cost:        5,
 		ID:          db.ShopBouteilleEau,
 		Thumbnail:   "https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f4a7.png",
 	},
@@ -80,12 +80,12 @@ func getShopData(page, totalPages int, user db.User, loc *i18n.Localizer) discor
 	actionRow := discord.NewActionRow(firstBtn, prevBtn, currBtn, nextBtn, lastBtn)
 
 	item := Items[page-1]
-	
+
 	locName, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: item.Name})
 	locDesc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: item.Description})
-	
+
 	coinsTxt, _ := loc.Localize(&i18n.LocalizeConfig{
-		MessageID: "ShopCoins",
+		MessageID:    "ShopCoins",
 		TemplateData: map[string]interface{}{"Coins": item.Cost},
 	})
 
@@ -163,7 +163,7 @@ func init() {
 				if len(parts) != 3 {
 					return
 				}
-				
+
 				idStr := parts[2]
 				var item *ShopItem
 				for i := range Items {
@@ -189,7 +189,7 @@ func init() {
 				if err := b.DB.GormDB.Save(&data).Error; err != nil {
 					fmt.Println("DB error:", err)
 				}
-				
+
 				db.IncrementStat(b.DB.GormDB, data.ID, db.StatTotalCoinsDepense, item.Cost)
 				db.IncrementItem(b.DB.GormDB, data.ID, item.ID, 1)
 
@@ -201,7 +201,7 @@ func init() {
 				case db.ShopBouteilleEau:
 					db.IncrementStat(b.DB.GormDB, data.ID, db.StatAchatEau, 1)
 				}
-				
+
 				db.LogAction(b.DB.GormDB, data.ID, db.ActionShop, fmt.Sprintf(`{"item_id":"%s", "cost":%d}`, item.ID, item.Cost))
 
 				var page int
