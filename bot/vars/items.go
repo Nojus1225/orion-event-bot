@@ -70,7 +70,7 @@ var SabotageItems = []ShopItem{
 	}, {
 		Name:        "ShopAlerteMedusesName",
 		Description: "ShopAlerteMedusesDesc",
-		Cost:        8,
+		Cost:        45,
 		ID:          db.ShopAlerteMeduses,
 		Thumbnail:   "https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f419.png",
 	},
