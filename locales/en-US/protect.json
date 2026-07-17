@@ -1,0 +1,9 @@
+{
+    "ProtectNoItem": "❌ You do not own this item or do not have enough.",
+    "ProtectNotNeeded": "⚠️ You do not need to use this item right now.",
+    "ProtectSuccessCreme": "✅ You applied your **Sunscreen**. Your sunburn is healed!",
+    "ProtectSuccessPansement": "✅ You used a **Bandage**. Your cut is healed!",
+    "ProtectSuccessEau": "✅ You drank a **Water Bottle**. Your search cooldown is reset!",
+    "ProtectSuccessDrapeau": "✅ Your **Private Bathing Flag** is now hoisted for the next 4 hours!",
+    "ProtectSuccessCreme100": "✅ Your **Sunscreen SPF 100** is applied. You are immune to sabotage for 4 hours!"
+}

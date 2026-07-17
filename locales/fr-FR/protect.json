@@ -1,0 +1,9 @@
+{
+    "ProtectNoItem": "❌ Vous ne possédez pas cet objet ou la quantité est insuffisante.",
+    "ProtectNotNeeded": "⚠️ Vous n'avez pas besoin d'utiliser cet objet actuellement.",
+    "ProtectSuccessCreme": "✅ Vous avez appliqué votre **Crème Solaire**. Votre coup de soleil est soigné !",
+    "ProtectSuccessPansement": "✅ Vous avez utilisé un **Pansement**. Votre coupure est guérie !",
+    "ProtectSuccessEau": "✅ Vous avez bu une **Bouteille d'Eau**. Votre délai de fouille est réinitialisé !",
+    "ProtectSuccessDrapeau": "✅ Votre **Drapeau de Baignade Privé** est maintenant hissé pour les 4 prochaines heures !",
+    "ProtectSuccessCreme100": "✅ Votre **Crème Solaire Indice 100** est appliquée. Vous êtes immunisé contre les sabotages pendant 4 heures !"
+}
