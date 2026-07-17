@@ -1,0 +1,11 @@
+{
+  "SabotageImmune": "Cette cible est immunisée contre les sabotages pour le moment !",
+  "SabotageNoItem": "Vous ne possédez pas cet objet de sabotage.",
+  "SabotageSuccessUser": "Vous avez saboté l'utilisateur avec succès !",
+  "SabotageSuccessZone": "Vous avez saboté la zone avec succès !",
+  "SabotageZoneImmune": "Cette zone est immunisée ou a déjà un sabotage en cours !",
+  "SabotageBlockedByCreme": "Votre attaque a été bloquée par la Crème Solaire Indice 100 de la cible !",
+  "SabotageAlertShovel": "💥 <@{{.TargetID}}> tu as été saboté par <@{{.AttackerID}}> !\nOn t'a volé ta pelle 🪣, ton prochain temps d'attente pour fouiller est augmenté de **15 minutes**. Il n'y a aucun remède, tu dois patienter !",
+  "SabotageAlertCrab": "🦀 <@{{.TargetID}}> tu t'es fait pincer à cause de <@{{.AttackerID}}> !\nTu saignes et tu ne peux plus fouiller pendant **90 minutes** ! Utilise un **Pansement** pour te soigner immédiatement.",
+  "SabotageAlertBlocked": "🛡️ <@{{.AttackerID}}> a essayé de saboter <@{{.TargetID}}> mais son attaque a été bloquée par une **Crème Solaire Indice 100** !"
+}

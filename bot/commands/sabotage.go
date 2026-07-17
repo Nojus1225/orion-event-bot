@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"strconv"
+	"time"
 
 	"orion-event-bot/bot/core"
 	"orion-event-bot/bot/handlers"
@@ -67,7 +68,7 @@ func init() {
 			if subCommand == nil {
 				return
 			}
-			
+
 			var data db.User
 			if err := b.DB.GormDB.FirstOrCreate(&data, db.User{ID: strconv.FormatUint(uint64(event.User().ID), 10)}).Error; err != nil {
 				fmt.Println("DB error:", err)
@@ -100,16 +101,27 @@ func init() {
 			case "zone":
 				for _, option := range event.Data.Options {
 					if option.Name == "zone" && option.Focused {
-						zones := []string{"Deckchairs", "WatersEdge", "TheRocks"}
+						zonesN := []string{"Deckchairs", "WatersEdge", "TheRocks"}
+						var zones []db.Zone
+						for _, n := range zonesN {
+							zones = append(zones, db.GetZone(b.DB.GormDB, n))
+						}
+
+						now := time.Now().Unix()
 						for _, zone := range zones {
-							zoneLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: zone})
+							zoneLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: zone.Name})
 							if zoneLoc == "" {
-								zoneLoc = zone
+								zoneLoc = zone.Name
 							}
-							choices = append(choices, discord.AutocompleteChoiceString{
-								Name:  zoneLoc,
-								Value: zone,
-							})
+
+							if zone.SabotageExpiresAt > now || zone.ImmunityExpiresAt > now {
+
+							} else {
+								choices = append(choices, discord.AutocompleteChoiceString{
+									Name:  zoneLoc,
+									Value: zone.Name,
+								})
+							}
 						}
 					} else if option.Name == "sabotage" && option.Focused {
 						items := []db.Item{db.ShopAlerteMeduses}
@@ -139,16 +151,131 @@ func init() {
 			}
 		},
 		Execute: func(b *core.Bot, event *events.ApplicationCommandInteractionCreate) {
+			loc := core.GetLocalizer(event.Locale().String())
+			cmdData := event.SlashCommandInteractionData()
+			if cmdData.SubCommandName == nil {
+				return
+			}
+
+			subCommand := *cmdData.SubCommandName
+			attackerID := strconv.FormatUint(uint64(event.User().ID), 10)
+
+			var attacker db.User
+			if err := b.DB.GormDB.FirstOrCreate(&attacker, db.User{ID: attackerID}).Error; err != nil {
+				return
+			}
+
+			var sabotageType db.Item
+			var responseMessageID string
+			var publicAlertID string
+			var targetID string
+			now := time.Now().Unix()
+
+			switch subCommand {
+			case "user":
+				targetID = cmdData.User("user").ID.String()
+				sabotageType = db.Item(cmdData.String("sabotage"))
+
+				if db.GetItemQuantity(b.DB.GormDB, attackerID, sabotageType) <= 0 {
+					responseMessageID = "SabotageNoItem"
+				} else {
+					var target db.User
+					b.DB.GormDB.FirstOrCreate(&target, db.User{ID: targetID})
+
+					if target.SabotageImmunityExpiresAt > now {
+						responseMessageID = "SabotageImmune"
+					} else if db.GetItemQuantity(b.DB.GormDB, targetID, db.ShopCremeSolaire1000) > 0 {
+						db.RemoveItem(b.DB.GormDB, targetID, db.ShopCremeSolaire1000, 1)
+						db.RemoveItem(b.DB.GormDB, attackerID, sabotageType, 1)
+						responseMessageID = "SabotageBlockedByCreme"
+						publicAlertID = "SabotageAlertBlocked"
+					} else {
+						switch sabotageType {
+						case db.ShopVolDePelle:
+							target.StatusMalus = db.MalusShovelTheft
+							if int64(target.CDMalus) > now {
+								target.CDMalus = int(int64(target.CDMalus) + 15*60)
+							} else {
+								target.CDMalus = int(now + 15*60)
+							}
+							target.CDFouille = 0
+							publicAlertID = "SabotageAlertShovel"
+						case db.ShopCrabeDePoche:
+							target.StatusMalus = db.MalusCut
+							target.CDMalus = int(now + 90*60)
+							target.CDFouille = 0
+							publicAlertID = "SabotageAlertCrab"
+						}
+
+						target.SabotageImmunityExpiresAt = now + 3600
+						b.DB.GormDB.Save(&target)
+
+						db.RemoveItem(b.DB.GormDB, attackerID, sabotageType, 1)
+						responseMessageID = "SabotageSuccessUser"
+					}
+				}
+			case "zone":
+				zoneName := cmdData.String("zone")
+				sabotageType = db.Item(cmdData.String("sabotage"))
+
+				if db.GetItemQuantity(b.DB.GormDB, attackerID, sabotageType) <= 0 {
+					responseMessageID = "SabotageNoItem"
+				} else {
+					zone := db.GetZone(b.DB.GormDB, zoneName)
+
+					if zone.SabotageExpiresAt > now || zone.ImmunityExpiresAt > now {
+						responseMessageID = "SabotageZoneImmune"
+					} else {
+						var activeSabotages int64
+						b.DB.GormDB.Model(&db.Zone{}).Where("sabotage_expires_at > ?", now).Count(&activeSabotages)
+
+						if activeSabotages > 0 {
+							responseMessageID = "SabotageZoneImmune"
+						} else {
+							if sabotageType == db.ShopAlerteMeduses {
+								sabotageDuration := int64(3 * 3600)
+								immunityDuration := int64(4 * 3600)
+								db.SetZoneSabotage(b.DB.GormDB, zoneName, string(sabotageType), now+sabotageDuration, now+sabotageDuration+immunityDuration)
+							}
+
+							db.RemoveItem(b.DB.GormDB, attackerID, sabotageType, 1)
+							responseMessageID = "SabotageSuccessZone"
+						}
+					}
+				}
+			}
+
+			msgStr, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: responseMessageID})
+			if msgStr == "" {
+				msgStr = responseMessageID
+			}
 
 			msg := discord.NewMessageCreateV2(
 				discord.NewContainer(
-					discord.NewTextDisplay("oui"),
+					discord.NewTextDisplay(msgStr),
 				).WithAccentColor(0x5865F2),
-			)
+			).WithEphemeral(true)
 
 			err := event.CreateMessage(msg)
 			if err != nil {
-				fmt.Println("Error sending ping message:", err)
+				fmt.Println("Error sending sabotage message:", err)
+			}
+
+			if publicAlertID != "" {
+				alertMsg, _ := loc.Localize(&i18n.LocalizeConfig{
+					MessageID: publicAlertID,
+					TemplateData: map[string]interface{}{
+						"TargetID":   targetID,
+						"AttackerID": attackerID,
+					},
+				})
+				if alertMsg == "" {
+					alertMsg = publicAlertID
+				}
+				_, errAlert := event.Client().Rest.CreateMessage(event.Channel().ID(), discord.NewMessageCreate().WithContent(alertMsg))
+				if errAlert != nil {
+					fmt.Println("Error sending sabotage alert message:", errAlert)
+				}
 			}
 		},
 	})

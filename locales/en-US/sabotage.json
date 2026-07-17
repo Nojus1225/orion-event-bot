@@ -1,0 +1,11 @@
+{
+  "SabotageImmune": "This target is currently immune to sabotages!",
+  "SabotageNoItem": "You do not own this sabotage item.",
+  "SabotageSuccessUser": "You have successfully sabotaged the user!",
+  "SabotageSuccessZone": "You have successfully sabotaged the zone!",
+  "SabotageZoneImmune": "This zone is immune or already has an active sabotage!",
+  "SabotageBlockedByCreme": "Your attack was blocked by the target's SPF 100 Sunscreen!",
+  "SabotageAlertShovel": "💥 <@{{.TargetID}}> you got sabotaged by <@{{.AttackerID}}>!\nYour shovel was stolen 🪣, your next search cooldown is increased by **15 minutes**. There is no cure, you must wait it out!",
+  "SabotageAlertCrab": "🦀 <@{{.TargetID}}> you got pinched because of <@{{.AttackerID}}>!\nYou are bleeding and cannot search for **90 minutes**! Use a **Bandage** to cure it immediately.",
+  "SabotageAlertBlocked": "🛡️ <@{{.AttackerID}}> tried to sabotage <@{{.TargetID}}> but the attack was blocked by an **SPF 100 Sunscreen**!"
+}
