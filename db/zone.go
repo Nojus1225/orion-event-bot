@@ -6,6 +6,7 @@ type Zone struct {
 	Name              string `gorm:"primaryKey;type:varchar(50)"`
 	SabotageExpiresAt int64
 	SabotageType      string `gorm:"type:varchar(50)"`
+	ImmunityExpiresAt int64
 }
 
 func GetZone(db *gorm.DB, zoneName string) Zone {
@@ -14,9 +15,10 @@ func GetZone(db *gorm.DB, zoneName string) Zone {
 	return zone
 }
 
-func SetZoneSabotage(db *gorm.DB, zoneName string, sabotageType string, expiresAt int64) {
+func SetZoneSabotage(db *gorm.DB, zoneName string, sabotageType string, expiresAt int64, immunityExpiresAt int64) {
 	zone := GetZone(db, zoneName)
 	zone.SabotageType = sabotageType
 	zone.SabotageExpiresAt = expiresAt
+	zone.ImmunityExpiresAt = immunityExpiresAt
 	db.Save(&zone)
 }
