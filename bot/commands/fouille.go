@@ -10,6 +10,7 @@ import (
 
 	"orion-event-bot/bot/core"
 	"orion-event-bot/bot/handlers"
+	"orion-event-bot/bot/vars"
 	"orion-event-bot/db"
 
 	"github.com/disgoorg/disgo/discord"
@@ -104,13 +105,7 @@ func init() {
 					object = db.ShopPansement
 				}
 
-				var item *ShopItem
-				for i := range Items {
-					if Items[i].ID == object {
-						item = &Items[i]
-						break
-					}
-				}
+				item := vars.GetItem(object)
 
 				hasItem := db.GetItemQuantity(b.DB.GormDB, data.ID, object) > 0
 
@@ -156,13 +151,7 @@ func init() {
 			cdFouille := time.Unix(int64(data.CDFouille), 0)
 			if now.Before(cdFouille) {
 				object := db.ShopBouteilleEau
-				var item *ShopItem
-				for i := range Items {
-					if Items[i].ID == object {
-						item = &Items[i]
-						break
-					}
-				}
+				item := vars.GetItem(object)
 
 				hasItem := db.GetItemQuantity(b.DB.GormDB, data.ID, object) > 0
 

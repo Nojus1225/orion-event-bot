@@ -19,5 +19,19 @@
   "NotEnoughCoins": "Not enough coins. You need {{.Coins}} more coins to buy this.",
   "PurchasedItem": "Purchased {{.Item}} for {{.Price}} coins.",
   "ShopItems": "Shop Items",
-  "NoItems": "> There are no items"
+  "NoItems": "> There are no items",
+  "ShopProtectionName": "Protection",
+  "ShopProtectionDesc": "Items to protect yourself from debuffs",
+  "ShopSabotageName": "Sabotage",
+  "ShopSabotageDesc": "Items to trap other players",
+  "ShopCremeSolaire1000Name": "SPF 1000 Sunscreen",
+  "ShopCremeSolaire1000Desc": "Grants immunity to the targeted attack 'Shovel Theft' or 'Pocket Crab'",
+  "ShopDrapeauBaignadeName": "Swimming Flag",
+  "ShopDrapeauBaignadeDesc": "Lets you ignore the effects of an active Jellyfish Alert. \\nTrade-off: Your item drop chances are reduced by 5% while you use it.",
+  "ShopVolDePelleName": "Shovel Theft",
+  "ShopVolDePelleDesc": "Adds 15 minutes of cooldown to a user.",
+  "ShopCrabeDePocheName": "Pocket Crab",
+  "ShopCrabeDePocheDesc": "Inflicts a cut-type debuff on a user. (clears previous cooldowns)",
+  "ShopAlerteMedusesName": "Jellyfish Alert",
+  "ShopAlerteMedusesDesc": "Sabotages an entire zone for 30 minutes. During this period, the Nothing drop rate increases by +20% for everyone scavenging there."
 }

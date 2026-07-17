@@ -24,6 +24,12 @@ const (
 	ShopPansement    Item = "pansement"
 	ShopBouteilleEau Item = "bouteille_eau"
 
+	ShopCremeSolaire1000 Item = "creme_solaire_1000"
+	ShopDrapeauBaignade  Item = "drapeau_baignade"
+	ShopVolDePelle       Item = "vol_de_pelle"
+	ShopCrabeDePoche     Item = "crabe_de_poche"
+	ShopAlerteMeduses    Item = "alerte_meduses"
+
 	ItemCoquillage Item = "coquillage"
 	ItemBouteille  Item = "bouteille_plastique"
 	ItemCannette   Item = "cannette"

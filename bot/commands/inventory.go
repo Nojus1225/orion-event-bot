@@ -6,6 +6,7 @@ import (
 
 	"orion-event-bot/bot/core"
 	"orion-event-bot/bot/handlers"
+	"orion-event-bot/bot/vars"
 	"orion-event-bot/db"
 
 	"github.com/disgoorg/disgo/discord"
@@ -119,13 +120,15 @@ func init() {
 			}
 			
 			shopLines := []string{}
-			for _, j := range Items {
-				if c := getQ(j.ID); c > 0 {
-					itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: j.Name})
-					if itemLoc == "" {
-						itemLoc = j.Name
+			for _, cat := range vars.Shop {
+				for _, j := range cat.Items {
+					if c := getQ(j.ID); c > 0 {
+						itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: j.Name})
+						if itemLoc == "" {
+							itemLoc = j.Name
+						}
+						shopLines = append(shopLines, fmt.Sprintf("(x%d) %s", c, itemLoc))
 					}
-					shopLines = append(shopLines, fmt.Sprintf("(x%d) %s", c, itemLoc))
 				}
 			}
 

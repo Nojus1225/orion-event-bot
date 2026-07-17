@@ -7,6 +7,7 @@ import (
 
 	"orion-event-bot/bot/core"
 	"orion-event-bot/bot/handlers"
+	"orion-event-bot/bot/vars"
 	"orion-event-bot/db"
 
 	"github.com/disgoorg/disgo/discord"
@@ -15,39 +16,7 @@ import (
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
-type ShopItem struct {
-	Name        string
-	Description string
-	Cost        int
-	ID          db.Item
-	Thumbnail   string
-}
-
-var Items = []ShopItem{
-	{
-		Name:        "ShopSunscreenName",
-		Description: "ShopSunscreenDesc",
-		Cost:        2,
-		ID:          db.ShopCremeSolaire,
-		Thumbnail:   "https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f9f4.png",
-	},
-	{
-		Name:        "ShopBandageName",
-		Description: "ShopBandageDesc",
-		Cost:        4,
-		ID:          db.ShopPansement,
-		Thumbnail:   "https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1fa79.png",
-	},
-	{
-		Name:        "ShopWaterBottleName",
-		Description: "ShopWaterBottleDesc",
-		Cost:        5,
-		ID:          db.ShopBouteilleEau,
-		Thumbnail:   "https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f4a7.png",
-	},
-}
-
-func getShopData(page, totalPages int, user db.User, loc *i18n.Localizer) discord.ContainerComponent {
+func getShopData(categoryIndex, page, totalPages int, user db.User, loc *i18n.Localizer) discord.ContainerComponent {
 	if page < 1 {
 		page = 1
 	}
@@ -55,31 +24,31 @@ func getShopData(page, totalPages int, user db.User, loc *i18n.Localizer) discor
 		page = totalPages
 	}
 
-	firstBtn := discord.NewButton(discord.ButtonStylePrimary, "", "shop-first", "", snowflake.ID(0)).WithEmoji(discord.NewComponentEmoji("⏮️"))
+	firstBtn := discord.NewButton(discord.ButtonStylePrimary, "", fmt.Sprintf("shop-nav-%d-1-first", categoryIndex), "", snowflake.ID(0)).WithEmoji(discord.NewComponentEmoji("⏮️"))
 	if page <= 1 {
 		firstBtn = firstBtn.WithDisabled(true)
 	}
 
-	prevBtn := discord.NewButton(discord.ButtonStylePrimary, "", fmt.Sprintf("shop-%d", page-1), "", snowflake.ID(0)).WithEmoji(discord.NewComponentEmoji("◀️"))
+	prevBtn := discord.NewButton(discord.ButtonStylePrimary, "", fmt.Sprintf("shop-nav-%d-%d-prev", categoryIndex, page-1), "", snowflake.ID(0)).WithEmoji(discord.NewComponentEmoji("◀️"))
 	if page <= 1 {
 		prevBtn = prevBtn.WithDisabled(true)
 	}
 
-	currBtn := discord.NewButton(discord.ButtonStyleSecondary, fmt.Sprintf("%d/%d", page, totalPages), "shop-current", "", snowflake.ID(0)).WithDisabled(true)
+	currBtn := discord.NewButton(discord.ButtonStyleSecondary, fmt.Sprintf("%d/%d", page, totalPages), fmt.Sprintf("shop-nav-%d-%d-curr", categoryIndex, page), "", snowflake.ID(0)).WithDisabled(true)
 
-	nextBtn := discord.NewButton(discord.ButtonStylePrimary, "", fmt.Sprintf("shop-%d", page+1), "", snowflake.ID(0)).WithEmoji(discord.NewComponentEmoji("▶️"))
+	nextBtn := discord.NewButton(discord.ButtonStylePrimary, "", fmt.Sprintf("shop-nav-%d-%d-next", categoryIndex, page+1), "", snowflake.ID(0)).WithEmoji(discord.NewComponentEmoji("▶️"))
 	if page >= totalPages {
 		nextBtn = nextBtn.WithDisabled(true)
 	}
 
-	lastBtn := discord.NewButton(discord.ButtonStylePrimary, "", "shop-last", "", snowflake.ID(0)).WithEmoji(discord.NewComponentEmoji("⏭️"))
+	lastBtn := discord.NewButton(discord.ButtonStylePrimary, "", fmt.Sprintf("shop-nav-%d-%d-last", categoryIndex, totalPages), "", snowflake.ID(0)).WithEmoji(discord.NewComponentEmoji("⏭️"))
 	if page >= totalPages {
 		lastBtn = lastBtn.WithDisabled(true)
 	}
 
 	actionRow := discord.NewActionRow(firstBtn, prevBtn, currBtn, nextBtn, lastBtn)
 
-	item := Items[page-1]
+	item := vars.Shop[categoryIndex].Items[page-1]
 
 	locName, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: item.Name})
 	locDesc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: item.Description})
@@ -99,6 +68,24 @@ func getShopData(page, totalPages int, user db.User, loc *i18n.Localizer) discor
 	shopTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "ShopTitle"})
 	buyItemTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "ShopBuyItem"})
 
+	var options []discord.StringSelectMenuOption
+	for i, cat := range vars.Shop {
+		catName, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: cat.Name})
+		catDesc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: cat.Description})
+		options = append(options, discord.StringSelectMenuOption{
+			Label:       catName,
+			Value:       strconv.Itoa(i),
+			Description: catDesc,
+			Default:     i == categoryIndex,
+		})
+	}
+
+	shopCategoryPrompt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "ShopCategoryPrompt"})
+	if shopCategoryPrompt == "" {
+		shopCategoryPrompt = "Quelle catégorie souhaitez-vous parcourir ?"
+	}
+	selectMenu := discord.NewStringSelectMenu("shop-category", shopCategoryPrompt, options...)
+
 	return discord.NewContainer(
 		discord.NewTextDisplay(shopTitle),
 		discord.NewSection(
@@ -107,13 +94,12 @@ func getShopData(page, totalPages int, user db.User, loc *i18n.Localizer) discor
 			discord.NewThumbnail(item.Thumbnail),
 		),
 		discord.NewActionRow(
-			discord.NewButton(discord.ButtonStyleSuccess, buyItemTxt, fmt.Sprintf("shop-buy-%s", item.ID), "", snowflake.ID(0)).WithDisabled(!canBuy).WithEmoji(discord.NewComponentEmoji("🛒")),
+			discord.NewButton(discord.ButtonStyleSuccess, buyItemTxt, fmt.Sprintf("shop-buy-%d-%s", categoryIndex, item.ID), "", snowflake.ID(0)).WithDisabled(!canBuy).WithEmoji(discord.NewComponentEmoji("🛒")),
 		),
 		actionRow,
+		discord.NewActionRow(selectMenu),
 	).WithAccentColor(0x5865F2)
 }
-
-var totalPages = len(Items)
 
 func init() {
 	handlers.RegisterCommand(handlers.Command{
@@ -134,7 +120,8 @@ func init() {
 				fmt.Println("DB error:", err)
 			}
 
-			container := getShopData(1, totalPages, data, loc)
+			totalPages := len(vars.Shop[0].Items)
+			container := getShopData(0, 1, totalPages, data, loc)
 
 			msg := discord.NewMessageCreateV2(container)
 
@@ -156,19 +143,26 @@ func init() {
 			}
 
 			customID := event.Data.CustomID()
-			parts := strings.SplitN(customID, "-", 2)
 
-			if strings.HasPrefix(customID, "shop-buy") {
-				parts := strings.SplitN(customID, "-", 3)
-				if len(parts) != 3 {
+			parts := strings.Split(customID, "-")
+			if len(parts) < 3 {
+				return
+			}
+
+			if parts[1] == "buy" {
+				if len(parts) < 4 {
 					return
 				}
+				catIndex, err := strconv.Atoi(parts[2])
+				if err != nil {
+					return
+				}
+				idStr := strings.Join(parts[3:], "-")
 
-				idStr := parts[2]
-				var item *ShopItem
-				for i := range Items {
-					if string(Items[i].ID) == idStr {
-						item = &Items[i]
+				var item *vars.ShopItem
+				for i := range vars.Shop[catIndex].Items {
+					if string(vars.Shop[catIndex].Items[i].ID) == idStr {
+						item = &vars.Shop[catIndex].Items[i]
 						break
 					}
 				}
@@ -205,14 +199,14 @@ func init() {
 				db.LogAction(b.DB.GormDB, data.ID, db.ActionShop, fmt.Sprintf(`{"item_id":"%s", "cost":%d}`, item.ID, item.Cost))
 
 				var page int
-				for i := range Items {
-					if Items[i].ID == item.ID {
+				for i := range vars.Shop[catIndex].Items {
+					if vars.Shop[catIndex].Items[i].ID == item.ID {
 						page = i + 1
 						break
 					}
 				}
-
-				container := getShopData(page, totalPages, data, loc)
+				totalPages := len(vars.Shop[catIndex].Items)
+				container := getShopData(catIndex, page, totalPages, data, loc)
 				msg := discord.NewMessageUpdateV2(container)
 
 				if err := event.UpdateMessage(msg); err != nil {
@@ -228,35 +222,57 @@ func init() {
 				return
 			}
 
-			if len(parts) != 2 {
-				return
-			}
-
-			if parts[1] == "current" {
-				return
-			}
-
-			var page int
-			if parts[1] == "first" {
-				page = 1
-			} else if parts[1] == "last" {
-				page = totalPages
-			} else if strings.HasPrefix(parts[1], "buy") {
-				return
-			} else {
-				p, err := strconv.Atoi(parts[1])
+			if parts[1] == "nav" {
+				if len(parts) < 4 {
+					return
+				}
+				catIndex, err := strconv.Atoi(parts[2])
 				if err != nil {
 					return
 				}
-				page = p
+				page, err := strconv.Atoi(parts[3])
+				if err != nil {
+					return
+				}
+
+				totalPages := len(vars.Shop[catIndex].Items)
+				container := getShopData(catIndex, page, totalPages, data, loc)
+
+				msg := discord.NewMessageUpdateV2(container)
+
+				if err := event.UpdateMessage(msg); err != nil {
+					fmt.Println("Error sending shop message:", err)
+				}
+			}
+		},
+		ExecuteMenu: func(b *core.Bot, event *events.ComponentInteractionCreate) {
+			loc := core.GetLocalizer(event.Locale().String())
+			notYourComponentTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "NotYourComponent"})
+			if (event.Message.InteractionMetadata != nil && event.Message.InteractionMetadata.User.ID != event.User().ID) ||
+				(event.Message.Interaction != nil && event.Message.Interaction.User.ID != event.User().ID) {
+				_ = event.CreateMessage(discord.NewMessageCreate().WithContent(notYourComponentTxt).WithEphemeral(true))
+				return
+			}
+			var data db.User
+			if err := b.DB.GormDB.FirstOrCreate(&data, db.User{ID: strconv.FormatUint(uint64(event.User().ID), 10)}).Error; err != nil {
+				fmt.Println("DB error:", err)
 			}
 
-			container := getShopData(page, totalPages, data, loc)
+			customID := event.Data.CustomID()
 
-			msg := discord.NewMessageUpdateV2(container)
-
-			if err := event.UpdateMessage(msg); err != nil {
-				fmt.Println("Error sending shop message:", err)
+			if customID == "shop-category" {
+				catIndexStr := event.StringSelectMenuInteractionData().Values[0]
+				catIndex, err := strconv.Atoi(catIndexStr)
+				if err != nil {
+					return
+				}
+				totalPages := len(vars.Shop[catIndex].Items)
+				container := getShopData(catIndex, 1, totalPages, data, loc)
+				msg := discord.NewMessageUpdateV2(container)
+				if err := event.UpdateMessage(msg); err != nil {
+					fmt.Println("Error updating shop message:", err)
+				}
+				return
 			}
 		},
 	})
