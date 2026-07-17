@@ -21,6 +21,7 @@ func StartAutoDropTicker(b *Bot) {
 
 			settings := db.GetSettings(b.DB.GormDB)
 			if settings.AutoDropEnabled {
+				TriggerAutoDrop(b)
 			}
 		}
 	}()
