@@ -184,11 +184,14 @@ func init() {
 
 					if target.SabotageImmunityExpiresAt > now {
 						responseMessageID = "SabotageImmune"
+						db.LogAction(b.DB.GormDB, attackerID, db.ActionSabotage, fmt.Sprintf(`{"target":"%s", "sabotage":"%s", "result":"immune"}`, targetID, sabotageType))
 					} else if db.GetItemQuantity(b.DB.GormDB, targetID, db.ShopCremeSolaire1000) > 0 {
 						db.RemoveItem(b.DB.GormDB, targetID, db.ShopCremeSolaire1000, 1)
 						db.RemoveItem(b.DB.GormDB, attackerID, sabotageType, 1)
 						responseMessageID = "SabotageBlockedByCreme"
 						publicAlertID = "SabotageAlertBlocked"
+						db.LogAction(b.DB.GormDB, attackerID, db.ActionSabotage, fmt.Sprintf(`{"target":"%s", "sabotage":"%s", "result":"blocked_by_creme"}`, targetID, sabotageType))
+						db.LogAction(b.DB.GormDB, targetID, db.ActionProtect, fmt.Sprintf(`{"attacker":"%s", "sabotage":"%s", "result":"creme_consumed_passive"}`, attackerID, sabotageType))
 					} else {
 						switch sabotageType {
 						case db.ShopVolDePelle:
@@ -212,6 +215,7 @@ func init() {
 
 						db.RemoveItem(b.DB.GormDB, attackerID, sabotageType, 1)
 						responseMessageID = "SabotageSuccessUser"
+						db.LogAction(b.DB.GormDB, attackerID, db.ActionSabotage, fmt.Sprintf(`{"target":"%s", "sabotage":"%s", "result":"success"}`, targetID, sabotageType))
 					}
 				}
 			case "zone":
@@ -225,12 +229,14 @@ func init() {
 
 					if zone.SabotageExpiresAt > now || zone.ImmunityExpiresAt > now {
 						responseMessageID = "SabotageZoneImmune"
+						db.LogAction(b.DB.GormDB, attackerID, db.ActionSabotage, fmt.Sprintf(`{"zone":"%s", "sabotage":"%s", "result":"immune"}`, zoneName, sabotageType))
 					} else {
 						var activeSabotages int64
 						b.DB.GormDB.Model(&db.Zone{}).Where("sabotage_expires_at > ?", now).Count(&activeSabotages)
 
 						if activeSabotages > 0 {
 							responseMessageID = "SabotageZoneImmune"
+							db.LogAction(b.DB.GormDB, attackerID, db.ActionSabotage, fmt.Sprintf(`{"zone":"%s", "sabotage":"%s", "result":"immune_other_active"}`, zoneName, sabotageType))
 						} else {
 							if sabotageType == db.ShopAlerteMeduses {
 								sabotageDuration := int64(3 * 3600)
@@ -240,6 +246,7 @@ func init() {
 
 							db.RemoveItem(b.DB.GormDB, attackerID, sabotageType, 1)
 							responseMessageID = "SabotageSuccessZone"
+							db.LogAction(b.DB.GormDB, attackerID, db.ActionSabotage, fmt.Sprintf(`{"zone":"%s", "sabotage":"%s", "result":"success"}`, zoneName, sabotageType))
 						}
 					}
 				}
