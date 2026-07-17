@@ -45,7 +45,7 @@ func TriggerAutoDrop(b *Bot) {
 		return
 	}
 
-	loc := GetLocalizer("fr-FR")
+	loc := GetLocalizer("en-US")
 	title := loc.MustLocalize(&i18n.LocalizeConfig{MessageID: "AutoDropTitle"})
 	desc := loc.MustLocalize(&i18n.LocalizeConfig{MessageID: "AutoDropDescription"})
 	btnText := loc.MustLocalize(&i18n.LocalizeConfig{MessageID: "AutoDropClaimButton"})

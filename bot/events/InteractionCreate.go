@@ -90,7 +90,7 @@ func init() {
 					success := db.ClaimDrop(b.DB.GormDB, dropID, userID)
 
 					if !success {
-						loc := core.GetLocalizer(event.Locale().String())
+						loc := core.GetLocalizer("en-US")
 						tooLate := loc.MustLocalize(&i18n.LocalizeConfig{MessageID: "AutoDropTooLate"})
 						_ = event.CreateMessage(discord.NewMessageCreate().WithEphemeral(true).WithContent(tooLate))
 						return
@@ -106,7 +106,7 @@ func init() {
 					}
 					roll := int(random.Int64()) + 1
 
-					loc := core.GetLocalizer(event.Locale().String())
+					loc := core.GetLocalizer("en-US")
 
 					var lootMsg string
 
