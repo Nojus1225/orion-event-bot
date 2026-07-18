@@ -11,24 +11,20 @@
   "ShopBandageDesc": "Soigne le malus 'Coupure'",
   "ShopWaterBottleName": "💧 Bouteille d'Eau",
   "ShopWaterBottleDesc": "Permet de fouiller sans temps d'attente (par unité)",
-
   "ShopProtectionName": "Protection",
   "ShopProtectionDesc": "Objets pour se protéger des malus",
   "ShopSabotageName": "Sabotage",
   "ShopSabotageDesc": "Objets pour piéger d'autres joueurs",
-
   "ShopCremeSolaire1000Name": "Crème Solaire Indice 1000",
   "ShopCremeSolaire1000Desc": "Immunise de l'attaque ciblée 'Vol de pelle' ou 'Crabe de poche'",
   "ShopDrapeauBaignadeName": "Drapeau de baignade",
-  "ShopDrapeauBaignadeDesc": "Permet d'ignorer les effets d'une Alerte aux Méduses en cours. \\nContrepartie : Tes chances de drop d'objets sont réduites de 5% tant que tu l'utilises.",
-  
+  "ShopDrapeauBaignadeDesc": "Permet d'ignorer les effets d'une Alerte aux Méduses en cours. \nContrepartie : Tes chances de drop d'objets sont réduites de 5% tant que tu l'utilises.",
   "ShopVolDePelleName": "Vol de pelle",
   "ShopVolDePelleDesc": "Ajoute 15 minutes de cooldown à un utilisateur.",
   "ShopCrabeDePocheName": "Crabe de poche",
   "ShopCrabeDePocheDesc": "Déclenche un malus de type coupure pour un utilisateur. (efface les précédents cooldowns)",
   "ShopAlerteMedusesName": "Alerte aux méduses",
   "ShopAlerteMedusesDesc": "Sabote une zone entière pendant 3 heures. Durant cette période, le taux de Rien augmente de +20% pour tous ceux qui y fouillent.",
-
   "ShopCategoryPrompt": "Quelle catégorie souhaitez-vous parcourir ?",
   "CommonItems": "Objets Communs",
   "RareItems": "Objets Rares",
