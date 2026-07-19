@@ -97,6 +97,8 @@ type User struct {
 	Coins     int
 	CDFouille int
 
+	LastFouilleMsg string
+
 	StatusMalus StatusMalus
 	CDMalus     int
 

@@ -220,6 +220,7 @@ func init() {
 				if err := event.CreateMessage(msg); err != nil {
 					fmt.Println("Error sending cd message:", err)
 				}
+
 				db.IncrementStat(b.DB.GormDB, data.ID, db.StatEchecsFouilleMalus, 1)
 				db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"failed_malus"}`)
 				return
@@ -265,6 +266,7 @@ func init() {
 				if err := event.CreateMessage(msg); err != nil {
 					fmt.Println("Error sending cd message:", err)
 				}
+
 				db.IncrementStat(b.DB.GormDB, data.ID, db.StatEchecsFouilleCooldown, 1)
 				db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"failed_cooldown"}`)
 				return
@@ -275,6 +277,15 @@ func init() {
 			if err := event.CreateMessage(msg); err != nil {
 				fmt.Println("Error sending search message:", err)
 			}
+
+			replyMsg, err := event.Client().Rest.GetInteractionResponse(event.ApplicationID(), event.Token())
+			if err != nil {
+				fmt.Println("Erreur lors de la récupération de la réponse:", err)
+				return
+			}
+
+			mid := replyMsg.ID
+			b.DB.GormDB.Model(data).Updates(db.User{LastFouilleMsg: mid.String()})
 
 		},
 		ExecuteButton: func(b *core.Bot, event *events.ComponentInteractionCreate) {
@@ -292,6 +303,9 @@ func init() {
 			}
 
 			customID := button.CustomID()
+			if data.LastFouilleMsg != event.Message.ID.String() {
+				return
+			}
 
 			if strings.HasPrefix(customID, "search-use-item-") {
 				object := db.Item(customID[16:])
