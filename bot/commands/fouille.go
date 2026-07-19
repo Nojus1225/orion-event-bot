@@ -221,6 +221,12 @@ func init() {
 					fmt.Println("Error sending cd message:", err)
 				}
 
+				if hasItem {
+					if replyMsg, err := event.Client().Rest.GetInteractionResponse(event.ApplicationID(), event.Token()); err == nil {
+						b.DB.GormDB.Model(&data).Updates(db.User{LastFouilleMsg: replyMsg.ID.String()})
+					}
+				}
+
 				db.IncrementStat(b.DB.GormDB, data.ID, db.StatEchecsFouilleMalus, 1)
 				db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"failed_malus"}`)
 				return
@@ -267,6 +273,12 @@ func init() {
 					fmt.Println("Error sending cd message:", err)
 				}
 
+				if hasItem {
+					if replyMsg, err := event.Client().Rest.GetInteractionResponse(event.ApplicationID(), event.Token()); err == nil {
+						b.DB.GormDB.Model(&data).Updates(db.User{LastFouilleMsg: replyMsg.ID.String()})
+					}
+				}
+
 				db.IncrementStat(b.DB.GormDB, data.ID, db.StatEchecsFouilleCooldown, 1)
 				db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"failed_cooldown"}`)
 				return
@@ -285,7 +297,7 @@ func init() {
 			}
 
 			mid := replyMsg.ID
-			b.DB.GormDB.Model(data).Updates(db.User{LastFouilleMsg: mid.String()})
+			b.DB.GormDB.Model(&data).Updates(db.User{LastFouilleMsg: mid.String()})
 
 		},
 		ExecuteButton: func(b *core.Bot, event *events.ComponentInteractionCreate) {
