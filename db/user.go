@@ -107,6 +107,17 @@ type User struct {
 	SabotageImmunityExpiresAt int64
 	FlagActiveUntil           int64
 
+	Daily []UserDaily `gorm:"foreignKey:UserID;references:ID"`
+
 	Items []UserItem `gorm:"foreignKey:UserID;references:ID"`
 	Stats []UserStat `gorm:"foreignKey:UserID;references:ID"`
+}
+
+type UserDaily struct {
+	UserID string `gorm:"primaryKey;type:varchar(255)"`
+	Date   string `gorm:"primaryKey;type:varchar(50)"`
+}
+
+func (UserDaily) TableName() string {
+	return "user_daily"
 }
