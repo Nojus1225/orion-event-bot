@@ -21,5 +21,10 @@
   "SearchWaterFound": "🎉 Great! You found x1 {{.Item}} (Total: {{.Total}}) while searching the water's edge.",
   "SearchRocksEmpty": "💨 You found nothing while searching the rocks...",
   "SearchRocksFound": "🎉 What a treasure! You found x1 {{.Item}} (Total: {{.Total}}) while searching the rocks.",
-  "SearchRocksCut": "🩸 Ouch! You got cut. Come back <t:{{.Time}}:R>."
+  "SearchRocksCut": "🩸 Ouch! You got cut. You are bleeding and will lose 10% of your coins on each search until <t:{{.Time}}:R>! Use a **Bandage** to heal.",
+  "SearchBleeding": "\n🩸 **You are bleeding!** You lost {{.Coins}} coins due to your cut.",
+  "SearchBleedingEscaped": "\n🩸 **You are bleeding!** You tripped due to your wound, but you have so few resources that you could pick them all up with one hand!",
+  "SearchCutWarning": "🩸 **You are bleeding!** You will lose 10% of your coins on each search. Use a /protect bandage to heal.",
+  "SearchAutoBandage": "\n🩹 **Your Bandage was automatically used to stop the bleeding!**",
+  "SearchRocksCutPrevented": "🩸 Ouch! You got cut, but your **Bandage** was applied immediately to stop the bleeding!"
 }

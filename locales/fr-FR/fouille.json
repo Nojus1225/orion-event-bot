@@ -21,5 +21,10 @@
   "SearchWaterFound": "🎉 Super ! Vous avez trouvé x1 {{.Item}} (Total: {{.Total}}) au bord de l'eau.",
   "SearchRocksEmpty": "💨 Les rochers sont vides aujourd'hui...",
   "SearchRocksFound": "🎉 Quel trésor ! Vous avez trouvé x1 {{.Item}} (Total: {{.Total}}) en fouillant les rochers.",
-  "SearchRocksCut": "🩸 Ouille ! Vous vous êtes coupé. Revenez <t:{{.Time}}:R>."
+  "SearchRocksCut": "🩸 Ouille ! Vous vous êtes coupé. Vous saignez et perdrez 10% de vos pièces à chaque fouille jusqu'à <t:{{.Time}}:R> ! Utilisez un **Pansement** pour vous soigner.",
+  "SearchBleeding": "\n🩸 **Vous saignez !** Vous avez perdu {{.Coins}} pièces à cause de votre coupure.",
+  "SearchBleedingEscaped": "\n🩸 **Vous saignez !** Vous avez trébuché à cause de votre blessure, mais vous avez si peu de richesses que vous avez pu tout ramasser d'une seule main !",
+  "SearchCutWarning": "🩸 **Vous saignez !** Vous perdrez 10% de vos pièces à chaque fouille. Utilisez un /protect pansement pour vous soigner.",
+  "SearchAutoBandage": "\n🩹 **Votre Pansement a été utilisé automatiquement pour stopper le saignement !**",
+  "SearchRocksCutPrevented": "🩸 Ouille ! Vous vous êtes coupé, mais votre **Pansement** a été appliqué immédiatement pour stopper le saignement !"
 }

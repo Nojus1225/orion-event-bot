@@ -74,7 +74,7 @@ func applyMalus(b *core.Bot, data *db.User, duration time.Duration, status db.St
 	return data.CDMalus
 }
 
-func getSearchContainer(b *core.Bot, loc *i18n.Localizer) discord.ContainerComponent {
+func getSearchContainer(b *core.Bot, data *db.User, loc *i18n.Localizer) discord.ContainerComponent {
 	searchTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"})
 	areaPrompt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchAreaPrompt"})
 	deckchairsTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "Deckchairs"})
@@ -124,6 +124,27 @@ func getSearchContainer(b *core.Bot, loc *i18n.Localizer) discord.ContainerCompo
 		components = append(components, discord.NewTextDisplay(sabotageWarning))
 	}
 
+	if data.StatusMalus == db.MalusCut && now < int64(data.CDMalus) {
+		cutWarning, _ := loc.Localize(&i18n.LocalizeConfig{
+			MessageID:    "SearchCutWarning",
+			TemplateData: map[string]interface{}{"Coins": 3},
+		})
+		components = append(components, discord.NewTextDisplay(cutWarning))
+
+		hasBandage := db.GetItemQuantity(b.DB.GormDB, data.ID, db.ShopPansement) > 0
+		if hasBandage {
+			useBtnTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "Use"})
+			item := vars.GetItem(db.ShopPansement)
+			itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: item.Name})
+			if itemLoc == "" {
+				itemLoc = item.Name
+			}
+			components = append(components, discord.NewActionRow(
+				discord.NewButton(discord.ButtonStyleSuccess, useBtnTxt+" "+itemLoc, "search-use-item-pansement", "", snowflake.ID(0)),
+			))
+		}
+	}
+
 	return discord.NewContainer(components...).WithAccentColor(0x5865F2)
 }
 
@@ -150,7 +171,7 @@ func init() {
 			now := time.Now()
 
 			cdMalus := time.Unix(int64(data.CDMalus), 0)
-			if now.Before(cdMalus) {
+			if now.Before(cdMalus) && data.StatusMalus != db.MalusCut {
 				if data.StatusMalus == db.MalusShovelTheft {
 					msgStr, _ := loc.Localize(&i18n.LocalizeConfig{
 						MessageID: "SearchShovelTheftPrompt",
@@ -284,7 +305,7 @@ func init() {
 				return
 			}
 
-			msg := discord.NewMessageCreateV2(getSearchContainer(b, loc))
+			msg := discord.NewMessageCreateV2(getSearchContainer(b, &data, loc))
 
 			if err := event.CreateMessage(msg); err != nil {
 				fmt.Println("Error sending search message:", err)
@@ -339,12 +360,40 @@ func init() {
 						}
 					}
 
-					msg := discord.NewMessageUpdateV2(getSearchContainer(b, loc))
+					msg := discord.NewMessageUpdateV2(getSearchContainer(b, &data, loc))
 
 					if err := event.UpdateMessage(msg); err != nil {
 						fmt.Println("Error updating search message:", err)
 					}
 					return
+				}
+			}
+
+			lostCoins := 0
+			isCut := data.StatusMalus == db.MalusCut && time.Now().Before(time.Unix(int64(data.CDMalus), 0))
+			hasLost := false
+			usedBandage := false
+
+			if isCut && (customID == "search-transats" || customID == "search-eau" || customID == "search-rochers") {
+				hasBandage := db.GetItemQuantity(b.DB.GormDB, data.ID, db.ShopPansement) > 0
+				if hasBandage {
+					db.RemoveItem(b.DB.GormDB, data.ID, db.ShopPansement, 1)
+					data.CDMalus = 0
+					data.StatusMalus = db.MalusNone
+					if err := b.DB.GormDB.Model(&data).Select("CDMalus", "StatusMalus").Updates(data).Error; err != nil {
+						fmt.Println("DB error clearing cut malus with bandage:", err)
+					}
+					isCut = false
+					usedBandage = true
+				} else {
+					if data.Coins > 10 {
+						lostCoins = data.Coins / 10
+						data.Coins -= lostCoins
+						hasLost = true
+						if err := b.DB.GormDB.Model(&data).Update("coins", data.Coins).Error; err != nil {
+							fmt.Println("DB error updating coins:", err)
+						}
+					}
 				}
 			}
 
@@ -397,6 +446,26 @@ func init() {
 				} else {
 					db.IncrementStat(b.DB.GormDB, data.ID, db.StatTotalRien, 1)
 					db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"rien"}`)
+				}
+
+				if usedBandage {
+					autoBandageMsg, _ := loc.Localize(&i18n.LocalizeConfig{
+						MessageID: "SearchAutoBandage",
+					})
+					message += autoBandageMsg
+				} else if isCut {
+					var bleedingMsg string
+					if hasLost {
+						bleedingMsg, _ = loc.Localize(&i18n.LocalizeConfig{
+							MessageID:    "SearchBleeding",
+							TemplateData: map[string]interface{}{"Coins": lostCoins},
+						})
+					} else {
+						bleedingMsg, _ = loc.Localize(&i18n.LocalizeConfig{
+							MessageID:    "SearchBleedingEscaped",
+						})
+					}
+					message += bleedingMsg
 				}
 
 				searchTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"})
@@ -460,6 +529,26 @@ func init() {
 				} else {
 					db.IncrementStat(b.DB.GormDB, data.ID, db.StatTotalRien, 1)
 					db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"rien"}`)
+				}
+
+				if usedBandage {
+					autoBandageMsg, _ := loc.Localize(&i18n.LocalizeConfig{
+						MessageID: "SearchAutoBandage",
+					})
+					message += autoBandageMsg
+				} else if isCut {
+					var bleedingMsg string
+					if hasLost {
+						bleedingMsg, _ = loc.Localize(&i18n.LocalizeConfig{
+							MessageID:    "SearchBleeding",
+							TemplateData: map[string]interface{}{"Coins": lostCoins},
+						})
+					} else {
+						bleedingMsg, _ = loc.Localize(&i18n.LocalizeConfig{
+							MessageID:    "SearchBleedingEscaped",
+						})
+					}
+					message += bleedingMsg
 				}
 
 				searchTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"})
@@ -526,11 +615,37 @@ func init() {
 						TemplateData: map[string]interface{}{"Time": cd},
 					})
 				} else {
-					cd := applyMalus(b, &data, 90*time.Minute, db.MalusCut)
-					message, _ = loc.Localize(&i18n.LocalizeConfig{
-						MessageID:    "SearchRocksCut",
-						TemplateData: map[string]interface{}{"Time": cd},
+					hasBandage := db.GetItemQuantity(b.DB.GormDB, data.ID, db.ShopPansement) > 0
+					if hasBandage {
+						db.RemoveItem(b.DB.GormDB, data.ID, db.ShopPansement, 1)
+						message, _ = loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchRocksCutPrevented"})
+					} else {
+						cd := applyMalus(b, &data, 90*time.Minute, db.MalusCut)
+						message, _ = loc.Localize(&i18n.LocalizeConfig{
+							MessageID:    "SearchRocksCut",
+							TemplateData: map[string]interface{}{"Time": cd},
+						})
+					}
+				}
+
+				if usedBandage {
+					autoBandageMsg, _ := loc.Localize(&i18n.LocalizeConfig{
+						MessageID: "SearchAutoBandage",
 					})
+					message += autoBandageMsg
+				} else if isCut {
+					var bleedingMsg string
+					if hasLost {
+						bleedingMsg, _ = loc.Localize(&i18n.LocalizeConfig{
+							MessageID:    "SearchBleeding",
+							TemplateData: map[string]interface{}{"Coins": lostCoins},
+						})
+					} else {
+						bleedingMsg, _ = loc.Localize(&i18n.LocalizeConfig{
+							MessageID:    "SearchBleedingEscaped",
+						})
+					}
+					message += bleedingMsg
 				}
 
 				searchTitle, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"})
