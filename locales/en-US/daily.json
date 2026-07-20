@@ -1,0 +1,8 @@
+{
+  "DailyDescription": "Claim your daily reward",
+  "DailyTitle": "# 📅 Daily Reward",
+  "DailyAlreadyClaimed": "❌ You have already claimed your reward for today! Come back tomorrow.",
+  "DailyNoReward": "No reward is scheduled for today.",
+  "DailyNextReward": "Next reward: <t:{{.Time}}:F> (<t:{{.Time}}:R>)",
+  "DailySuccess": "🎉 You received **x{{.Quantity}} {{.Item}}**! (New total: {{.Total}})"
+}
