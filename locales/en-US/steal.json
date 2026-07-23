@@ -4,8 +4,9 @@
   "StealBotError": "You cannot steal from a bot!",
   "StealPocket": "Pocket {{.Pocket}}",
   "StealPrompt": "You are trying to steal from <@{{.TargetID}}>! Choose a pocket:",
-  "StealSuccess": "🎉 **Success!** You found the correct pocket and stole **{{.Coins}} coins** from <@{{.TargetID}}>!",
-  "StealFailure": "❌ **Failure!** You picked the wrong pocket. <@{{.TargetID}}> caught you and took **{{.Coins}} coins** from you!",
-  "StealNotEnoughCoinsAttacker": "You must have coins to steal from someone!",
+  "StealSuccess": "🎉 **Success!** You found the correct pocket and stole **1 {{.ItemName}}** from <@{{.TargetID}}>!",
+  "StealFailure": "❌ **Failure!** You picked the wrong pocket. <@{{.TargetID}}> caught you and took **1 {{.ItemName}}** from you!",
+  "StealNotEnoughItemsAttacker": "You must have at least one item to steal from someone!",
+  "StealNotEnoughItemsTarget": "This person has no items to steal!",
   "StealCooldownError": "You have already attacked this person recently. Try again in {{.Minutes}} minutes."
 }

@@ -4,8 +4,9 @@
   "StealBotError": "Vous ne pouvez pas voler un bot !",
   "StealPocket": "Poche {{.Pocket}}",
   "StealPrompt": "Vous essayez de voler <@{{.TargetID}}> ! Choisissez une poche :",
-  "StealSuccess": "🎉 **Succès !** Vous avez trouvé la bonne poche et volé **{{.Coins}} pièces** à <@{{.TargetID}}> !",
-  "StealFailure": "❌ **Échec !** Vous vous êtes trompé de poche. <@{{.TargetID}}> vous a surpris et vous a pris **{{.Coins}} pièces** !",
-  "StealNotEnoughCoinsAttacker": "Vous devez avoir des pièces pour pouvoir voler quelqu'un !",
+  "StealSuccess": "🎉 **Succès !** Vous avez trouvé la bonne poche et volé **1 {{.ItemName}}** à <@{{.TargetID}}> !",
+  "StealFailure": "❌ **Échec !** Vous vous êtes trompé de poche. <@{{.TargetID}}> vous a surpris et vous a pris **1 {{.ItemName}}** !",
+  "StealNotEnoughItemsAttacker": "Vous devez avoir au moins un objet pour pouvoir voler quelqu'un !",
+  "StealNotEnoughItemsTarget": "Cette personne n'a pas d'objets à voler !",
   "StealCooldownError": "Vous avez déjà attaqué cette personne récemment. Réessayez dans {{.Minutes}} minutes."
 }

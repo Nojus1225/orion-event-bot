@@ -11,6 +11,7 @@ import (
 
 	"orion-event-bot/bot/core"
 	"orion-event-bot/bot/handlers"
+	"orion-event-bot/bot/vars"
 	"orion-event-bot/db"
 
 	"github.com/disgoorg/disgo/discord"
@@ -20,6 +21,39 @@ import (
 )
 
 var stealCooldowns sync.Map
+
+func getItemName(itemID string, loc *i18n.Localizer) string {
+	itemKey := ""
+	switch db.Item(itemID) {
+	case db.ItemCoquillage: itemKey = "Shell"
+	case db.ItemBouteille: itemKey = "Bottle"
+	case db.ItemCannette: itemKey = "Can"
+	case db.ItemLunettes: itemKey = "Glasses"
+	case db.ItemPiece: itemKey = "Coins"
+	case db.ItemPince: itemKey = "CrabClaw"
+	case db.ItemMsgBouteille: itemKey = "MessageInABottle"
+	case db.ItemMontre: itemKey = "Watch"
+	case db.ItemDent: itemKey = "SharkTooth"
+	default:
+		for _, cat := range vars.Shop {
+			for _, j := range cat.Items {
+				if string(j.ID) == itemID {
+					itemKey = j.Name
+					break
+				}
+			}
+		}
+	}
+	
+	if itemKey != "" {
+		itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: itemKey})
+		if itemLoc != "" {
+			return itemLoc
+		}
+		return itemKey
+	}
+	return itemID
+}
 
 func init() {
 	handlers.RegisterCommand(handlers.Command{
@@ -62,16 +96,29 @@ func init() {
 			if err := b.DB.GormDB.FirstOrCreate(&attacker, db.User{ID: attackerID}).Error; err != nil {
 				return
 			}
-			if attacker.Coins <= 0 {
-				msg, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "StealNotEnoughCoinsAttacker"})
+			var attackerItems []db.UserItem
+			b.DB.GormDB.Where("user_id = ? AND quantity > 0", attackerID).Find(&attackerItems)
+			if len(attackerItems) == 0 {
+				msg, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "StealNotEnoughItemsAttacker"})
 				if msg == "" {
-					msg = "Vous devez avoir des pièces pour pouvoir voler quelqu'un !"
+					msg = "Vous devez avoir au moins un objet pour pouvoir voler quelqu'un !"
 				}
 				_ = event.CreateMessage(discord.NewMessageCreate().WithContent(msg).WithEphemeral(true))
 				return
 			}
 
-			cooldownKey := attackerID + "-" + targetID
+			var targetItems []db.UserItem
+			b.DB.GormDB.Where("user_id = ? AND quantity > 0", targetID).Find(&targetItems)
+			if len(targetItems) == 0 {
+				msg, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "StealNotEnoughItemsTarget"})
+				if msg == "" {
+					msg = "Cette personne n'a pas d'objets à voler !"
+				}
+				_ = event.CreateMessage(discord.NewMessageCreate().WithContent(msg).WithEphemeral(true))
+				return
+			}
+
+			cooldownKey := attackerID
 			if val, ok := stealCooldowns.Load(cooldownKey); ok {
 				lastTime := val.(time.Time)
 				if time.Since(lastTime) < 30*time.Minute {
@@ -92,7 +139,7 @@ func init() {
 			correctIdx := int(randomNum.Int64())
 
 			var components []discord.InteractiveComponent
-			for i := 0; i < 3; i++ {
+			for i := 0; i < 5; i++ {
 				btnTxt, _ := loc.Localize(&i18n.LocalizeConfig{
 					MessageID:    "StealPocket",
 					TemplateData: map[string]interface{}{"Pocket": i + 1},
@@ -118,6 +165,8 @@ func init() {
 			msg := discord.NewMessageCreateV2(
 				discord.NewContainer(componentsList...).WithAccentColor(0x5865F2),
 			)
+
+			stealCooldowns.Store(attackerID, time.Now())
 
 			if err := event.CreateMessage(msg); err != nil {
 				fmt.Println("Error sending steal message:", err)
@@ -165,59 +214,45 @@ func init() {
 				return
 			}
 
-			stealCooldowns.Store(attackerID+"-"+targetID, time.Now())
-
 			var resultMsg string
 			if chosenIdx == correctIdx {
-				stolenCoins := (target.Coins * 15) / 100
-				if stolenCoins <= 0 && target.Coins > 0 {
-					stolenCoins = 1
-				} else if stolenCoins < 0 {
-					stolenCoins = 0
+				var targetItems []db.UserItem
+				b.DB.GormDB.Where("user_id = ? AND quantity > 0", targetID).Find(&targetItems)
+				if len(targetItems) > 0 {
+					randomNum, _ := rand.Int(rand.Reader, big.NewInt(int64(len(targetItems))))
+					chosenItem := targetItems[randomNum.Int64()].ItemID
+
+					db.RemoveItem(b.DB.GormDB, targetID, db.Item(chosenItem), 1)
+					db.IncrementItem(b.DB.GormDB, attackerID, db.Item(chosenItem), 1)
+
+					itemLoc := getItemName(chosenItem, loc)
+
+					resultMsg, _ = loc.Localize(&i18n.LocalizeConfig{
+						MessageID:    "StealSuccess",
+						TemplateData: map[string]interface{}{"ItemName": itemLoc, "TargetID": targetID},
+					})
+				} else {
+					resultMsg = "Mince, il semblerait que cette personne n'ait plus d'objets !"
 				}
-
-				receivedCoins := stolenCoins
-				if receivedCoins > 20 {
-					receivedCoins -= 10
-				}
-
-				target.Coins -= stolenCoins
-				attacker.Coins += receivedCoins
-
-				b.DB.GormDB.Model(&target).Update("coins", target.Coins)
-				b.DB.GormDB.Model(&attacker).Update("coins", attacker.Coins)
-
-				resultMsg, _ = loc.Localize(&i18n.LocalizeConfig{
-					MessageID:    "StealSuccess",
-					TemplateData: map[string]interface{}{"Coins": stolenCoins, "TargetID": targetID},
-				})
 			} else {
-				lostCoins := (attacker.Coins * 5) / 100
-				if lostCoins <= 0 && attacker.Coins > 0 {
-					lostCoins = 1
-				} else if lostCoins < 0 {
-					lostCoins = 0
+				var attackerItems []db.UserItem
+				b.DB.GormDB.Where("user_id = ? AND quantity > 0", attackerID).Find(&attackerItems)
+				if len(attackerItems) > 0 {
+					randomNum, _ := rand.Int(rand.Reader, big.NewInt(int64(len(attackerItems))))
+					chosenItem := attackerItems[randomNum.Int64()].ItemID
+
+					db.RemoveItem(b.DB.GormDB, attackerID, db.Item(chosenItem), 1)
+					db.IncrementItem(b.DB.GormDB, targetID, db.Item(chosenItem), 1)
+
+					itemLoc := getItemName(chosenItem, loc)
+
+					resultMsg, _ = loc.Localize(&i18n.LocalizeConfig{
+						MessageID:    "StealFailure",
+						TemplateData: map[string]interface{}{"ItemName": itemLoc, "TargetID": targetID},
+					})
+				} else {
+					resultMsg = "Vous avez échoué, mais vous n'aviez plus d'objets à vous faire voler !"
 				}
-
-				if lostCoins > 30 {
-					lostCoins = 30
-				}
-
-				receivedCoins := lostCoins
-				if receivedCoins > 20 {
-					receivedCoins -= 10
-				}
-
-				attacker.Coins -= lostCoins
-				target.Coins += receivedCoins
-
-				b.DB.GormDB.Model(&attacker).Update("coins", attacker.Coins)
-				b.DB.GormDB.Model(&target).Update("coins", target.Coins)
-
-				resultMsg, _ = loc.Localize(&i18n.LocalizeConfig{
-					MessageID:    "StealFailure",
-					TemplateData: map[string]interface{}{"Coins": lostCoins, "TargetID": targetID},
-				})
 			}
 
 			color := 0x5865F2
