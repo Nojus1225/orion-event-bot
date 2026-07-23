@@ -26,5 +26,6 @@
   "SearchBleedingEscaped": "\n🩸 **Vous saignez !** Vous avez trébuché à cause de votre blessure, mais vous avez si peu de richesses que vous avez pu tout ramasser d'une seule main !",
   "SearchCutWarning": "🩸 **Vous saignez !** Vous perdrez 10% de vos pièces à chaque fouille. Utilisez un /protect pansement pour vous soigner.",
   "SearchAutoBandage": "\n🩹 **Votre Pansement a été utilisé automatiquement pour stopper le saignement !**",
-  "SearchRocksCutPrevented": "🩸 Ouille ! Vous vous êtes coupé, mais votre **Pansement** a été appliqué immédiatement pour stopper le saignement !"
+  "SearchRocksCutPrevented": "🩸 Ouille ! Vous vous êtes coupé, mais votre **Pansement** a été appliqué immédiatement pour stopper le saignement !",
+  "SearchTrapTriggered": "🕸️ **Piège !** Vous avez trouvé x1 {{.Item}}, mais un Voleur de filet était caché ici ! Votre récolte et {{.Coins}} pièces ont été volées et envoyées à <@{{.AttackerID}}>."
 }

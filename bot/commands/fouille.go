@@ -148,6 +148,46 @@ func getSearchContainer(b *core.Bot, data *db.User, loc *i18n.Localizer) discord
 	return discord.NewContainer(components...).WithAccentColor(0x5865F2)
 }
 
+func handleTrapIfActive(b *core.Bot, data *db.User, zoneName string, roll int, rewards []string, items []db.Item, loc *i18n.Localizer) (bool, string) {
+	zone := db.GetZone(b.DB.GormDB, zoneName)
+	if zone.SabotageExpiresAt > time.Now().Unix() && zone.SabotageType == string(db.ShopVoleurDeFilet) && zone.SaboteurID != data.ID {
+		idx := roll % len(rewards)
+		var saboteur db.User
+		if err := b.DB.GormDB.First(&saboteur, "id = ?", zone.SaboteurID).Error; err != nil {
+			db.SetZoneSabotage(b.DB.GormDB, zone.Name, "", 0, 0, "")
+			return false, ""
+		}
+
+		itemName, _ := grantLoot(b, &saboteur, idx, rewards, items)
+		itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: itemName})
+		if itemLoc == "" {
+			itemLoc = itemName
+		}
+
+		transferredCoins := 0
+		if data.Coins > 0 {
+			transferredCoins = 10
+			if data.Coins < 10 {
+				transferredCoins = data.Coins
+			}
+			data.Coins -= transferredCoins
+			saboteur.Coins += transferredCoins
+			b.DB.GormDB.Model(data).Update("coins", data.Coins)
+			b.DB.GormDB.Model(&saboteur).Update("coins", saboteur.Coins)
+		}
+
+		db.SetZoneSabotage(b.DB.GormDB, zone.Name, "", 0, 0, "")
+		db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"trap_triggered"}`)
+
+		message, _ := loc.Localize(&i18n.LocalizeConfig{
+			MessageID:    "SearchTrapTriggered",
+			TemplateData: map[string]interface{}{"Item": itemLoc, "Coins": transferredCoins, "AttackerID": zone.SaboteurID},
+		})
+		return true, message
+	}
+	return false, ""
+}
+
 func init() {
 	handlers.RegisterCommand(handlers.Command{
 		Name:        "search",
@@ -416,36 +456,40 @@ func init() {
 				db.IncrementStat(b.DB.GormDB, data.ID, db.StatFouilleTransats, 1)
 
 				message, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchDeckchairsEmpty"})
-				rollLootThreshold := 85
-				zone := db.GetZone(b.DB.GormDB, "Deckchairs")
-				if zone.SabotageExpiresAt > time.Now().Unix() && zone.SabotageType == string(db.ShopAlerteMeduses) {
-					if data.FlagActiveUntil > time.Now().Unix() {
-						rollLootThreshold -= 10
-					} else {
-						rollLootThreshold -= 20
-					}
-				}
-
-				if roll <= rollLootThreshold || (roll > 98 && (data.FlagActiveUntil > time.Now().Unix() || data.SabotageImmunityExpiresAt > time.Now().Unix())) {
-					idx := roll % len(rewards)
-					itemName, total := grantLoot(b, &data, idx, rewards, items)
-					itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: itemName})
-					if itemLoc == "" {
-						itemLoc = itemName
-					}
-					message, _ = loc.Localize(&i18n.LocalizeConfig{
-						MessageID:    "SearchDeckchairsFound",
-						TemplateData: map[string]interface{}{"Item": itemLoc, "Total": total},
-					})
-				} else if roll > 98 {
-					cd := applyMalus(b, &data, 1*time.Hour, db.MalusSunBurn)
-					message, _ = loc.Localize(&i18n.LocalizeConfig{
-						MessageID:    "SearchDeckchairsSunburn",
-						TemplateData: map[string]interface{}{"Time": cd},
-					})
+				if trapTriggered, trapMsg := handleTrapIfActive(b, &data, "Deckchairs", roll, rewards, items, loc); trapTriggered {
+					message = trapMsg
 				} else {
-					db.IncrementStat(b.DB.GormDB, data.ID, db.StatTotalRien, 1)
-					db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"rien"}`)
+					rollLootThreshold := 85
+					zone := db.GetZone(b.DB.GormDB, "Deckchairs")
+					if zone.SabotageExpiresAt > time.Now().Unix() && zone.SabotageType == string(db.ShopAlerteMeduses) {
+						if data.FlagActiveUntil > time.Now().Unix() {
+							rollLootThreshold -= 10
+						} else {
+							rollLootThreshold -= 20
+						}
+					}
+
+					if roll <= rollLootThreshold || (roll > 98 && (data.FlagActiveUntil > time.Now().Unix() || data.SabotageImmunityExpiresAt > time.Now().Unix())) {
+						idx := roll % len(rewards)
+						itemName, total := grantLoot(b, &data, idx, rewards, items)
+						itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: itemName})
+						if itemLoc == "" {
+							itemLoc = itemName
+						}
+						message, _ = loc.Localize(&i18n.LocalizeConfig{
+							MessageID:    "SearchDeckchairsFound",
+							TemplateData: map[string]interface{}{"Item": itemLoc, "Total": total},
+						})
+					} else if roll > 98 {
+						cd := applyMalus(b, &data, 1*time.Hour, db.MalusSunBurn)
+						message, _ = loc.Localize(&i18n.LocalizeConfig{
+							MessageID:    "SearchDeckchairsSunburn",
+							TemplateData: map[string]interface{}{"Time": cd},
+						})
+					} else {
+						db.IncrementStat(b.DB.GormDB, data.ID, db.StatTotalRien, 1)
+						db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"rien"}`)
+					}
 				}
 
 				if usedBandage {
@@ -499,36 +543,40 @@ func init() {
 				db.IncrementStat(b.DB.GormDB, data.ID, db.StatFouilleEau, 1)
 
 				message, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchWaterEmpty"})
-				rollLootThreshold := 60
-				zone := db.GetZone(b.DB.GormDB, "WatersEdge")
-				if zone.SabotageExpiresAt > time.Now().Unix() && zone.SabotageType == string(db.ShopAlerteMeduses) {
-					if data.FlagActiveUntil > time.Now().Unix() {
-						rollLootThreshold -= 10
-					} else {
-						rollLootThreshold -= 20
-					}
-				}
-
-				if roll <= rollLootThreshold || (roll > 80 && (data.FlagActiveUntil > time.Now().Unix() || data.SabotageImmunityExpiresAt > time.Now().Unix())) {
-					idx := roll % len(rewards)
-					itemName, total := grantLoot(b, &data, idx, rewards, items)
-					itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: itemName})
-					if itemLoc == "" {
-						itemLoc = itemName
-					}
-					message, _ = loc.Localize(&i18n.LocalizeConfig{
-						MessageID:    "SearchWaterFound",
-						TemplateData: map[string]interface{}{"Item": itemLoc, "Total": total},
-					})
-				} else if roll > 80 {
-					cd := applyMalus(b, &data, 1*time.Hour, db.MalusSunBurn)
-					message, _ = loc.Localize(&i18n.LocalizeConfig{
-						MessageID:    "SearchDeckchairsSunburn",
-						TemplateData: map[string]interface{}{"Time": cd},
-					})
+				if trapTriggered, trapMsg := handleTrapIfActive(b, &data, "WatersEdge", roll, rewards, items, loc); trapTriggered {
+					message = trapMsg
 				} else {
-					db.IncrementStat(b.DB.GormDB, data.ID, db.StatTotalRien, 1)
-					db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"rien"}`)
+					rollLootThreshold := 60
+					zone := db.GetZone(b.DB.GormDB, "WatersEdge")
+					if zone.SabotageExpiresAt > time.Now().Unix() && zone.SabotageType == string(db.ShopAlerteMeduses) {
+						if data.FlagActiveUntil > time.Now().Unix() {
+							rollLootThreshold -= 10
+						} else {
+							rollLootThreshold -= 20
+						}
+					}
+
+					if roll <= rollLootThreshold || (roll > 80 && (data.FlagActiveUntil > time.Now().Unix() || data.SabotageImmunityExpiresAt > time.Now().Unix())) {
+						idx := roll % len(rewards)
+						itemName, total := grantLoot(b, &data, idx, rewards, items)
+						itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: itemName})
+						if itemLoc == "" {
+							itemLoc = itemName
+						}
+						message, _ = loc.Localize(&i18n.LocalizeConfig{
+							MessageID:    "SearchWaterFound",
+							TemplateData: map[string]interface{}{"Item": itemLoc, "Total": total},
+						})
+					} else if roll > 80 {
+						cd := applyMalus(b, &data, 1*time.Hour, db.MalusSunBurn)
+						message, _ = loc.Localize(&i18n.LocalizeConfig{
+							MessageID:    "SearchDeckchairsSunburn",
+							TemplateData: map[string]interface{}{"Time": cd},
+						})
+					} else {
+						db.IncrementStat(b.DB.GormDB, data.ID, db.StatTotalRien, 1)
+						db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"rien"}`)
+					}
 				}
 
 				if usedBandage {
@@ -583,48 +631,52 @@ func init() {
 				db.IncrementStat(b.DB.GormDB, data.ID, db.StatFouilleRochers, 1)
 
 				message, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchRocksEmpty"})
-				rollLootThreshold := 35
-				zone := db.GetZone(b.DB.GormDB, "TheRocks")
-				if zone.SabotageExpiresAt > time.Now().Unix() && zone.SabotageType == string(db.ShopAlerteMeduses) {
-					if data.FlagActiveUntil > time.Now().Unix() {
-						rollLootThreshold -= 10
-					} else {
-						rollLootThreshold -= 20
-					}
-				}
-
-				if roll <= rollLootThreshold || (roll > 75 && roll <= 90 && (data.FlagActiveUntil > time.Now().Unix() || data.SabotageImmunityExpiresAt > time.Now().Unix())) {
-					idx := roll % len(rewards)
-					itemName, total := grantLoot(b, &data, idx, rewards, items)
-					itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: itemName})
-					if itemLoc == "" {
-						itemLoc = itemName
-					}
-					message, _ = loc.Localize(&i18n.LocalizeConfig{
-						MessageID:    "SearchRocksFound",
-						TemplateData: map[string]interface{}{"Item": itemLoc, "Total": total},
-					})
-				} else if roll <= 75 || (roll > 90 && data.FlagActiveUntil > time.Now().Unix()) {
-					message, _ = loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchRocksEmpty"})
-					db.IncrementStat(b.DB.GormDB, data.ID, db.StatTotalRien, 1)
-					db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"rien"}`)
-				} else if roll <= 90 {
-					cd := applyMalus(b, &data, 1*time.Hour, db.MalusSunBurn)
-					message, _ = loc.Localize(&i18n.LocalizeConfig{
-						MessageID:    "SearchDeckchairsSunburn",
-						TemplateData: map[string]interface{}{"Time": cd},
-					})
+				if trapTriggered, trapMsg := handleTrapIfActive(b, &data, "TheRocks", roll, rewards, items, loc); trapTriggered {
+					message = trapMsg
 				} else {
-					hasBandage := db.GetItemQuantity(b.DB.GormDB, data.ID, db.ShopPansement) > 0
-					if hasBandage {
-						db.RemoveItem(b.DB.GormDB, data.ID, db.ShopPansement, 1)
-						message, _ = loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchRocksCutPrevented"})
-					} else {
-						cd := applyMalus(b, &data, 90*time.Minute, db.MalusCut)
+					rollLootThreshold := 35
+					zone := db.GetZone(b.DB.GormDB, "TheRocks")
+					if zone.SabotageExpiresAt > time.Now().Unix() && zone.SabotageType == string(db.ShopAlerteMeduses) {
+						if data.FlagActiveUntil > time.Now().Unix() {
+							rollLootThreshold -= 10
+						} else {
+							rollLootThreshold -= 20
+						}
+					}
+
+					if roll <= rollLootThreshold || (roll > 75 && roll <= 90 && (data.FlagActiveUntil > time.Now().Unix() || data.SabotageImmunityExpiresAt > time.Now().Unix())) {
+						idx := roll % len(rewards)
+						itemName, total := grantLoot(b, &data, idx, rewards, items)
+						itemLoc, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: itemName})
+						if itemLoc == "" {
+							itemLoc = itemName
+						}
 						message, _ = loc.Localize(&i18n.LocalizeConfig{
-							MessageID:    "SearchRocksCut",
+							MessageID:    "SearchRocksFound",
+							TemplateData: map[string]interface{}{"Item": itemLoc, "Total": total},
+						})
+					} else if roll <= 75 || (roll > 90 && data.FlagActiveUntil > time.Now().Unix()) {
+						message, _ = loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchRocksEmpty"})
+						db.IncrementStat(b.DB.GormDB, data.ID, db.StatTotalRien, 1)
+						db.LogAction(b.DB.GormDB, data.ID, db.ActionFouille, `{"result":"rien"}`)
+					} else if roll <= 90 {
+						cd := applyMalus(b, &data, 1*time.Hour, db.MalusSunBurn)
+						message, _ = loc.Localize(&i18n.LocalizeConfig{
+							MessageID:    "SearchDeckchairsSunburn",
 							TemplateData: map[string]interface{}{"Time": cd},
 						})
+					} else {
+						hasBandage := db.GetItemQuantity(b.DB.GormDB, data.ID, db.ShopPansement) > 0
+						if hasBandage {
+							db.RemoveItem(b.DB.GormDB, data.ID, db.ShopPansement, 1)
+							message, _ = loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchRocksCutPrevented"})
+						} else {
+							cd := applyMalus(b, &data, 90*time.Minute, db.MalusCut)
+							message, _ = loc.Localize(&i18n.LocalizeConfig{
+								MessageID:    "SearchRocksCut",
+								TemplateData: map[string]interface{}{"Time": cd},
+							})
+						}
 					}
 				}
 

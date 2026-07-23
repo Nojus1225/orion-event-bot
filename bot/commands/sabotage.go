@@ -124,7 +124,7 @@ func init() {
 							}
 						}
 					} else if option.Name == "sabotage" && option.Focused {
-						items := []db.Item{db.ShopAlerteMeduses}
+						items := []db.Item{db.ShopAlerteMeduses, db.ShopVoleurDeFilet}
 						for _, itemID := range items {
 							qty := db.GetItemQuantity(b.DB.GormDB, data.ID, itemID)
 							if qty > 0 {
@@ -241,7 +241,10 @@ func init() {
 							if sabotageType == db.ShopAlerteMeduses {
 								sabotageDuration := int64(3 * 3600)
 								immunityDuration := int64(4 * 3600)
-								db.SetZoneSabotage(b.DB.GormDB, zoneName, string(sabotageType), now+sabotageDuration, now+sabotageDuration+immunityDuration)
+								db.SetZoneSabotage(b.DB.GormDB, zoneName, string(sabotageType), now+sabotageDuration, now+sabotageDuration+immunityDuration, attackerID)
+							} else if sabotageType == db.ShopVoleurDeFilet {
+								sabotageDuration := int64(5 * 3600)
+								db.SetZoneSabotage(b.DB.GormDB, zoneName, string(sabotageType), now+sabotageDuration, 0, attackerID)
 							}
 
 							db.RemoveItem(b.DB.GormDB, attackerID, sabotageType, 1)

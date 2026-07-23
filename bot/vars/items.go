@@ -73,6 +73,12 @@ var SabotageItems = []ShopItem{
 		Cost:        45,
 		ID:          db.ShopAlerteMeduses,
 		Thumbnail:   "https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f419.png",
+	}, {
+		Name:        "ShopVoleurDeFiletName",
+		Description: "ShopVoleurDeFiletDesc",
+		Cost:        20,
+		ID:          db.ShopVoleurDeFilet,
+		Thumbnail:   "https://raw.githubusercontent.com/googlefonts/noto-emoji/main/png/512/emoji_u1f578.png",
 	},
 }
 

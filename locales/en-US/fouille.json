@@ -26,5 +26,6 @@
   "SearchBleedingEscaped": "\n🩸 **You are bleeding!** You tripped due to your wound, but you have so few resources that you could pick them all up with one hand!",
   "SearchCutWarning": "🩸 **You are bleeding!** You will lose 10% of your coins on each search. Use a /protect bandage to heal.",
   "SearchAutoBandage": "\n🩹 **Your Bandage was automatically used to stop the bleeding!**",
-  "SearchRocksCutPrevented": "🩸 Ouch! You got cut, but your **Bandage** was applied immediately to stop the bleeding!"
+  "SearchRocksCutPrevented": "🩸 Ouch! You got cut, but your **Bandage** was applied immediately to stop the bleeding!",
+  "SearchTrapTriggered": "🕸️ **Trap!** You found x1 {{.Item}}, but a Net Thief was hiding there! Your harvest and {{.Coins}} coins were stolen and sent to <@{{.AttackerID}}>."
 }

@@ -30,6 +30,7 @@ const (
 	ShopVolDePelle       Item = "vol_de_pelle"
 	ShopCrabeDePoche     Item = "crabe_de_poche"
 	ShopAlerteMeduses    Item = "alerte_meduses"
+	ShopVoleurDeFilet    Item = "voleur_de_filet"
 
 	ItemCoquillage Item = "coquillage"
 	ItemBouteille  Item = "bouteille_plastique"
