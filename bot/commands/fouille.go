@@ -437,6 +437,10 @@ func init() {
 				}
 			}
 
+			var count int64
+			b.DB.GormDB.Model(&db.User{}).Where("coins > ?", data.Coins).Count(&count)
+			rank := count + 1
+
 			switch customID {
 			case "search-transats":
 				rewards := []string{"Shell", "Bottle", "Can"}
@@ -460,6 +464,11 @@ func init() {
 					message = trapMsg
 				} else {
 					rollLootThreshold := 85
+					if rank == 1 {
+						rollLootThreshold -= 10
+					} else if rank == 2 {
+						rollLootThreshold -= 5
+					}
 					zone := db.GetZone(b.DB.GormDB, "Deckchairs")
 					if zone.SabotageExpiresAt > time.Now().Unix() && zone.SabotageType == string(db.ShopAlerteMeduses) {
 						if data.FlagActiveUntil > time.Now().Unix() {
@@ -547,6 +556,11 @@ func init() {
 					message = trapMsg
 				} else {
 					rollLootThreshold := 60
+					if rank == 1 {
+						rollLootThreshold -= 10
+					} else if rank == 2 {
+						rollLootThreshold -= 5
+					}
 					zone := db.GetZone(b.DB.GormDB, "WatersEdge")
 					if zone.SabotageExpiresAt > time.Now().Unix() && zone.SabotageType == string(db.ShopAlerteMeduses) {
 						if data.FlagActiveUntil > time.Now().Unix() {
@@ -635,6 +649,11 @@ func init() {
 					message = trapMsg
 				} else {
 					rollLootThreshold := 35
+					if rank == 1 {
+						rollLootThreshold -= 10
+					} else if rank == 2 {
+						rollLootThreshold -= 5
+					}
 					zone := db.GetZone(b.DB.GormDB, "TheRocks")
 					if zone.SabotageExpiresAt > time.Now().Unix() && zone.SabotageType == string(db.ShopAlerteMeduses) {
 						if data.FlagActiveUntil > time.Now().Unix() {
