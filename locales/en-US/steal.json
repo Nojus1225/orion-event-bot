@@ -5,5 +5,7 @@
   "StealPocket": "Pocket {{.Pocket}}",
   "StealPrompt": "You are trying to steal from <@{{.TargetID}}>! Choose a pocket:",
   "StealSuccess": "🎉 **Success!** You found the correct pocket and stole **{{.Coins}} coins** from <@{{.TargetID}}>!",
-  "StealFailure": "❌ **Failure!** You picked the wrong pocket. <@{{.TargetID}}> caught you and took **{{.Coins}} coins** from you!"
+  "StealFailure": "❌ **Failure!** You picked the wrong pocket. <@{{.TargetID}}> caught you and took **{{.Coins}} coins** from you!",
+  "StealNotEnoughCoinsAttacker": "You must have coins to steal from someone!",
+  "StealCooldownError": "You have already attacked this person recently. Try again in {{.Minutes}} minutes."
 }

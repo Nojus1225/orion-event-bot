@@ -6,6 +6,8 @@ import (
 	"math/big"
 	"strconv"
 	"strings"
+	"sync"
+	"time"
 
 	"orion-event-bot/bot/core"
 	"orion-event-bot/bot/handlers"
@@ -16,6 +18,8 @@ import (
 	"github.com/disgoorg/snowflake/v2"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
+
+var stealCooldowns sync.Map
 
 func init() {
 	handlers.RegisterCommand(handlers.Command{
@@ -54,6 +58,36 @@ func init() {
 				return
 			}
 
+			var attacker db.User
+			if err := b.DB.GormDB.FirstOrCreate(&attacker, db.User{ID: attackerID}).Error; err != nil {
+				return
+			}
+			if attacker.Coins <= 0 {
+				msg, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "StealNotEnoughCoinsAttacker"})
+				if msg == "" {
+					msg = "Vous devez avoir des pièces pour pouvoir voler quelqu'un !"
+				}
+				_ = event.CreateMessage(discord.NewMessageCreate().WithContent(msg).WithEphemeral(true))
+				return
+			}
+
+			cooldownKey := attackerID + "-" + targetID
+			if val, ok := stealCooldowns.Load(cooldownKey); ok {
+				lastTime := val.(time.Time)
+				if time.Since(lastTime) < 30*time.Minute {
+					remaining := (30 * time.Minute) - time.Since(lastTime)
+					msg, _ := loc.Localize(&i18n.LocalizeConfig{
+						MessageID:    "StealCooldownError",
+						TemplateData: map[string]interface{}{"Minutes": int(remaining.Minutes())},
+					})
+					if msg == "" {
+						msg = fmt.Sprintf("Vous avez déjà attaqué cette personne récemment. Réessayez dans %d minutes.", int(remaining.Minutes()))
+					}
+					_ = event.CreateMessage(discord.NewMessageCreate().WithContent(msg).WithEphemeral(true))
+					return
+				}
+			}
+
 			randomNum, _ := rand.Int(rand.Reader, big.NewInt(3))
 			correctIdx := int(randomNum.Int64())
 
@@ -63,7 +97,7 @@ func init() {
 					MessageID:    "StealPocket",
 					TemplateData: map[string]interface{}{"Pocket": i + 1},
 				})
-				customID := fmt.Sprintf("steal_%s_%s_%d_%d", attackerID, targetID, correctIdx, i)
+				customID := fmt.Sprintf("steal-%s-%s-%d-%d", attackerID, targetID, correctIdx, i)
 				components = append(components, discord.NewButton(discord.ButtonStylePrimary, btnTxt, customID, "", snowflake.ID(0)))
 			}
 
@@ -91,11 +125,11 @@ func init() {
 		},
 		ExecuteButton: func(b *core.Bot, event *events.ComponentInteractionCreate) {
 			customID := event.ButtonInteractionData().CustomID()
-			if !strings.HasPrefix(customID, "steal_") {
+			if !strings.HasPrefix(customID, "steal-") {
 				return
 			}
 
-			parts := strings.Split(customID, "_")
+			parts := strings.Split(customID, "-")
 			if len(parts) != 5 {
 				return
 			}
@@ -131,6 +165,8 @@ func init() {
 				return
 			}
 
+			stealCooldowns.Store(attackerID+"-"+targetID, time.Now())
+
 			var resultMsg string
 			if chosenIdx == correctIdx {
 				stolenCoins := (target.Coins * 15) / 100
@@ -140,8 +176,13 @@ func init() {
 					stolenCoins = 0
 				}
 
+				receivedCoins := stolenCoins
+				if receivedCoins > 20 {
+					receivedCoins -= 10
+				}
+
 				target.Coins -= stolenCoins
-				attacker.Coins += stolenCoins
+				attacker.Coins += receivedCoins
 
 				b.DB.GormDB.Model(&target).Update("coins", target.Coins)
 				b.DB.GormDB.Model(&attacker).Update("coins", attacker.Coins)
@@ -162,8 +203,13 @@ func init() {
 					lostCoins = 30
 				}
 
+				receivedCoins := lostCoins
+				if receivedCoins > 20 {
+					receivedCoins -= 10
+				}
+
 				attacker.Coins -= lostCoins
-				target.Coins += lostCoins
+				target.Coins += receivedCoins
 
 				b.DB.GormDB.Model(&attacker).Update("coins", attacker.Coins)
 				b.DB.GormDB.Model(&target).Update("coins", target.Coins)
