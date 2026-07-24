@@ -38,6 +38,7 @@ type RPCGame struct {
 var activeRPCGames sync.Map
 
 func init() {
+	minMise := 5
 	handlers.RegisterCommand(handlers.Command{
 		Name:        "challenge",
 		Description: "Challenge a player",
@@ -63,6 +64,7 @@ func init() {
 						discord.ApplicationCommandOptionInt{
 							Name:        "mise",
 							Description: "The wager in coins",
+							MinValue:    &minMise,
 							Required:    true,
 						},
 					},
