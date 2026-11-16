@@ -1,0 +1,13 @@
+{
+  "BoardTitle": "# ⛷️ Winter Rush — Plateau actuel",
+  "BoardLodge": "🏡 **Refuge :** {{.LodgeTotal}} / {{.LodgeGoal}} ({{.Percent}}%)",
+  "BoardActivePlayers": "🎿 **Joueurs en piste :** {{.Count}}",
+  "BoardYourPos": "📍 **Ta position :** Case **{{.Position}} / {{.TotalCases}}**",
+  "BoardNotStarted": "📍 **Ta position :** Tu n'es pas encore sur la piste.",
+  "BoardLeaderboardTitle": "🏆 **Top 3 de la piste :**",
+  "BoardLeaderboardEmpty": "_Aucun joueur n'est encore sur la piste._",
+  "BoardLeaderboardEntry": "{{.Medal}} <@{{.UserID}}> — Case **{{.Position}}**",
+  "BoardRenderError": "❌ Impossible de générer l'image du plateau pour le moment.",
+  "ImageLodgeLabel": "Progression du Refuge",
+  "ImageStartLabel": "DÉPART"
+}

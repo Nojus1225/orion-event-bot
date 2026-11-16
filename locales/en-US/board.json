@@ -1,0 +1,13 @@
+{
+  "BoardTitle": "# ⛷️ Winter Rush — Current Board",
+  "BoardLodge": "🏡 **Mountain Refuge:** {{.LodgeTotal}} / {{.LodgeGoal}} ({{.Percent}}%)",
+  "BoardActivePlayers": "🎿 **Active Skiers:** {{.Count}}",
+  "BoardYourPos": "📍 **Your Position:** Tile **{{.Position}} / {{.TotalCases}}**",
+  "BoardNotStarted": "📍 **Your Position:** You haven't hit the slopes yet.",
+  "BoardLeaderboardTitle": "🏆 **Top 3 Skiers:**",
+  "BoardLeaderboardEmpty": "_No players on the slopes yet._",
+  "BoardLeaderboardEntry": "{{.Medal}} <@{{.UserID}}> — Tile **{{.Position}}**",
+  "BoardRenderError": "❌ Failed to generate the board image right now.",
+  "ImageLodgeLabel": "Mountain Refuge Progress",
+  "ImageStartLabel": "START"
+}

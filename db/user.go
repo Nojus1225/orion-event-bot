@@ -15,7 +15,7 @@ type User struct {
 	Energy          int
 	LastEnergyReset time.Time
 
-	Inventory []string
+	Inventory []string `gorm:"serializer:json"`
 
 	DebuffChairlift bool `gorm:"default:false"`
 	BuffHelmet      bool `gorm:"default:false"`
