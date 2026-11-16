@@ -16,12 +16,15 @@ require (
 	github.com/disgoorg/godave v0.1.0 // indirect
 	github.com/disgoorg/json/v2 v2.0.0 // indirect
 	github.com/disgoorg/omit v1.0.0 // indirect
+	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/klauspost/compress v1.18.4 // indirect
 	github.com/mattn/go-sqlite3 v1.14.22 // indirect
 	github.com/sasha-s/go-csync v0.0.0-20240107134140-fcbab37b09ad // indirect
+	github.com/wcharczuk/go-chart/v2 v2.1.2 // indirect
 	golang.org/x/crypto v0.48.0 // indirect
+	golang.org/x/image v0.18.0 // indirect
 	golang.org/x/sys v0.41.0 // indirect
 )

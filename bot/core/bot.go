@@ -7,16 +7,15 @@ import (
 )
 
 type Bot struct {
-	Client          *bot.Client
-	DB              *db.DB
-	AdminIDs        []string
-	GuildID         string
-	ChannelID       string
+	Client    *bot.Client
+	DB        *db.DB
+	AdminIDs  []string
+	GuildID   string
+	ChannelID string
 }
 
 func (b *Bot) IsMaintenanceMode() bool {
-	settings := db.GetSettings(b.DB.GormDB)
-	return settings.MaintenanceMode
+	return false
 }
 
 func (b *Bot) IsAdmin(userID string) bool {

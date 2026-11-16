@@ -46,9 +46,9 @@ func main() {
 	channelID := os.Getenv("CHANNEL_ID")
 
 	coreBot := &core.Bot{
-		DB:       database,
-		AdminIDs: adminIDs,
-		GuildID:  guildID,
+		DB:        database,
+		AdminIDs:  adminIDs,
+		GuildID:   guildID,
 		ChannelID: channelID,
 	}
 
@@ -74,7 +74,6 @@ func main() {
 	coreBot.Client = client
 
 	handlers.SetupEvents(coreBot)
-	core.StartAutoDropTicker(coreBot)
 
 	defer func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

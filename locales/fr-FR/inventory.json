@@ -1,9 +1,0 @@
-{
-  "InventoryDescription": "Voir l'inventaire de l'utilisateur",
-  "InventoryUserOpt": "Voir l'inventaire de cet utilisateur",
-  "Backpack": "🎒 Sac à dos",
-  "Sieve": "🪛 Tamis",
-  "Detector": "📟 Détecteur",
-  "InventoryTitle": "# Inventaire de {{.User}}",
-  "InventoryStats": "🪙 Pièces: {{.Coins}}\n⚠️ Pénalité: {{.Penalty}}\n⭐ Palier: {{.Tier}}"
-}

@@ -1,8 +1,0 @@
-{
-  "DailyDescription": "Récupérer la récompense quotidienne",
-  "DailyTitle": "# 📅 Récompense Quotidienne",
-  "DailyAlreadyClaimed": "❌ Tu as déjà récupéré ta récompense pour aujourd'hui ! Reviens demain.",
-  "DailyNoReward": "Aucune récompense n'est programmée pour aujourd'hui.",
-  "DailyNextReward": "Prochaine récompense : <t:{{.Time}}:F> (<t:{{.Time}}:R>)",
-  "DailySuccess": "🎉 Tu as obtenu **x{{.Quantity}} {{.Item}}** ! (Nouveau total: {{.Total}})"
-}

@@ -1,9 +1,0 @@
-{
-  "InventoryDescription": "Get user inventory",
-  "InventoryUserOpt": "Get this user inventory",
-  "Backpack": "🎒 Backpack",
-  "Sieve": "🪛 Sieve",
-  "Detector": "📟 Detector",
-  "InventoryTitle": "# {{.User}} Inventory",
-  "InventoryStats": "🪙 Coins: {{.Coins}}\n⚠️ Penalty: {{.Penalty}}\n⭐ Tier: {{.Tier}}"
-}

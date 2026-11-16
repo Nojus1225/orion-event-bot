@@ -1,6 +1,0 @@
-{
-  "LeaderboardDescription": "View the leaderboard",
-  "LeaderboardTitle": "## 🏆 Leaderboard",
-  "LeaderboardEntry": "{{.RankEmoji}} **#{{.Rank}}** <@{{.ID}}> - **{{.Coins}}** 🪙\n> ⚪ {{.Common}} | 🔵 {{.Rare}} | 🟡 {{.Epic}}",
-  "NoUsersFound": "No users found."
-}
