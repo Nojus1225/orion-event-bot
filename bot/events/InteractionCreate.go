@@ -3,14 +3,17 @@ package events
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"orion-event-bot/bot/core"
 	"orion-event-bot/bot/handlers"
+	"orion-event-bot/db"
 
 	"github.com/disgoorg/disgo/bot"
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"gorm.io/gorm/clause"
 )
 
 func init() {
@@ -43,6 +46,39 @@ func init() {
 			}
 
 			commandName := event.Data.CommandName()
+
+			var user db.User
+			userID := event.User().ID.String()
+			now := time.Now().UTC()
+
+			if err := b.DB.GormDB.Clauses(clause.OnConflict{DoNothing: true}).Create(&db.User{
+				ID:              userID,
+				Position:        1,
+				Energy:          3,
+				LastEnergyReset: now,
+			}).Error; err != nil {
+				fmt.Println("DB error:", err)
+				return
+			}
+			if err := b.DB.GormDB.Where("id = ?", userID).First(&user).Error; err != nil {
+				fmt.Println("DB error:", err)
+				return
+			}
+
+			lastResetDay := user.LastEnergyReset.UTC().Format("2006-01-02")
+			today := now.Format("2006-01-02")
+
+			if lastResetDay != today {
+				user.Energy = 3
+				user.LodgeDonatedToday = 0
+				user.LastEnergyReset = now
+
+				if err := b.DB.GormDB.Save(&user).Error; err != nil {
+					fmt.Println("Save reset error:", err)
+					return
+				}
+			}
+
 			if cmd, exists := handlers.Commands[commandName]; exists && cmd.Execute != nil {
 				cmd.Execute(b, event)
 			}

@@ -1,6 +1,9 @@
 package db
 
-type GamePositions struct {
-	PositionId int
-	Piege      string
+type SpecialCaseType uint8
+
+type GamePosition struct {
+	PositionId int `gorm:"column:posid;primaryKey"`
+	Piege      SpecialCaseType
+	Snowflakes int
 }

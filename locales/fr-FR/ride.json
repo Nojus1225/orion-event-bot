@@ -1,0 +1,20 @@
+{
+  "RideTitle": "# ⛷️ Ride",
+  "RidePrompt": "Choisissez parmi la piste Verte, Rouge ou Noire que vous allez descendre :",
+  "RideButtonGreen": "Piste Verte",
+  "RideButtonRed": "Piste Rouge",
+  "RideButtonBlack": "Piste Noire",
+  "RideNormal": "⛷️ Vous descendez la piste sans encombre ! Vous êtes maintenant sur la case **{{.newPos}}**.",
+  "RideAvalanche": "❄️ Une avalanche vous a emporté sur la Piste Noire ! Vous reculez de 3 cases jusqu'à la case **{{.newPos}}**.",
+  "RideSpecialSupply": "🎁 Vous avez trouvé une caisse de ravitaillement ! Vous êtes maintenant sur la case **{{.newPos}}**.",
+  "RideSpecialTree": "🌲 Vous avez percuté un sapin ! Vous reculez de 2 cases et perdez 10 flocons. Vous êtes maintenant sur la case **{{.newPos}}**.",
+  "RideSpecialCaveWithHelmet": "🪖 Vous êtes tombé dans un ravin, mais votre casque vous a protégé ! Vous reculez seulement de 4 cases. Vous êtes maintenant sur la case **{{.newPos}}**.",
+  "RideSpecialCaveNoHelmet": "🕳️ Vous êtes tombé dans un ravin sans casque ! Vous êtes renvoyé à la case **{{.newPos}}**.",
+  "RideSpecialYeti": "🦍 Un Yéti vous a pris en embuscade ! Vous perdez 20% de vos flocons. Vous êtes maintenant sur la case **{{.newPos}}**.",
+  "RideSpecialSlush": "❄️ Vous avez atterri dans la neige fondue ! Votre prochain déplacement sera ralenti. Vous êtes maintenant sur la case **{{.newPos}}**.",
+  "RideSpecialJump": "🏂 Vous avez pris un tremplin ! Vous décollez et atterrissez sur la case **{{.newPos}}**.",
+  "RideSpecialBlizzard": "🌨️ Un blizzard éclate ! Vous échangez votre position avec le joueur le plus proche. Vous êtes maintenant sur la case **{{.newPos}}**.",
+  "RideSpecialChairlift": "🚡 Vous avez pris le télésiège ! Vous gagnez 25 flocons, mais votre déplacement est divisé par deux. Vous êtes maintenant sur la case **{{.newPos}}**.",
+  "RideSpecialIce": "🧊 Vous avez glissé sur une plaque de verglas ! Vous avancez de 3 cases jusqu'à la case **{{.newPos}}**.",
+  "RideSpecialGondola": "🚠 Vous avez pris la télécabine ! Vous êtes transporté directement à la case **{{.newPos}}**."
+}

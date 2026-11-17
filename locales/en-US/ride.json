@@ -1,0 +1,20 @@
+{
+  "RideTitle": "# ⛷️ Ride",
+  "RidePrompt": "Choose which slope to descend: Green, Red, or Black:",
+  "RideButtonGreen": "Green Slope",
+  "RideButtonRed": "Red Slope",
+  "RideButtonBlack": "Black Slope",
+  "RideNormal": "⛷️ You descended smoothly! You are now on tile **{{.newPos}}**.",
+  "RideAvalanche": "❄️ An avalanche hit you on the Black Slope! You move back 3 tiles to tile **{{.newPos}}**.",
+  "RideSpecialSupply": "🎁 You found a supply crate! You are now on tile **{{.newPos}}**.",
+  "RideSpecialTree": "🌲 You crashed into a tree! You move back 2 tiles and lose 10 snowflakes. You are now on tile **{{.newPos}}**.",
+  "RideSpecialCaveWithHelmet": "🪖 You fell into a ravine, but your helmet saved you! You only move back 4 tiles. You are now on tile **{{.newPos}}**.",
+  "RideSpecialCaveNoHelmet": "🕳️ You fell into a ravine without a helmet! You are sent back to tile **{{.newPos}}**.",
+  "RideSpecialYeti": "🦍 A Yeti ambushed you! You lose 20% of your snowflakes. You are now on tile **{{.newPos}}**.",
+  "RideSpecialSlush": "❄️ You landed in slush! Your next movement will be slowed down. You are now on tile **{{.newPos}}**.",
+  "RideSpecialJump": "🏂 You hit a ski jump! You fly through the air and land on tile **{{.newPos}}**.",
+  "RideSpecialBlizzard": "🌨️ A blizzard hits! You swap positions with the closest player. You are now on tile **{{.newPos}}**.",
+  "RideSpecialChairlift": "🚡 You took the chairlift! You gain 25 snowflakes, but your movement is halved. You are now on tile **{{.newPos}}**.",
+  "RideSpecialIce": "🧊 You slipped on ice! You slide forward 3 tiles to tile **{{.newPos}}**.",
+  "RideSpecialGondola": "🚠 You rode the gondola! You are taken directly to tile **{{.newPos}}**."
+}
