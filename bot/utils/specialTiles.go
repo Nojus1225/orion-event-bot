@@ -42,8 +42,12 @@ func UpdateUserWithSpecialTile(gormDB *gorm.DB, user db.User, tileType vars.Spec
 	case vars.SpecialCaseGondola:
 		user.Position = 14
 	case vars.SpecialCaseSupply:
-		// soit 25 flocons soit un item aleatoire
-		break
+		if len(user.Inventory) >= 2 || rand.Intn(2) == 0 {
+			user.Snowflakes += 25
+		} else {
+			rItem := vars.RollRandomItem()
+			user.Inventory = append(user.Inventory, string(rItem.ID))
+		}
 	}
 	return user, game, event
 }
