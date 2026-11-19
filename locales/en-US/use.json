@@ -1,0 +1,6 @@
+{
+  "UseName": "use",
+  "UseDescription": "Use an object from your inventory",
+  "UseItemNotFound": "This item does not exist.",
+  "UseError": "❌ {{.Error}}"
+}
