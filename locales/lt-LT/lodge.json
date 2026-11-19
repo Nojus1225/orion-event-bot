@@ -1,0 +1,8 @@
+{
+  "LodgeName": "Kalnų namelis",
+  "LodgeDescription": "Įnešk snaiges į kalnų namelį.",
+  "LodgeNotEnoughSnowflakes": "Tu neturi pakankamai snaigių, kad galėtum padėti jas į kalnų namelį.",
+  "LodgeMaxDonation": "Tu gali aukoti daugiausiai 25 snaiges į dieną.",
+  "LodgeSuccess": "Tu padėjai {{.Snowflakes}} snaigę(-es) į kalnų namelį!",
+  "LodgeGoalExceeded": "Tu negali aukoti tiek daug snaigių, kalnų namelio tikslas yra ({{.Goal}}), būtų viršytas tikslas! ({{.Remaining}} like)"
+}

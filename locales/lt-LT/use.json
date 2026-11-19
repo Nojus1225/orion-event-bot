@@ -1,0 +1,6 @@
+{
+  "UseName": "naudoti",
+  "UseDescription": "Naudoti daiktą iš savo inventoriaus.",
+  "UseItemNotFound": "Šitas daiktas neegzistuoja.",
+  "UseError": "❌ {{.Error}}"
+}

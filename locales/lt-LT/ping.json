@@ -1,0 +1,5 @@
+{
+  "PingName": "ping",
+  "PingDescription": "Atsako su pong",
+  "PingStats": "**🤖 Robotas:** {{.BotPing}}ms\n**🌐 WS:** {{.WSPing}}ms\n**🗄️ Duomenų bazė:** {{.DBPing}}ms"
+}

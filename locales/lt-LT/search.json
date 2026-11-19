@@ -1,0 +1,8 @@
+{
+  "SearchName": "Ieškoti",
+  "SearchDescription": "Ieškoti sniege",
+  "SearchFoundSnowflakes": "Tu radai {{.Snowflakes}} snaiges sniege!",
+  "SearchInventoryFull": "Tavo inventorius pilnas, tu gavai 25 snaiges.",
+  "SearchFoundItem": "Tu radai {{.Item}} sniege!",
+  "SearchNoEnergy": "Tu neturi pakankamai energijos ieškojimui."
+}
