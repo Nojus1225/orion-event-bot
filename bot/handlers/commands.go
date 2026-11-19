@@ -1,11 +1,14 @@
 package handlers
 
 import (
+	"strings"
+
 	"orion-event-bot/bot/core"
 
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
 	"github.com/disgoorg/snowflake/v2"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
 type Command struct {
@@ -26,9 +29,32 @@ func RegisterCommand(cmd Command) {
 }
 
 func SyncCommands(b *core.Bot) error {
+	frLoc := core.GetLocalizer("fr-FR")
+	enLoc := core.GetLocalizer("en-US")
+
 	var cmds []discord.ApplicationCommandCreate
 	for _, cmd := range Commands {
-		cmds = append(cmds, cmd.Create)
+		create := cmd.Create
+		if slash, ok := create.(discord.SlashCommandCreate); ok && len(cmd.Name) > 0 {
+			prefix := strings.ToUpper(cmd.Name[:1]) + cmd.Name[1:]
+			if desc, err := enLoc.Localize(&i18n.LocalizeConfig{MessageID: prefix + "Description"}); err == nil && desc != "" {
+				slash.Description = desc
+			}
+			if descFr, err := frLoc.Localize(&i18n.LocalizeConfig{MessageID: prefix + "Description"}); err == nil && descFr != "" {
+				if slash.DescriptionLocalizations == nil {
+					slash.DescriptionLocalizations = make(map[discord.Locale]string)
+				}
+				slash.DescriptionLocalizations[discord.LocaleFrench] = descFr
+			}
+			if nameFr, err := frLoc.Localize(&i18n.LocalizeConfig{MessageID: prefix + "Name"}); err == nil && nameFr != "" {
+				if slash.NameLocalizations == nil {
+					slash.NameLocalizations = make(map[discord.Locale]string)
+				}
+				slash.NameLocalizations[discord.LocaleFrench] = nameFr
+			}
+			create = slash
+		}
+		cmds = append(cmds, create)
 	}
 
 	if b.GuildID != "" {
