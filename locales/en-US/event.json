@@ -1,0 +1,15 @@
+{
+  "EventName": "event",
+  "EventDescription": "Learn how the Winter Rush event works",
+  "EventTitle": "# ⛷️ Winter Rush — Orion Hosting",
+  "EventMenuPrompt": "Choose a section to read...",
+  "EventCatOverview": "🏔️ Goal & Rewards",
+  "EventCatOverviewDesc": "How the event works and how to win credits",
+  "EventCatCommands": "📜 Commands",
+  "EventCatCommandsDesc": "List and explanation of all commands",
+  "EventCatItems": "🎒 Items & Shop",
+  "EventCatItemsDesc": "Items you can buy or find in the snow",
+  "EventOverviewContent": "Welcome to **Winter Rush**, the **Orion Hosting** (`orionhost.xyz`) 1-week board game event!\n\n🎯 **Goal:**\nReach **Tile 50** before the end of the week and donate **Snowflakes** to the **Lodge**.\n\n💰 **Rewards (End of Event):**\n• You win **credits equal to the Snowflakes you donated to the Lodge**.\n• **Podium Bonus** for the first 3 players to reach Tile 50:\n  🥇 1st place: **+50 credits**\n  🥈 2nd place: **+30 credits**\n  🥉 3rd place: **+20 credits**",
+  "EventCommandsContent": "• `/ride` — Ski down a Green, Red, or Black slope to advance on the board.\n• `/search` — Search in the snow for Snowflakes or items (costs 1 energy).\n• `/lodge <amount>` — Donate Snowflakes to the Lodge (max 25/day).\n• `/shop` — Buy items with your Snowflakes.\n• `/use <item>` — Use an item from your inventory.\n• `/target <user> <type>` — Throw a snowball (-2 tiles) or pickpocket (-15 Snowflakes).\n• `/user [user]` — View your (or another player's) stats & inventory.\n• `/board` — View the current board and leaderboard.",
+  "EventItemsContent": "• 🛡️ **Full-Face Helmet (30 ❄️)** — Blocks the next negative trap, snowball, avalanche, or pickpocket.\n• 🧲 **Snowflake Magnet (35 ❄️)** — Steals 10 Snowflakes from up to 2 closest players.\n• 🎿 **Turbo Ski Wax (40 ❄️)** — Doubles the distance of your next `/ride`.\n• 🧨 **Avalanche Firecracker (55 ❄️)** — Pushes back all unfinished players ahead of you by 3 tiles."
+}

@@ -1,0 +1,15 @@
+{
+  "EventName": "evenement",
+  "EventDescription": "Découvrir le fonctionnement de l'événement Winter Rush",
+  "EventTitle": "# ⛷️ Winter Rush — Orion Hosting",
+  "EventMenuPrompt": "Choisis une section à consulter...",
+  "EventCatOverview": "🏔️ But & Récompenses",
+  "EventCatOverviewDesc": "Fonctionnement de l'événement et crédits à gagner",
+  "EventCatCommands": "📜 Commandes",
+  "EventCatCommandsDesc": "Liste et explication de toutes les commandes",
+  "EventCatItems": "🎒 Objets & Boutique",
+  "EventCatItemsDesc": "Objets à acheter ou trouver dans la neige",
+  "EventOverviewContent": "Bienvenue dans **Winter Rush**, l'événement jeu de l'oie d'**Orion Hosting** (`orionhost.xyz`) d'une durée d'**1 semaine** !\n\n🎯 **Objectif :**\nAtteindre la **Case 50** avant la fin de la semaine et déposer des **Flocons** dans le **Chalet (Lodge)**.\n\n💰 **Récompenses (fin d'événement) :**\n• Tu gagnes le **nombre de crédits équivalent aux Flocons déposés dans le Chalet**.\n• **Bonus de podium** pour les 3 premiers arrivés à la Case 50 :\n  🥇 1ère place : **+50 crédits**\n  🥈 2ème place : **+30 crédits**\n  🥉 3ème place : **+20 crédits**",
+  "EventCommandsContent": "• `/glisser` (`/ride`) — Descendre une piste Verte, Rouge ou Noire pour avancer.\n• `/chercher` (`/search`) — Chercher des Flocons ou des objets dans la neige (1 énergie).\n• `/chalet` (`/lodge`) — Déposer des Flocons dans le Chalet (max 25/jour).\n• `/boutique` (`/shop`) — Acheter des objets avec tes Flocons.\n• `/utiliser` (`/use`) — Utiliser un objet de ton inventaire.\n• `/cibler` (`/target`) — Lancer une boule de neige (-2 cases) ou voler (-15 Flocons).\n• `/utilisateur` (`/user`) — Voir tes stats et ton inventaire (ou ceux d'un joueur).\n• `/plateau` (`/board`) — Afficher le plateau et le classement.",
+  "EventItemsContent": "• 🛡️ **Casque Intégral (30 ❄️)** — Bloque le prochain piège, boule de neige, avalanche ou vol.\n• 🧲 **Aimant à Flocons (35 ❄️)** — Vole 10 Flocons aux 2 joueurs les plus proches.\n• 🎿 **Fart Turbo (40 ❄️)** — Double la distance de ton prochain `/ride`.\n• 🧨 **Pétard d'Avalanche (55 ❄️)** — Fait reculer de 3 cases tous les joueurs devant toi qui n'ont pas fini."
+}
