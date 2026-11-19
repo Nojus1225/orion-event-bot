@@ -1,4 +1,6 @@
 {
+  "BoardName": "plateau",
+  "BoardDescription": "Afficher le plateau actuel",
   "BoardTitle": "# ⛷️ Winter Rush — Plateau actuel",
   "BoardLodge": "🏡 **Refuge :** {{.LodgeTotal}} / {{.LodgeGoal}} ({{.Percent}}%)",
   "BoardActivePlayers": "🎿 **Joueurs en piste :** {{.Count}}",

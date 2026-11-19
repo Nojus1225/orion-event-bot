@@ -1,4 +1,6 @@
 {
+  "BoardName": "board",
+  "BoardDescription": "Show the current board",
   "BoardTitle": "# ⛷️ Winter Rush — Current Board",
   "BoardLodge": "🏡 **Mountain Refuge:** {{.LodgeTotal}} / {{.LodgeGoal}} ({{.Percent}}%)",
   "BoardActivePlayers": "🎿 **Active Skiers:** {{.Count}}",

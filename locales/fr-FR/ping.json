@@ -1,4 +1,5 @@
 {
+  "PingName": "ping",
   "PingDescription": "Répond avec pong",
   "PingStats": "**🤖 Bot:** {{.BotPing}}ms\n**🌐 WS:** {{.WSPing}}ms\n**🗄️ DB:** {{.DBPing}}ms"
 }
