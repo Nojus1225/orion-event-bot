@@ -6,6 +6,7 @@ import (
 
 	"orion-event-bot/bot/core"
 	"orion-event-bot/bot/handlers"
+	"orion-event-bot/bot/vars"
 	"orion-event-bot/db"
 
 	"github.com/disgoorg/disgo/discord"
@@ -59,6 +60,26 @@ func init() {
 							discord.NewTextDisplay(notEnoughText),
 						).WithAccessory(discord.NewThumbnail("https://abs.twimg.com/emoji/v2/72x72/1f3e1.png")),
 					).WithAccentColor(0x5865F2),
+				)
+			} else if evt.LodgeTotal+nSnowflakes > vars.LodgeGoal {
+				remaining := vars.LodgeGoal - evt.LodgeTotal
+				if remaining < 0 {
+					remaining = 0
+				}
+				goalExceededText, _ := loc.Localize(&i18n.LocalizeConfig{
+					MessageID: "LodgeGoalExceeded",
+					TemplateData: map[string]interface{}{
+						"Goal":      vars.LodgeGoal,
+						"Remaining": remaining,
+					},
+				})
+				msg = discord.NewMessageCreateV2(
+					discord.NewContainer(
+						discord.NewSection(
+							discord.NewTextDisplay("# Lodge"),
+							discord.NewTextDisplay(goalExceededText),
+						).WithAccessory(discord.NewThumbnail("https://abs.twimg.com/emoji/v2/72x72/1f3e1.png")),
+					).WithAccentColor(0xED4245),
 				)
 			} else if (user.LodgeDonatedToday + nSnowflakes) > 25 {
 				maxDonationText, _ := loc.Localize(&i18n.LocalizeConfig{

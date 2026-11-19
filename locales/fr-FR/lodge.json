@@ -2,5 +2,6 @@
   "LodgeDescription": "Mettre des flocons dans le chalet",
   "LodgeNotEnoughSnowflakes": "Tu n'as pas assez de flocons à mettre dans le chalet.",
   "LodgeMaxDonation": "Tu peux donner maximum 25 flocons par jour.",
-  "LodgeSuccess": "Tu as mis {{.Snowflakes}} flocons dans le chalet !"
+  "LodgeSuccess": "Tu as mis {{.Snowflakes}} flocons dans le chalet !",
+  "LodgeGoalExceeded": "Tu ne peux pas donner autant de flocons, l'objectif du chalet ({{.Goal}}) serait dépassé ! ({{.Remaining}} restants)"
 }
