@@ -1,4 +1,0 @@
-{
-  "MeDescription": "Get your event data",
-  "MeStats": ":snowflake: {{.Snowflakes}} Snowflakes\n:zap: {{.Energy}} Energy left\n:clock1: Energy reset {{.EnergyReset}}\n:map: Tile {{.Position}}/50"
-}

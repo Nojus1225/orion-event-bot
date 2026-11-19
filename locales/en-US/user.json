@@ -1,0 +1,7 @@
+{
+  "UserName": "user",
+  "UserDescription": "Get user event data",
+  "UserNotParticipating": "<@{{.User}}> is not participating in the event.",
+  "MeStats": ":snowflake: {{.Snowflakes}} Snowflakes\n:zap: {{.Energy}} Energy left\n:clock1: Energy reset {{.EnergyReset}}\n:map: Tile {{.Position}}/50\n:backpack: Inventory: {{.Inventory}}",
+  "MeInventoryEmpty": "Empty"
+}

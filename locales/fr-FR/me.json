@@ -1,4 +1,0 @@
-{
-  "MeDescription": "Obtenez vos données d'événement",
-  "MeStats": ":snowflake: {{.Snowflakes}} Flocons\n:zap: {{.Energy}} Énergie restante\n:clock1: Réinitialisation de l'énergie {{.EnergyReset}}\n:map: Case {{.Position}}/50"
-}

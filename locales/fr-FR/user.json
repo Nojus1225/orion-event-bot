@@ -1,0 +1,7 @@
+{
+  "UserName": "utilisateur",
+  "UserDescription": "Voir les données d'événement d'un joueur",
+  "UserNotParticipating": "<@{{.User}}> ne participe pas à l'événement.",
+  "MeStats": ":snowflake: {{.Snowflakes}} Flocons\n:zap: {{.Energy}} Énergie restante\n:clock1: Réinitialisation de l'énergie {{.EnergyReset}}\n:map: Case {{.Position}}/50\n:backpack: Inventaire : {{.Inventory}}",
+  "MeInventoryEmpty": "Vide"
+}
