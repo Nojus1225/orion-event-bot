@@ -36,6 +36,10 @@ func init() {
 			slash := event.SlashCommandInteractionData()
 			nSnowflakes := slash.Int("snowflakes")
 
+			if nSnowflakes <= 0 {
+				return
+			}
+
 			var user db.User
 			if err := b.DB.GormDB.Where("id = ?", event.User().ID.String()).First(&user).Error; err != nil {
 				fmt.Println("DB error:", err)

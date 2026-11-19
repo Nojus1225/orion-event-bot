@@ -1,4 +1,5 @@
 {
+  "LodgeName": "lodge",
   "LodgeDescription": "Put snowflakes in the lodge",
   "LodgeNotEnoughSnowflakes": "You don't have enough snowflakes to put in the lodge.",
   "LodgeMaxDonation": "You can donate a maximum of 25 snowflakes by day.",
