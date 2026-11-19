@@ -1,0 +1,11 @@
+{
+  "ShopName": "Parduotuvė",
+  "ShopDescription": "Atidaryti parduotuvę",
+  "ShopTitle": "# 🛒 Žiemos parduotuvė",
+  "ShopPrice": "❄️ **{{.Price}}** snaigė(-ės)",
+  "ShopBuyItem": "Pirkti",
+  "ShopNotEnoughSnowflakes": "Tu neturi pakankamai snaigių, kad galėtum nusipirkti šitą daiktą.",
+  "ShopInventoryFull": "Tavo inventorius pilnas (daugiausiai 2 daiktai).",
+  "ShopBuySuccess": "Tu nusipirkai **{{.Item}}**!",
+  "NotYourComponent": "Negalite naudotis kito žaidėjo meniu."
+}

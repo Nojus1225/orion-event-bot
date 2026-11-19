@@ -1,0 +1,22 @@
+{
+  "RideName": "čiuožti",
+  "RideDescription": "Leiskis slidėmis nuo šlaito",
+  "RideTitle": "# ⛷️ Čiuožimas",
+  "RidePrompt": "Pasirink, kuria trasa leistis: žalia, raudona ar juoda:",
+  "RideButtonGreen": "Žalia trasa",
+  "RideButtonRed": "Raudona trasa",
+  "RideButtonBlack": "Juoda trasa",
+  "RideNormal": "⛷️ Sėkmingai nusileidai! Dabar esi **{{.newPos}}** laukelyje.",
+  "RideAvalanche": "❄️ Juodojoje trasoje tave užklupo lavina! Grįžti 3 laukeliais atgal, į **{{.newPos}}** laukelį.",
+  "RideSpecialSupply": "🎁 Radai atsargų dėžę! Dabar esi **{{.newPos}}** laukelyje.",
+  "RideSpecialTree": "🌲 Atsitrenkei į medį! Grįžti 2 laukeliais atgal ir prarandi 10 snaigių. Dabar esi **{{.newPos}}** laukelyje.",
+  "RideSpecialCaveWithHelmet": "🪖 Įkritai į tarpeklį, bet šalmas tave išgelbėjo! Grįžti tik 4 laukeliais atgal. Dabar esi **{{.newPos}}** laukelyje.",
+  "RideSpecialCaveNoHelmet": "🕳️ Įkritai į tarpeklį neturėdamas šalmo! Grįžti į **{{.newPos}}** laukelį.",
+  "RideSpecialYeti": "🦍 Tave užpuolė sniego žmogus! Prarandi 20 % savo snaigių. Dabar esi **{{.newPos}}** laukelyje.",
+  "RideSpecialSlush": "❄️ Įvažiavai į pažliugusį sniegą! Kitas tavo judėjimas bus lėtesnis. Dabar esi **{{.newPos}}** laukelyje.",
+  "RideSpecialJump": "🏂 Užvažiavai ant tramplino! Pakilai į orą ir nusileidai **{{.newPos}}** laukelyje.",
+  "RideSpecialBlizzard": "🌨️ Užklupo pūga! Sukeitei vietomis su artimiausiu žaidėju. Dabar esi **{{.newPos}}** laukelyje.",
+  "RideSpecialChairlift": "🚡 Pasinaudojai keltuvu! Gauni 25 snaiges, tačiau tavo judėjimo greitis sumažėja perpus. Dabar esi **{{.newPos}}** laukelyje.",
+  "RideSpecialIce": "🧊 Paslydai ant ledo! Nuslydai 3 laukeliais į priekį, į **{{.newPos}}** laukelį.",
+  "RideSpecialGondola": "🚠 Pasinaudojai gondoline keltuvo kabina! Buvai nugabentas tiesiai į **{{.newPos}}** laukelį."
+}
