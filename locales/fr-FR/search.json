@@ -1,0 +1,8 @@
+{
+  "SearchName": "chercher",
+  "SearchDescription": "Chercher dans la neige",
+  "SearchFoundSnowflakes": "Tu as trouvé {{.Snowflakes}} flocons dans la neige !",
+  "SearchInventoryFull": "Ton inventaire est plein, tu reçois 25 flocons.",
+  "SearchFoundItem": "Tu as trouvé {{.Item}} dans la neige !",
+  "SearchNoEnergy": "Tu n'as pas assez d'énergie pour chercher."
+}
