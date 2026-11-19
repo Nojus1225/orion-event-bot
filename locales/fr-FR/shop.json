@@ -1,0 +1,11 @@
+{
+  "ShopName": "boutique",
+  "ShopDescription": "Ouvrir la boutique",
+  "ShopTitle": "# 🛒 Boutique d'hiver",
+  "ShopPrice": "❄️ **{{.Price}}** Flocons",
+  "ShopBuyItem": "Acheter",
+  "ShopNotEnoughSnowflakes": "Tu n'as pas assez de flocons pour acheter cet objet.",
+  "ShopInventoryFull": "Ton inventaire est plein (2 objets maximum).",
+  "ShopBuySuccess": "Tu as acheté **{{.Item}}** !",
+  "NotYourComponent": "Tu ne peux pas interagir avec le menu de quelqu'un d'autre."
+}

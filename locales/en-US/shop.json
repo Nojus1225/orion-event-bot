@@ -1,0 +1,11 @@
+{
+  "ShopName": "shop",
+  "ShopDescription": "Open the shop",
+  "ShopTitle": "# 🛒 Winter Shop",
+  "ShopPrice": "❄️ **{{.Price}}** Snowflakes",
+  "ShopBuyItem": "Buy",
+  "ShopNotEnoughSnowflakes": "You don't have enough snowflakes to buy this item.",
+  "ShopInventoryFull": "Your inventory is full (max 2 items).",
+  "ShopBuySuccess": "You bought **{{.Item}}**!",
+  "NotYourComponent": "You cannot interact with someone else's menu."
+}
