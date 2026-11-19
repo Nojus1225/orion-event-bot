@@ -1,4 +1,6 @@
 {
+  "RideName": "glisser",
+  "RideDescription": "Descendre une piste de ski",
   "RideTitle": "# ⛷️ Ride",
   "RidePrompt": "Choisissez parmi la piste Verte, Rouge ou Noire que vous allez descendre :",
   "RideButtonGreen": "Piste Verte",

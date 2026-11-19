@@ -1,4 +1,6 @@
 {
+  "RideName": "ride",
+  "RideDescription": "Ski down a slope",
   "RideTitle": "# ⛷️ Ride",
   "RidePrompt": "Choose which slope to descend: Green, Red, or Black:",
   "RideButtonGreen": "Green Slope",

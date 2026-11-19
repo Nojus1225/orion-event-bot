@@ -135,6 +135,19 @@ func init() {
 				}
 			}
 
+			if isAvalanche && user.BuffHelmet {
+				tileToMove = 0
+				isAvalanche = false
+				user.BuffHelmet = false
+			}
+
+			if user.BuffWax {
+				if tileToMove > 0 {
+					tileToMove *= 2
+				}
+				user.BuffWax = false
+			}
+
 			newTilePos := user.Position + tileToMove
 			if newTilePos < 0 {
 				newTilePos = 0
