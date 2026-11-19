@@ -1,0 +1,14 @@
+{
+  "TargetName": "cibler",
+  "TargetDescription": "Attaquer un joueur",
+  "TargetNoEnergy": "Tu n'as pas assez d'énergie pour cibler quelqu'un.",
+  "TargetSelf": "Tu ne peux pas te cibler toi-même.",
+  "TargetFinished": "Ce joueur a déjà terminé la course.",
+  "TargetHelmet": "🛡️ <@{{.Target}}> était protégé par un Casque Intégral !",
+  "TargetTooFarBehind": "Tu ne peux pas cibler un joueur situé à plus de 2 places en dessous de toi.",
+  "TargetSnowballSuccess": "❄️ Tu as lancé une boule de neige sur <@{{.Target}}> ! Il recule de 2 cases.",
+  "TargetPickpocketSuccess": "💰 Tu as volé **{{.Stolen}} Flocons** à <@{{.Target}}> !",
+  "TargetPickpocketFail": "🕵️ Tu as essayé de voler <@{{.Target}}>, mais tu as échoué !",
+  "TargetNotEnoughSnowflakes": "<@{{.Target}}> n'a pas assez de flocons à voler (minimum 15).",
+  "TargetNotParticipating": "<@{{.Target}}> ne participe pas à l'événement."
+}

@@ -1,0 +1,14 @@
+{
+  "TargetName": "target",
+  "TargetDescription": "Attack a user",
+  "TargetNoEnergy": "You don't have enough energy to target someone.",
+  "TargetSelf": "You cannot target yourself.",
+  "TargetFinished": "This player has already finished the race.",
+  "TargetHelmet": "🛡️ <@{{.Target}}> was protected by a Full-Face Helmet!",
+  "TargetTooFarBehind": "You cannot target a player more than 2 places below you.",
+  "TargetSnowballSuccess": "❄️ You threw a snowball at <@{{.Target}}>! They were pushed back 2 tiles.",
+  "TargetPickpocketSuccess": "💰 You pickpocketed **{{.Stolen}} Snowflakes** from <@{{.Target}}>!",
+  "TargetPickpocketFail": "🕵️ You tried to pickpocket <@{{.Target}}>, but failed!",
+  "TargetNotEnoughSnowflakes": "<@{{.Target}}> doesn't have enough snowflakes to pickpocket (minimum 15).",
+  "TargetNotParticipating": "<@{{.Target}}> is not participating in the event."
+}
