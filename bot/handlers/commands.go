@@ -29,28 +29,43 @@ func RegisterCommand(cmd Command) {
 }
 
 func SyncCommands(b *core.Bot) error {
-	frLoc := core.GetLocalizer("fr")
-	enLoc := core.GetLocalizer("en-US")
+	if core.Bundle == nil {
+		core.InitI18n()
+	}
+
+	tags := core.Bundle.LanguageTags()
+	localizers := make(map[string]*i18n.Localizer, len(tags))
+	for _, tag := range tags {
+		if tag.String() == "und" {
+			continue
+		}
+		localizers[tag.String()] = core.GetLocalizer(tag.String())
+	}
 
 	var cmds []discord.ApplicationCommandCreate
 	for _, cmd := range Commands {
 		create := cmd.Create
 		if slash, ok := create.(discord.SlashCommandCreate); ok && len(cmd.Name) > 0 {
 			prefix := strings.ToUpper(cmd.Name[:1]) + cmd.Name[1:]
-			if desc, err := enLoc.Localize(&i18n.LocalizeConfig{MessageID: prefix + "Description"}); err == nil && desc != "" {
-				slash.Description = desc
-			}
-			if descFr, err := frLoc.Localize(&i18n.LocalizeConfig{MessageID: prefix + "Description"}); err == nil && descFr != "" {
-				if slash.DescriptionLocalizations == nil {
-					slash.DescriptionLocalizations = make(map[discord.Locale]string)
+			for lang, loc := range localizers {
+				if desc, err := loc.Localize(&i18n.LocalizeConfig{MessageID: prefix + "Description"}); err == nil && desc != "" {
+					if lang == "en-US" {
+						slash.Description = desc
+					} else {
+						if slash.DescriptionLocalizations == nil {
+							slash.DescriptionLocalizations = make(map[discord.Locale]string)
+						}
+						slash.DescriptionLocalizations[discord.Locale(lang)] = desc
+					}
 				}
-				slash.DescriptionLocalizations[discord.LocaleFrench] = descFr
-			}
-			if nameFr, err := frLoc.Localize(&i18n.LocalizeConfig{MessageID: prefix + "Name"}); err == nil && nameFr != "" {
-				if slash.NameLocalizations == nil {
-					slash.NameLocalizations = make(map[discord.Locale]string)
+				if lang != "en-US" {
+					if name, err := loc.Localize(&i18n.LocalizeConfig{MessageID: prefix + "Name"}); err == nil && name != "" {
+						if slash.NameLocalizations == nil {
+							slash.NameLocalizations = make(map[discord.Locale]string)
+						}
+						slash.NameLocalizations[discord.Locale(lang)] = name
+					}
 				}
-				slash.NameLocalizations[discord.LocaleFrench] = nameFr
 			}
 			create = slash
 		}
