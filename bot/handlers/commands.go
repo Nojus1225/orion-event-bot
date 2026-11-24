@@ -29,7 +29,7 @@ func RegisterCommand(cmd Command) {
 }
 
 func SyncCommands(b *core.Bot) error {
-	frLoc := core.GetLocalizer("fr-FR")
+	frLoc := core.GetLocalizer("fr")
 	enLoc := core.GetLocalizer("en-US")
 
 	var cmds []discord.ApplicationCommandCreate

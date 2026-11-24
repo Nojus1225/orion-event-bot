@@ -16,8 +16,16 @@ func InitI18n() {
 	Bundle = i18n.NewBundle(language.English)
 	Bundle.RegisterUnmarshalFunc("json", json.Unmarshal)
 
-	locales := []string{"en-US", "fr-FR"}
-	for _, locale := range locales {
+	entries, err := os.ReadDir("locales")
+	if err != nil {
+		fmt.Println("Warning: could not read locales dir:", err)
+		return
+	}
+	for _, entry := range entries {
+		if !entry.IsDir() {
+			continue
+		}
+		locale := entry.Name()
 		dir := filepath.Join("locales", locale)
 		files, err := os.ReadDir(dir)
 		if err != nil {
@@ -51,9 +59,6 @@ func InitI18n() {
 }
 
 func GetLocalizer(lang string) *i18n.Localizer {
-	if lang == "fr" || lang == "French" {
-		lang = "fr-FR"
-	}
 	if Bundle == nil {
 		InitI18n()
 	}
