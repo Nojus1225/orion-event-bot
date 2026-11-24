@@ -1,5 +1,5 @@
 {
-  "ShopName": "Parduotuvė",
+  "ShopName": "parduotuvė",
   "ShopDescription": "Atidaryti parduotuvę",
   "ShopTitle": "# 🛒 Žiemos parduotuvė",
   "ShopPrice": "❄️ **{{.Price}}** snaigė(-ės)",

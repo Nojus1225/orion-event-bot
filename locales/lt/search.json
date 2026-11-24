@@ -1,5 +1,5 @@
 {
-  "SearchName": "Ieškoti",
+  "SearchName": "ieškoti",
   "SearchDescription": "Ieškoti sniege",
   "SearchFoundSnowflakes": "Tu radai {{.Snowflakes}} snaiges sniege!",
   "SearchInventoryFull": "Tavo inventorius pilnas, tu gavai 25 snaiges.",
