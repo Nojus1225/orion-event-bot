@@ -1,6 +1,6 @@
 {
-  "LodgeName": "namelis",
-  "LodgeDescription": "Įnešk snaiges į kalnų namelį.",
+  "LodgeName": "kalnų_namelis",
+  "LodgeDescription": "Įneškite snaigęs į kalnų namelį.",
   "LodgeNotEnoughSnowflakes": "Tu neturi pakankamai snaigių, kad galėtum padėti jas į kalnų namelį.",
   "LodgeMaxDonation": "Tu gali aukoti daugiausiai 25 snaiges į dieną.",
   "LodgeSuccess": "Tu padėjai {{.Snowflakes}} snaigę(-es) į kalnų namelį!",

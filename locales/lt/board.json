@@ -1,15 +1,15 @@
 {
   "BoardName": "lenta",
-  "BoardDescription": "Parodyti dabartinę lentą",
+  "BoardDescription": "Parodyti dabartinę lentą.",
   "BoardTitle": "# ⛷️ Žiemos šėlsmas — dabartinė lenta",
   "BoardLodge": "🏡 **Kalnų prieglobstis:** {{.LodgeTotal}} / {{.LodgeGoal}} ({{.Percent}}%)",
   "BoardActivePlayers": "🎿 **Aktyvūs slidinėtojai:** {{.Count}}",
-  "BoardYourPos": "📍 **Tavo pozicija:** pavadinimas **{{.Position}} / {{.TotalCases}}**",
-  "BoardNotStarted": "📍 **Tavo pozicija:** Dar nebuvai slidinėjimo trasose.",
-  "BoardLeaderboardTitle": "🏆 **Top 3 slidinėtojai:**",
-  "BoardLeaderboardEmpty": "_Nėra žaidėjų slidinėjimo trasoje._",
-  "BoardLeaderboardEntry": "{{.Medal}} <@{{.UserID}}> — pavadinimas **{{.Position}}**",
+  "BoardYourPos": "📍 **Tavo pozicija:** laukelis **{{.Position}} / {{.TotalCases}}**",
+  "BoardNotStarted": "📍 **Tavo pozicija:** Dar nebuvai slidinėjimo trasoje.",
+  "BoardLeaderboardTitle": "🏆 **3 geriausi slidinėtojai:**",
+  "BoardLeaderboardEmpty": "_Nėra jokių slidinėtojų trasoje._",
+  "BoardLeaderboardEntry": "{{.Medal}} <@{{.UserID}}> — laukelis **{{.Position}}**",
   "BoardRenderError": "❌ Nepavyko sugeneruoti lentos nuotraukos.",
-  "ImageLodgeLabel": "Kalnų prieglobsčio pažanga",
+  "ImageLodgeLabel": "Kalnų prieglobstis pažanga",
   "ImageStartLabel": "PRADŽIA"
 }
