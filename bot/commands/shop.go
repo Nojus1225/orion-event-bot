@@ -100,7 +100,7 @@ func init() {
 			},
 		},
 		Execute: func(b *core.Bot, event *events.ApplicationCommandInteractionCreate) {
-			loc := core.GetLocalizer(event.Locale().String())
+			loc := core.GetLocalizer(event.Locale().Code())
 			var user db.User
 			if err := b.DB.GormDB.Where("id = ?", event.User().ID.String()).First(&user).Error; err != nil {
 				fmt.Println("DB error:", err)
@@ -116,7 +116,7 @@ func init() {
 			}
 		},
 		ExecuteButton: func(b *core.Bot, event *events.ComponentInteractionCreate) {
-			loc := core.GetLocalizer(event.Locale().String())
+			loc := core.GetLocalizer(event.Locale().Code())
 			notYourComponentTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "NotYourComponent"})
 			if (event.Message.InteractionMetadata != nil && event.Message.InteractionMetadata.User.ID != event.User().ID) ||
 				(event.Message.Interaction != nil && event.Message.Interaction.User.ID != event.User().ID) {

@@ -91,7 +91,7 @@ func init() {
 			_ = event.AutocompleteResult(choices)
 		},
 		Execute: func(b *core.Bot, event *events.ApplicationCommandInteractionCreate) {
-			loc := core.GetLocalizer(event.Locale().String())
+			loc := core.GetLocalizer(event.Locale().Code())
 			itemId := event.SlashCommandInteractionData().String("object")
 			item, exist := vars.Items[vars.ItemID(itemId)]
 			if !exist {

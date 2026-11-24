@@ -76,7 +76,7 @@ func init() {
 			Description: "Learn how the Winter Rush event works",
 		},
 		Execute: func(b *core.Bot, event *events.ApplicationCommandInteractionCreate) {
-			loc := core.GetLocalizer(event.Locale().String())
+			loc := core.GetLocalizer(event.Locale().Code())
 			container := getEventContainer("overview", loc, event.User().EffectiveAvatarURL())
 
 			if err := event.CreateMessage(discord.NewMessageCreateV2(container)); err != nil {
@@ -84,7 +84,7 @@ func init() {
 			}
 		},
 		ExecuteMenu: func(b *core.Bot, event *events.ComponentInteractionCreate) {
-			loc := core.GetLocalizer(event.Locale().String())
+			loc := core.GetLocalizer(event.Locale().Code())
 			notYourComponentTxt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "NotYourComponent"})
 			if (event.Message.InteractionMetadata != nil && event.Message.InteractionMetadata.User.ID != event.User().ID) ||
 				(event.Message.Interaction != nil && event.Message.Interaction.User.ID != event.User().ID) {

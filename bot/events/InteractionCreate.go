@@ -27,7 +27,7 @@ func init() {
 			}
 
 			if b.ChannelID != "" && event.Channel().ID().String() != b.ChannelID && !b.IsAdmin(event.User().ID.String()) {
-				loc := core.GetLocalizer(event.Locale().String())
+				loc := core.GetLocalizer(event.Locale().Code())
 				txt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "HandlerWrongChannelCommand"})
 				msg := discord.NewMessageCreate().WithEphemeral(true).WithContent(txt)
 				_ = event.CreateMessage(msg)
@@ -35,7 +35,7 @@ func init() {
 			}
 
 			if b.IsMaintenanceMode() && !b.IsStaff(event.User().ID.String()) {
-				loc := core.GetLocalizer(event.Locale().String())
+				loc := core.GetLocalizer(event.Locale().Code())
 				msg, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "MaintenanceMessage"})
 				if msg == "" {
 					msg = "The event is complete."
@@ -97,7 +97,7 @@ func init() {
 			}
 
 			if b.ChannelID != "" && event.Channel().ID().String() != b.ChannelID && !b.IsAdmin(event.User().ID.String()) {
-				loc := core.GetLocalizer(event.Locale().String())
+				loc := core.GetLocalizer(event.Locale().Code())
 				txt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "HandlerWrongChannelInteraction"})
 				msg := discord.NewMessageCreate().WithEphemeral(true).WithContent(txt)
 				_ = event.CreateMessage(msg)
@@ -105,7 +105,7 @@ func init() {
 			}
 
 			if b.IsMaintenanceMode() && !b.IsStaff(event.User().ID.String()) {
-				loc := core.GetLocalizer(event.Locale().String())
+				loc := core.GetLocalizer(event.Locale().Code())
 				msg, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "MaintenanceMessage"})
 				if msg == "" {
 					msg = "L'événement est actuellement en maintenance. Merci de patienter !"
@@ -150,7 +150,7 @@ func init() {
 			}
 
 			if b.ChannelID != "" && event.Channel().ID().String() != b.ChannelID && !b.IsAdmin(event.User().ID.String()) {
-				loc := core.GetLocalizer(event.Locale().String())
+				loc := core.GetLocalizer(event.Locale().Code())
 				txt, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "HandlerWrongChannelModal"})
 				msg := discord.NewMessageCreate().WithEphemeral(true).WithContent(txt)
 				_ = event.CreateMessage(msg)

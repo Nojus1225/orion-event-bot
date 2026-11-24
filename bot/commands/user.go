@@ -30,7 +30,7 @@ func init() {
 			},
 		},
 		Execute: func(b *core.Bot, event *events.ApplicationCommandInteractionCreate) {
-			loc := core.GetLocalizer(event.Locale().String())
+			loc := core.GetLocalizer(event.Locale().Code())
 
 			u := event.SlashCommandInteractionData().User("user")
 			if u.ID == 0 {

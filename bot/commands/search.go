@@ -23,7 +23,7 @@ func init() {
 			Description: "Search in the snow",
 		},
 		Execute: func(b *core.Bot, event *events.ApplicationCommandInteractionCreate) {
-			loc := core.GetLocalizer(event.Locale().String())
+			loc := core.GetLocalizer(event.Locale().Code())
 
 			var user db.User
 			if err := b.DB.GormDB.Where("id = ?", event.User().ID.String()).First(&user).Error; err != nil {

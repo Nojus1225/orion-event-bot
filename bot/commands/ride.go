@@ -43,7 +43,7 @@ func init() {
 				return
 			}
 
-			loc := core.GetLocalizer(event.Locale().String())
+			loc := core.GetLocalizer(event.Locale().Code())
 
 			title := localizeText(loc, "RideTitle", nil, "# ⛷️ Ride")
 			prompt := localizeText(loc, "RidePrompt", nil, "Choose which slope to descend: Green, Red, or Black:")
@@ -184,7 +184,7 @@ func init() {
 
 			var msg discord.MessageUpdate
 			if isAvalanche {
-				loc := core.GetLocalizer(event.Locale().String())
+				loc := core.GetLocalizer(event.Locale().Code())
 				title := localizeText(loc, "RideTitle", nil, "# ⛷️ Ride")
 				body := localizeText(loc, "RideAvalanche", map[string]interface{}{
 					"newPos": user.Position,
@@ -198,7 +198,7 @@ func init() {
 					),
 				)
 			} else {
-				msg = utils.GetMessageByTileType(newTile, event.User(), user, event.Locale().String())
+				msg = utils.GetMessageByTileType(newTile, event.User(), user, event.Locale().Code())
 			}
 
 			if err := event.UpdateMessage(msg); err != nil {

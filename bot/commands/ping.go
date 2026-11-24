@@ -21,7 +21,8 @@ func init() {
 			Description: "Replies with pong",
 		},
 		Execute: func(b *core.Bot, event *events.ApplicationCommandInteractionCreate) {
-			loc := core.GetLocalizer(event.Locale().String())
+			fmt.Println("User locale:", event.Locale().Code())
+			loc := core.GetLocalizer(event.Locale().Code())
 			wsPing := b.Client.Gateway.Latency().Milliseconds()
 			dbPing := 0
 

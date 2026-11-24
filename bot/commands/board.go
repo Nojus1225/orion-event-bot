@@ -42,7 +42,7 @@ func executeBoard(b *core.Bot, event *events.ApplicationCommandInteractionCreate
 		return
 	}
 
-	loc := core.GetLocalizer(event.Locale().String())
+	loc := core.GetLocalizer(event.Locale().Code())
 	callerID := event.User().ID.String()
 
 	var evt db.Event
@@ -82,7 +82,7 @@ func executeBoard(b *core.Bot, event *events.ApplicationCommandInteractionCreate
 		}
 	}
 
-	labels := buildBoardLabels(loc, event.Locale().String())
+	labels := buildBoardLabels(loc, event.Locale().Code())
 	pngBytes, err := board.RenderBoardPNG(board.RenderData{
 		LodgeTotal: evt.LodgeTotal,
 		LodgeGoal:  vars.LodgeGoal,

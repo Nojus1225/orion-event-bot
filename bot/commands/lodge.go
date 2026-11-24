@@ -31,7 +31,7 @@ func init() {
 			},
 		},
 		Execute: func(b *core.Bot, event *events.ApplicationCommandInteractionCreate) {
-			loc := core.GetLocalizer(event.Locale().String())
+			loc := core.GetLocalizer(event.Locale().Code())
 
 			slash := event.SlashCommandInteractionData()
 			nSnowflakes := slash.Int("snowflakes")
