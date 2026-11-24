@@ -37,6 +37,8 @@ func New() *DB {
 		log.Fatalf("Erreur lors de la migration de la base de donnees: %v", err)
 	}
 
+	db.FirstOrCreate(&Event{ID: 1})
+
 	return &DB{
 		GormDB: db,
 	}

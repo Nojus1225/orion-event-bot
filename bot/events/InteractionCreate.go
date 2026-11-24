@@ -104,7 +104,7 @@ func init() {
 				return
 			}
 
-			if b.IsMaintenanceMode() && !b.IsAdmin(event.User().ID.String()) {
+			if b.IsMaintenanceMode() && !b.IsStaff(event.User().ID.String()) {
 				loc := core.GetLocalizer(event.Locale().String())
 				msg, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "MaintenanceMessage"})
 				if msg == "" {

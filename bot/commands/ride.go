@@ -156,7 +156,7 @@ func init() {
 
 			newTile := utils.GetTile(newTilePos, vars.Plate)
 			var gamepos db.GamePosition
-			if err := b.DB.GormDB.Where("posid = ?", newTile.Number).First(&gamepos).Error; err != nil {
+			if err := b.DB.GormDB.Where("posid = ?", newTile.Number).FirstOrCreate(&gamepos).Error; err != nil {
 				fmt.Println("DB error:", err)
 				return
 			}
