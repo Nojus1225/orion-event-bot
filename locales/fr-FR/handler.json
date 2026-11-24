@@ -1,0 +1,5 @@
+{
+  "HandlerWrongChannelCommand": "⚠️ Cette commande ne peut être utilisée que dans le salon de l'événement.",
+  "HandlerWrongChannelInteraction": "⚠️ Cette interaction ne peut être utilisée que dans le salon de l'événement.",
+  "HandlerWrongChannelModal": "⚠️ Ce modal ne peut être soumis que dans le salon de l'événement."
+}

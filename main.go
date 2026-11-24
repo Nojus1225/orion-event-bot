@@ -42,12 +42,22 @@ func main() {
 		}
 	}
 
+	staffIDsStr := os.Getenv("STAFF_IDS")
+	var staffIDs []string
+	if staffIDsStr != "" {
+		staffIDs = strings.Split(staffIDsStr, ",")
+		for i := range staffIDs {
+			staffIDs[i] = strings.TrimSpace(staffIDs[i])
+		}
+	}
+
 	guildID := os.Getenv("GUILD_ID")
 	channelID := os.Getenv("CHANNEL_ID")
 
 	coreBot := &core.Bot{
 		DB:        database,
 		AdminIDs:  adminIDs,
+		StaffIDs:  staffIDs,
 		GuildID:   guildID,
 		ChannelID: channelID,
 	}

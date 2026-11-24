@@ -1,0 +1,5 @@
+{
+  "HandlerWrongChannelCommand": "⚠️ This command can only be used in the event channel.",
+  "HandlerWrongChannelInteraction": "⚠️ This interaction can only be used in the event channel.",
+  "HandlerWrongChannelModal": "⚠️ This modal can only be submitted in the event channel."
+}
