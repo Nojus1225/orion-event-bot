@@ -1,15 +1,15 @@
 {
   "EventName": "eventas",
-  "EventDescription": "Išmok kaip \"Žiemos šėlsmas\" event'as veikia",
+  "EventDescription": "Sužinok kaip žiemos šėlsmas veikia.",
   "EventTitle": "# ⛷️ Žiemos šėlsmas — Orion Hosting",
   "EventMenuPrompt": "Pasirinkite, skyrių kurį norite perskaityti.",
   "EventCatOverview": "🏔️ Tikslas ir prizai",
-  "EventCatOverviewDesc": "Kaip event'as veikia ir kaip gauti kreditų",
+  "EventCatOverviewDesc": "Kaip eventas veikia ir kaip laimėti kreditus",
   "EventCatCommands": "📜 Komandos",
-  "EventCatCommandsDesc": "Sąrašas ir paaiškinimas visų komandų",
+  "EventCatCommandsDesc": "Sąrašas ir paaiškinimas kaip veikia komandos.",
   "EventCatItems": "🎒 Daiktai ir parduotuvė",
-  "EventCatItemsDesc": "Daiktus jūs galite pirkti arba rasti sniege",
-  "EventOverviewContent": "Sveiki atvykę į **Winter Rush** – 1 savaitę trunkantį stalo žaidimo renginį, kurį organizuoja **Orion Hosting** (`orionhost.xyz`)!\n🎯 **Tikslas:**\nPasiekite **50-ąjį laukelį** iki savaitės pabaigos ir paaukokite **Snaigių** **Kalnų prieglobsčiui**.\n\n💰 **Apdovanojimai (renginio pabaigoje):**\n• Laimėsite tiek **kreditų, kiek Snaigių paaukojote Kalnų prieglobsčiui**.\n• **Prizinės vietos premijos** pirmiesiems 3 žaidėjams, pasiekusiems 50-ąjį laukelį:\n🥇 1 vieta: **+50 kreditų**\n🥈 2 vieta: **+30 kreditų**\n🥉 3 vieta: **+20 kreditų**",
+  "EventCatItemsDesc": "Daiktai kuriuos gali nusipirkti arba rasti sniege.",
+  "EventOverviewContent": "Sveiki atvykę į **Žiemos šėlsmą** – 1 savaitę trunkantį stalo žaidimo renginį, kurį organizuoja **Orion Hosting** (`orionhost.xyz`)!\n🎯 **Tikslas:**\nPasiekite **50-ąjį laukelį** iki savaitės pabaigos ir paaukokite **Snaigių** **Kalnų prieglobsčiui**.\n\n💰 **Apdovanojimai (renginio pabaigoje):**\n• Laimėsite tiek **kreditų, kiek Snaigių paaukojote Kalnų prieglobsčiui**.\n• **Prizinės vietos premijos** pirmiesiems 3 žaidėjams, pasiekusiems 50-ąjį laukelį:\n🥇 1 vieta: **+50 kreditų**\n🥈 2 vieta: **+30 kreditų**\n🥉 3 vieta: **+20 kreditų**",
   "EventCommandsContent": "• `/ride` — Čiuožkite žalia, raudona arba juoda trasa, kad judėtumėte žaidimo lentoje pirmyn.\n• `/search` — Ieškokite sniege snaigių arba daiktų (kainuoja 1 energijos tašką).\n• `/lodge <amount>` — Paaukokite snaigių Kalnų prieglobsčiui (daugiausia 25 per dieną).\n• `/shop` — Pirkite daiktus už savo snaiges.\n• `/use <item>` — Panaudokite daiktą iš savo inventoriaus.\n• `/target <user> <type>` — Mes­kite sniego gniūžtę (−2 laukeliai) arba apvogkite kitą žaidėją (−15 snaigių).\n• `/user [user]` — Peržiūrėkite savo arba kito žaidėjo statistiką ir inventorių.\n• `/board` — Peržiūrėkite dabartinę žaidimo lentą ir lyderių lentelę.",
   "EventItemsContent": "• 🛡️ **Pilno veido šalmas (30 ❄️)** — Apsaugo nuo kitos neigiamos spąstų, sniego gniūžtės, lavinos arba vagystės atakos.\n• 🧲 **Snaigių magnetas (35 ❄️)** — Pavagia po 10 snaigių iš iki 2 artimiausių žaidėjų.\n• 🎿 **Turbo slidžių vaškas (40 ❄️)** — Padvigubina kito `/ride` metu įveikiamą atstumą.\n• 🧨 **Lavinos petarda (55 ❄️)** — Nustumia visus dar finišo nepasiekusius žaidėjus, esančius priešais tave, 3 laukeliais atgal."
 }

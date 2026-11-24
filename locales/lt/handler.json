@@ -1,0 +1,5 @@
+{
+  "HandlerWrongChannelCommand": "⚠️ Šitą komandą galima naudoti tik evento kanale.",
+  "HandlerWrongChannelInteraction": "⚠️ Šį veiksmą galima atlikti tik renginio kanale.",
+  "HandlerWrongChannelModal": "⚠️ Šią formą galima pateikti tik renginio kanale."
+}
