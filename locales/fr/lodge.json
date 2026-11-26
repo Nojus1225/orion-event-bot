@@ -1,5 +1,6 @@
 {
   "LodgeName": "chalet",
+  "LodgeTitle": "# 🏡 Chalet",
   "LodgeDescription": "Mettre des flocons dans le chalet",
   "LodgeNotEnoughSnowflakes": "Tu n'as pas assez de flocons à mettre dans le chalet.",
   "LodgeMaxDonation": "Tu peux donner maximum 25 flocons par jour.",

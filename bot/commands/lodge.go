@@ -60,7 +60,7 @@ func init() {
 				msg = discord.NewMessageCreateV2(
 					discord.NewContainer(
 						discord.NewSection(
-							discord.NewTextDisplay("# Lodge"),
+							discord.NewTextDisplay(func() string { t, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "LodgeTitle"}); return t }()),
 							discord.NewTextDisplay(notEnoughText),
 						).WithAccessory(discord.NewThumbnail("https://abs.twimg.com/emoji/v2/72x72/1f3e1.png")),
 					).WithAccentColor(0x5865F2),
@@ -80,7 +80,7 @@ func init() {
 				msg = discord.NewMessageCreateV2(
 					discord.NewContainer(
 						discord.NewSection(
-							discord.NewTextDisplay("# Lodge"),
+							discord.NewTextDisplay(func() string { t, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "LodgeTitle"}); return t }()),
 							discord.NewTextDisplay(goalExceededText),
 						).WithAccessory(discord.NewThumbnail("https://abs.twimg.com/emoji/v2/72x72/1f3e1.png")),
 					).WithAccentColor(0xED4245),
@@ -92,7 +92,7 @@ func init() {
 				msg = discord.NewMessageCreateV2(
 					discord.NewContainer(
 						discord.NewSection(
-							discord.NewTextDisplay("# Lodge"),
+							discord.NewTextDisplay(func() string { t, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "LodgeTitle"}); return t }()),
 							discord.NewTextDisplay(maxDonationText),
 						).WithAccessory(discord.NewThumbnail("https://abs.twimg.com/emoji/v2/72x72/1f3e1.png")),
 					).WithAccentColor(0x5865F2),
@@ -123,7 +123,7 @@ func init() {
 				msg = discord.NewMessageCreateV2(
 					discord.NewContainer(
 						discord.NewSection(
-							discord.NewTextDisplay("# Lodge"),
+							discord.NewTextDisplay(func() string { t, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "LodgeTitle"}); return t }()),
 							discord.NewTextDisplay(successText),
 						).WithAccessory(discord.NewThumbnail("https://abs.twimg.com/emoji/v2/72x72/1f3e1.png")),
 					).WithAccentColor(0x5865F2),
