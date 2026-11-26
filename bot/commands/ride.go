@@ -58,9 +58,9 @@ func init() {
 						discord.NewTextDisplay(prompt),
 					).WithAccessory(discord.NewThumbnail(event.User().EffectiveAvatarURL())),
 					discord.NewActionRow(
-						discord.NewSuccessButton(btnGreen, "ride-buttonGreen-"+event.User().ID.String()),
-						discord.NewDangerButton(btnRed, "ride-buttonRed-"+event.User().ID.String()),
-						discord.NewSecondaryButton(btnBlack, "ride-buttonBlack-"+event.User().ID.String()),
+						discord.NewSuccessButton(btnGreen, "ride-buttonGreen-"+event.User().ID.String()).WithDisabled(user.Energy >= 1),
+						discord.NewDangerButton(btnRed, "ride-buttonRed-"+event.User().ID.String()).WithDisabled(user.Energy >= 1),
+						discord.NewSecondaryButton(btnBlack, "ride-buttonBlack-"+event.User().ID.String()).WithDisabled(user.Energy >= 2),
 					),
 				),
 			)
@@ -75,17 +75,6 @@ func init() {
 			var user db.User
 			if err := b.DB.GormDB.Where("id = ?", event.User().ID.String()).First(&user).Error; err != nil {
 				fmt.Println("DB error:", err)
-				return
-			}
-
-			if user.Energy <= 0 {
-				if err := event.CreateMessage(discord.NewMessageCreateV2(
-					discord.NewContainer(
-						discord.NewTextDisplay("You have no energy left."),
-					),
-				).WithFlags(discord.MessageFlagEphemeral)); err != nil {
-					return
-				}
 				return
 			}
 
@@ -120,6 +109,17 @@ func init() {
 				if err := event.CreateMessage(discord.NewMessageCreateV2(
 					discord.NewContainer(
 						discord.NewTextDisplay("You cant interact with this buttons."),
+					),
+				).WithFlags(discord.MessageFlagEphemeral)); err != nil {
+					return
+				}
+				return
+			}
+
+			if user.Energy < 0 {
+				if err := event.CreateMessage(discord.NewMessageCreateV2(
+					discord.NewContainer(
+						discord.NewTextDisplay("You have no energy left."),
 					),
 				).WithFlags(discord.MessageFlagEphemeral)); err != nil {
 					return

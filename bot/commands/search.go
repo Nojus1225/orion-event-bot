@@ -31,7 +31,7 @@ func init() {
 				return
 			}
 
-			if user.Energy < 1 {
+			if user.Energy <= 0 {
 				noEnergyText, _ := loc.Localize(&i18n.LocalizeConfig{
 					MessageID: "SearchNoEnergy",
 				})
