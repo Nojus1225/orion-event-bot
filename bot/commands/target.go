@@ -22,7 +22,7 @@ func sendTargetError(event *events.ApplicationCommandInteractionCreate, loc *i18
 	msg := discord.NewMessageCreateV2(
 		discord.NewContainer(
 			discord.NewSection(
-				discord.NewTextDisplay("# 🎯 Target"),
+				discord.NewTextDisplay(func() string { t, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "TargetTitle"}); return t }()),
 				discord.NewTextDisplay(txt),
 			).WithAccessory(discord.NewThumbnail(event.User().EffectiveAvatarURL())),
 		).WithAccentColor(0xED4245),
@@ -169,7 +169,7 @@ func init() {
 			msg := discord.NewMessageCreateV2(
 				discord.NewContainer(
 					discord.NewSection(
-						discord.NewTextDisplay("# 🎯 Target"),
+						discord.NewTextDisplay(func() string { t, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "TargetTitle"}); return t }()),
 						discord.NewTextDisplay(responseText),
 					).WithAccessory(discord.NewThumbnail(event.User().EffectiveAvatarURL())),
 				).WithAccentColor(0x5865F2),

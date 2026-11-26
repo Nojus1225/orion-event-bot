@@ -1,5 +1,6 @@
 {
   "TargetName": "cibler",
+  "TargetTitle": "# 🎯 Cibler",
   "TargetDescription": "Attaquer un joueur",
   "TargetNoEnergy": "Tu n'as pas assez d'énergie pour cibler quelqu'un.",
   "TargetSelf": "Tu ne peux pas te cibler toi-même.",

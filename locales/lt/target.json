@@ -1,5 +1,6 @@
 {
   "TargetName": "taikinys",
+  "TargetTitle": "# 🎯 Taikinys",
   "TargetDescription": "Užpulti žaidėją",
   "TargetNoEnergy": "Tau nepakanka energijos, kad galėtum užpulti kitą žaidėją.",
   "TargetSelf": "Negali užpulti savęs.",

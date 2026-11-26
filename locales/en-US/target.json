@@ -1,5 +1,6 @@
 {
   "TargetName": "target",
+  "TargetTitle": "# 🎯 Target",
   "TargetDescription": "Attack a user",
   "TargetNoEnergy": "You don't have enough energy to target someone.",
   "TargetSelf": "You cannot target yourself.",
