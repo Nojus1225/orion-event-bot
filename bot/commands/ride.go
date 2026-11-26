@@ -33,9 +33,10 @@ func init() {
 			}
 
 			if user.Energy <= 0 {
+				loc := core.GetLocalizer(event.Locale().String())
 				if err := event.CreateMessage(discord.NewMessageCreateV2(
 					discord.NewContainer(
-						discord.NewTextDisplay("You have no energy left."),
+						discord.NewTextDisplay(localizeText(loc, "RideNoEnergy", nil, "You have no energy left.")),
 					),
 				).WithFlags(discord.MessageFlagEphemeral)); err != nil {
 					return
@@ -106,9 +107,10 @@ func init() {
 					isAvalanche = true
 				}
 			default:
+				loc := core.GetLocalizer(event.Locale().String())
 				if err := event.CreateMessage(discord.NewMessageCreateV2(
 					discord.NewContainer(
-						discord.NewTextDisplay("You cant interact with this buttons."),
+						discord.NewTextDisplay(localizeText(loc, "NotYourComponent", nil, "You cannot interact with someone else's menu.")),
 					),
 				).WithFlags(discord.MessageFlagEphemeral)); err != nil {
 					return
@@ -119,7 +121,7 @@ func init() {
 			if user.Energy < 0 {
 				if err := event.CreateMessage(discord.NewMessageCreateV2(
 					discord.NewContainer(
-						discord.NewTextDisplay("You have no energy left."),
+						discord.NewTextDisplay(localizeText(core.GetLocalizer(event.Locale().String()), "RideNoEnergy", nil, "You have no energy left.")),
 					),
 				).WithFlags(discord.MessageFlagEphemeral)); err != nil {
 					return

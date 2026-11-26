@@ -2,6 +2,7 @@
   "RideName": "čiuožti",
   "RideDescription": "Leiskis slidėmis nuo šlaito",
   "RideTitle": "# ⛷️ Čiuožimas",
+  "RideNoEnergy": "Nebeturi energijos.",
   "RidePrompt": "Pasirink, kuria trasa leistis: žalia, raudona ar juoda:",
   "RideButtonGreen": "Žalia trasa",
   "RideButtonRed": "Raudona trasa",

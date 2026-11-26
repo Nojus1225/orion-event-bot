@@ -2,6 +2,7 @@
   "RideName": "ride",
   "RideDescription": "Ski down a slope",
   "RideTitle": "# ⛷️ Ride",
+  "RideNoEnergy": "You have no energy left.",
   "RidePrompt": "Choose which slope to descend: Green, Red, or Black:",
   "RideButtonGreen": "Green Slope",
   "RideButtonRed": "Red Slope",
