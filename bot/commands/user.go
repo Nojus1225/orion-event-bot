@@ -46,7 +46,7 @@ func init() {
 				msg := discord.NewMessageCreateV2(
 					discord.NewContainer(
 						discord.NewSection(
-							discord.NewTextDisplay("# 👤 User"),
+							discord.NewTextDisplay(func() string { t, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "UserTitle"}); return t }()),
 							discord.NewTextDisplay(notParticipatingTxt),
 						).WithAccessory(discord.NewThumbnail(u.EffectiveAvatarURL())),
 					).WithAccentColor(0xED4245),

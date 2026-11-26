@@ -1,5 +1,6 @@
 {
   "UserName": "naudotojas",
+  "UserTitle": "# 👤 Naudotojas",
   "UserDescription": "Gauti naudotojo evento duomenis",
   "UserNotParticipating": "<@{{.User}}> nedalyvauja evente.",
   "MeStats": ":snowflake: {{.Snowflakes}} Snaigių\n:zap: Liko {{.Energy}} energijos taškų\n:clock1: Energija atsistatys {{.EnergyReset}}\n:map: Laukelis {{.Position}}/50\n:backpack: Inventorius: {{.Inventory}}",
