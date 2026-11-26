@@ -38,7 +38,7 @@ func init() {
 				msg := discord.NewMessageCreateV2(
 					discord.NewContainer(
 						discord.NewSection(
-							discord.NewTextDisplay("# Search"),
+							discord.NewTextDisplay(func() string { t, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"}); return t }()),
 							discord.NewTextDisplay(noEnergyText),
 						).WithAccessory(discord.NewThumbnail(*event.User().AvatarURL())),
 					).WithAccentColor(0xED4245),
@@ -89,7 +89,7 @@ func init() {
 			msg := discord.NewMessageCreateV2(
 				discord.NewContainer(
 					discord.NewSection(
-						discord.NewTextDisplay("# Search"),
+						discord.NewTextDisplay(func() string { t, _ := loc.Localize(&i18n.LocalizeConfig{MessageID: "SearchTitle"}); return t }()),
 						discord.NewTextDisplay(message),
 					).WithAccessory(discord.NewThumbnail(*event.User().AvatarURL())),
 				).WithAccentColor(0x5865F2),

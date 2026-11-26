@@ -1,5 +1,6 @@
 {
   "SearchName": "search",
+  "SearchTitle": "# 🔍 Search",
   "SearchDescription": "Search in the snow",
   "SearchFoundSnowflakes": "You found {{.Snowflakes}} snowflakes in the snow!",
   "SearchInventoryFull": "Your inventory is full, you get 25 snowflakes.",

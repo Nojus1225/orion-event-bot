@@ -1,5 +1,6 @@
 {
   "SearchName": "chercher",
+  "SearchTitle": "# 🔍 Chercher",
   "SearchDescription": "Chercher dans la neige",
   "SearchFoundSnowflakes": "Tu as trouvé {{.Snowflakes}} flocons dans la neige !",
   "SearchInventoryFull": "Ton inventaire est plein, tu reçois 25 flocons.",
